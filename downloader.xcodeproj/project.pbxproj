@@ -8,12 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB51284EEFF200FDA80F /* AppDelegate.swift */; };
-		47FDFB56284EEFF200FDA80F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* ViewController.swift */; };
+		47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* MainViewController.swift */; };
 		47FDFB5B284EEFF500FDA80F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47FDFB5A284EEFF500FDA80F /* Assets.xcassets */; };
 		47FDFB5E284EEFF500FDA80F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */; };
 		47FDFB69284EEFF500FDA80F /* downloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB68284EEFF500FDA80F /* downloaderTests.swift */; };
 		47FDFB73284EEFF500FDA80F /* downloaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */; };
 		47FDFB75284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */; };
+		47FDFB90284F00C100FDA80F /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB8F284F00C100FDA80F /* MainController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +37,7 @@
 /* Begin PBXFileReference section */
 		47FDFB4E284EEFF200FDA80F /* downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB51284EEFF200FDA80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		47FDFB55284EEFF200FDA80F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		47FDFB55284EEFF200FDA80F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		47FDFB5A284EEFF500FDA80F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		47FDFB5D284EEFF500FDA80F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		47FDFB5F284EEFF500FDA80F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -45,6 +46,9 @@
 		47FDFB6E284EEFF500FDA80F /* downloaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = downloaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITests.swift; sourceTree = "<group>"; };
 		47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		47FDFB8E284F00C100FDA80F /* MainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
+		47FDFB8F284F00C100FDA80F /* MainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
+		47FDFB91284F018C00FDA80F /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,10 +100,14 @@
 			isa = PBXGroup;
 			children = (
 				47FDFB51284EEFF200FDA80F /* AppDelegate.swift */,
-				47FDFB55284EEFF200FDA80F /* ViewController.swift */,
 				47FDFB5A284EEFF500FDA80F /* Assets.xcassets */,
-				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
+				47FDFB91284F018C00FDA80F /* BridgingHeader.h */,
+				47FDFB8D284F007D00FDA80F /* Controller */,
 				47FDFB5F284EEFF500FDA80F /* Info.plist */,
+				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
+				47FDFB55284EEFF200FDA80F /* MainViewController.swift */,
+				47FDFB8C284F007500FDA80F /* Models */,
+				47FDFB8A284F004D00FDA80F /* ViewController */,
 			);
 			path = downloader;
 			sourceTree = "<group>";
@@ -119,6 +127,29 @@
 				47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */,
 			);
 			path = downloaderUITests;
+			sourceTree = "<group>";
+		};
+		47FDFB8A284F004D00FDA80F /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		47FDFB8C284F007500FDA80F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		47FDFB8D284F007D00FDA80F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				47FDFB8E284F00C100FDA80F /* MainController.h */,
+				47FDFB8F284F00C100FDA80F /* MainController.m */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,6 +220,7 @@
 				TargetAttributes = {
 					47FDFB4D284EEFF200FDA80F = {
 						CreatedOnToolsVersion = 13.3.1;
+						LastSwiftMigration = 1330;
 					};
 					47FDFB63284EEFF500FDA80F = {
 						CreatedOnToolsVersion = 13.3.1;
@@ -251,7 +283,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47FDFB56284EEFF200FDA80F /* ViewController.swift in Sources */,
+				47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */,
+				47FDFB90284F00C100FDA80F /* MainController.m in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -419,6 +452,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -435,6 +469,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = vng.downloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = downloader/BridgingHeader.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -445,6 +481,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -461,6 +498,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = vng.downloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = downloader/BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
