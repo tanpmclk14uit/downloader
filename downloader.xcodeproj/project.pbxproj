@@ -15,6 +15,8 @@
 		47FDFB73284EEFF500FDA80F /* downloaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */; };
 		47FDFB75284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */; };
 		47FDFB90284F00C100FDA80F /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB8F284F00C100FDA80F /* MainController.m */; };
+		47FDFB94284F48D600FDA80F /* DownloadItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB93284F48D600FDA80F /* DownloadItem.m */; };
+		47FDFB9A284F647400FDA80F /* DownloadItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB99284F647400FDA80F /* DownloadItemCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,9 @@
 		47FDFB8E284F00C100FDA80F /* MainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
 		47FDFB8F284F00C100FDA80F /* MainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
 		47FDFB91284F018C00FDA80F /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		47FDFB92284F48D600FDA80F /* DownloadItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItem.h; sourceTree = "<group>"; };
+		47FDFB93284F48D600FDA80F /* DownloadItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadItem.m; sourceTree = "<group>"; };
+		47FDFB99284F647400FDA80F /* DownloadItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +110,6 @@
 				47FDFB8D284F007D00FDA80F /* Controller */,
 				47FDFB5F284EEFF500FDA80F /* Info.plist */,
 				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
-				47FDFB55284EEFF200FDA80F /* MainViewController.swift */,
 				47FDFB8C284F007500FDA80F /* Models */,
 				47FDFB8A284F004D00FDA80F /* ViewController */,
 			);
@@ -132,6 +136,8 @@
 		47FDFB8A284F004D00FDA80F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				47FDFB95284F4B4400FDA80F /* Component */,
+				47FDFB55284EEFF200FDA80F /* MainViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -139,6 +145,8 @@
 		47FDFB8C284F007500FDA80F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				47FDFB92284F48D600FDA80F /* DownloadItem.h */,
+				47FDFB93284F48D600FDA80F /* DownloadItem.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -150,6 +158,14 @@
 				47FDFB8F284F00C100FDA80F /* MainController.m */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		47FDFB95284F4B4400FDA80F /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				47FDFB99284F647400FDA80F /* DownloadItemCell.swift */,
+			);
+			path = Component;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,7 +300,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */,
+				47FDFB94284F48D600FDA80F /* DownloadItem.m in Sources */,
 				47FDFB90284F00C100FDA80F /* MainController.m in Sources */,
+				47FDFB9A284F647400FDA80F /* DownloadItemCell.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

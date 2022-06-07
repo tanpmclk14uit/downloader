@@ -9,4 +9,5 @@
 #define BridgingHeader_h
 
 #import "MainController.h"
+#import "DownloadItem.h"
 #endif /* BridgingHeader_h */
