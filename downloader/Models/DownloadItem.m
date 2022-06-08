@@ -8,7 +8,7 @@
 #import "DownloadItem.h"
 
 @implementation DownloadItem
-- (instancetype)initWithNameAnd:(NSString *)name DownloadLink:(NSString *)downloadLink{
+- (instancetype)initWithName:(NSString *)name AndDownloadLink:(NSString *)downloadLink{
     self = [super init];
     if(self){
         self.name = name;

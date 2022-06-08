@@ -7,7 +7,15 @@
 
 import UIKit
 
+protocol DownloadItemCellDelegate{
+    func downloadClick(downloadItem: DownloadItem);
+}
 class DownloadItemCell: UITableViewCell {
+    
+    public var delegate: DownloadItemCellDelegate?
+    public static let identifier: String = "DownloadItemCell"
+    public var downloadItem: DownloadItem?
+    
     lazy var bookName: UILabel = {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
@@ -107,16 +115,37 @@ class DownloadItemCell: UITableViewCell {
         stackView.addArrangedSubview(buttonPrint)
         return stackView
     }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubview(downloadBookContainer)
-        downloadBookContainer.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        downloadBookContainer.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        downloadBookContainer.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        downloadBookContainer.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        // disable chagne background when click on item
+        self.selectionStyle = .none
+        contentView.addSubview(downloadBookContainer)
+        configDownloadBookContainerConstraint()
+        setUpButtonDownloadClick()
+    }
+    private func setUpButtonDownloadClick(){
+        buttonDownload.addTarget(self, action: #selector(onDownloadClick), for: .touchUpInside)
+    }
+    
+    @objc func onDownloadClick(){
+        delegate?.downloadClick(downloadItem: self.downloadItem!)
+    }
+    
+    private func configDownloadBookContainerConstraint(){
+        downloadBookContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+        downloadBookContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
+        downloadBookContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+        downloadBookContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    public func setDownloadItem(_ downloadItem: DownloadItem){
+        self.downloadItem = downloadItem
+        bookName.text = downloadItem.name
+        downloadedQuantity.text = "Downloaded: \(downloadItem.downloadedCount)"
+        downloadingQuantity.text = "Downloading: \(downloadItem.downloadingCount)"
     }
 }

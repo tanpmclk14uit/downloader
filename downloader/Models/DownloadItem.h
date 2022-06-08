@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) int downloadingCount;
 @property(assign, nonatomic) int downloadedCount;
 @property(strong, nonatomic) NSString* downloadLink;
-- (instancetype) initWithNameAnd: (NSString*) name DownloadLink: (NSString*) downloadLink;
+- (instancetype) initWithName: (NSString*) name AndDownloadLink: (NSString*) downloadLink;
 @end
 
 NS_ASSUME_NONNULL_END
