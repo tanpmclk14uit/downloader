@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47A1F02F285AEA2C006B8944 /* DownloadingTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A1F02E285AEA2C006B8944 /* DownloadingTask.m */; };
 		47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB51284EEFF200FDA80F /* AppDelegate.swift */; };
 		47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* MainViewController.swift */; };
 		47FDFB5B284EEFF500FDA80F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47FDFB5A284EEFF500FDA80F /* Assets.xcassets */; };
@@ -37,6 +38,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		474380502852F9E50068AEB9 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
+		47A1F02D285AEA2C006B8944 /* DownloadingTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadingTask.h; sourceTree = "<group>"; };
+		47A1F02E285AEA2C006B8944 /* DownloadingTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadingTask.m; sourceTree = "<group>"; };
 		47FDFB4E284EEFF200FDA80F /* downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB51284EEFF200FDA80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		47FDFB55284EEFF200FDA80F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -147,6 +151,8 @@
 			children = (
 				47FDFB92284F48D600FDA80F /* DownloadItem.h */,
 				47FDFB93284F48D600FDA80F /* DownloadItem.m */,
+				47A1F02D285AEA2C006B8944 /* DownloadingTask.h */,
+				47A1F02E285AEA2C006B8944 /* DownloadingTask.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -156,6 +162,7 @@
 			children = (
 				47FDFB8E284F00C100FDA80F /* MainController.h */,
 				47FDFB8F284F00C100FDA80F /* MainController.m */,
+				474380502852F9E50068AEB9 /* DownloadDelegate.h */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -302,6 +309,7 @@
 				47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */,
 				47FDFB94284F48D600FDA80F /* DownloadItem.m in Sources */,
 				47FDFB90284F00C100FDA80F /* MainController.m in Sources */,
+				47A1F02F285AEA2C006B8944 /* DownloadingTask.m in Sources */,
 				47FDFB9A284F647400FDA80F /* DownloadItemCell.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 			);

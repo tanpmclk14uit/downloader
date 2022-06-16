@@ -14,18 +14,20 @@ class MainViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.rowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.register(DownloadItemCell.self, forCellReuseIdentifier: DownloadItemCell.identifier)
         return tableView
     }()
-    
-    private var downloadItems: [DownloadItem] = []
+    private var controller: MainController?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        // init main controller
+        controller = MainController()
+        controller?.updateViewDelegate = self
         view.addSubview(downloadItemsView)
         configDownloadItemViewContraints()
-        downloadItems = fetchDownloadItem()
+        
     }
     private func configDownloadItemViewContraints(){
         downloadItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -34,30 +36,58 @@ class MainViewController: UIViewController {
         downloadItemsView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
     }
 }
-
+// MARK: - Conform Table Delegate
 extension MainViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return downloadItems.count
+        return controller?.downloadItems.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemCell.identifier) as! DownloadItemCell
-        cell.setDownloadItem(downloadItems[indexPath.row])
+        cell.setDownloadItem((controller?.downloadItems[indexPath.row])!, position: indexPath.row)
         cell.delegate = self
         return cell
     }
 }
-extension MainViewController{
-    func fetchDownloadItem() -> [DownloadItem]{
-        let learniOSDev = DownloadItem(name: "Learn iOS dev", andDownloadLink: "")
-        let beginningiOS = DownloadItem(name: "Beginning iOS", andDownloadLink: "")
-        let theBigNerdRanch = DownloadItem(name: "The Big Nerd Ranch", andDownloadLink: "")
-        return [learniOSDev, beginningiOS, theBigNerdRanch]
+// MARK: - Conform DowloadItemCellDelegate
+extension MainViewController: DownloadItemCellDelegate{
+    func cancelClick(position: Int) {
+        reloadRow(position: position)
+    }
+    
+    func deleteClick(position: Int) {
+        reloadRow(position: position)
+    }
+    
+    func printClick(dowloadItem: DownloadItem, position: Int) {
+        dowloadItem.shouldShowCopiesItem = true
+        reloadRow(position: position)
+    }
+    
+    func downloadClick(downloadItem: DownloadItem, position: Int) {
+        DispatchQueue.global(qos: .utility).async { [self] in
+            self.controller?.downloadItem(downloadItem, inPosition: Int32(position), afterComplete: {
+                DispatchQueue.main.async { [self] in
+                    downloadItem.shouldShowCopiesItem = false
+                    self.reloadRow(position: position)
+                }
+            })
+        }
+    }
+    
+    
+    private func reloadRow(position: Int){
+        let indexPath = IndexPath(row: position, section: 0)
+        self.downloadItemsView.reloadRows(at: [indexPath], with: .fade)
     }
 }
-extension MainViewController: DownloadItemCellDelegate{
-    func downloadClick(downloadItem: DownloadItem) {
-        print(downloadItem.name)
+// MARK: - Conform DownloadDelegate
+extension MainViewController: DownloadDelegate{
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        
+    }
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        print("error")
     }
 }
 

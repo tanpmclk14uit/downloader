@@ -6,14 +6,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DownloadItem.h"
+#import "DownloadDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MainController : NSObject
-@property(strong, nonatomic) NSString* message;
-@property(assign, nonatomic) int clickCount;
-- (void) print;
-- (instancetype) initWithMessage: (NSString*) message;
+@property NSArray<DownloadItem *>* downloadItems;
+@property(weak, nonatomic) id<DownloadDelegate> updateViewDelegate;
+@property(strong, atomic) NSOperationQueue* sessionDelegateQueue;
+@property(strong, atomic) NSURLSession* session;
+- (NSArray<DownloadItem*>*) fetchDownloadItems;
+- (instancetype)init;
+- (void) downloadItem:(DownloadItem *)item inPosition:(int)position afterComplete: (void (^)(void)) afterCompleteHandler;
 @end
-
 NS_ASSUME_NONNULL_END
