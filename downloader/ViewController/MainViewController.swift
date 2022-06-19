@@ -9,6 +9,7 @@ import UIKit
 
 class MainViewController: UIViewController {
     
+    //MARK: - Init UI
     lazy var downloadItemsView: UITableView = {
         var tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -18,13 +19,14 @@ class MainViewController: UIViewController {
         tableView.register(DownloadItemCell.self, forCellReuseIdentifier: DownloadItemCell.identifier)
         return tableView
     }()
+    
     private var controller: MainController?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         // init main controller
         controller = MainController()
-        controller?.updateViewDelegate = self
+        controller?.setDownloadViewDelegate(self)
         view.addSubview(downloadItemsView)
         configDownloadItemViewContraints()
         
@@ -66,15 +68,12 @@ extension MainViewController: DownloadItemCellDelegate{
     
     func downloadClick(downloadItem: DownloadItem, position: Int) {
         DispatchQueue.global(qos: .utility).async { [self] in
-            self.controller?.downloadItem(downloadItem, inPosition: Int32(position), afterComplete: {
-                DispatchQueue.main.async { [self] in
-                    downloadItem.shouldShowCopiesItem = false
-                    self.reloadRow(position: position)
-                }
-            })
+            self.controller?.downloadItem(downloadItem)
+            DispatchQueue.main.async {
+                self.reloadRow(position: position)
+            }
         }
     }
-    
     
     private func reloadRow(position: Int){
         let indexPath = IndexPath(row: position, section: 0)
@@ -83,11 +82,47 @@ extension MainViewController: DownloadItemCellDelegate{
 }
 // MARK: - Conform DownloadDelegate
 extension MainViewController: DownloadDelegate{
+    
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        
+        let currentDownloadItem = self.controller?.getItemByDownloadingTask(downloadTask);
+        if let downloadItem = currentDownloadItem{
+            do {
+                let documentsURL = try
+                FileManager.default.url(for: .documentDirectory,
+                                        in: .userDomainMask,
+                                        appropriateFor: nil,
+                                        create: false)
+                var i: Int = 0;
+                repeat{
+                    let fileExtension: String = (i > 0) ? ("(\(i)).pdf") : (".pdf")
+                    let fileName = "\(downloadItem.name)\(fileExtension)"
+                    let savedURL = documentsURL.appendingPathComponent(
+                        fileName)
+                    do{
+                        try FileManager.default.moveItem(at: location, to: savedURL)
+                        downloadItem.downloadedCount += 1
+                        downloadItem.downloadingCount -= 1
+                        downloadItem.addNewDownloadedCopy(fileName)
+                        downloadItem.removeDowloadingTask(downloadTask)
+                        print(savedURL)
+                        break;
+                    }catch{
+                        i += 1
+                    }
+                }while(true)
+                DispatchQueue.main.async {
+                    self.reloadRow(position: self.controller?.downloadItems.firstIndex(of: downloadItem) ?? 0)
+                }
+            } catch {
+                print("error")
+            }
+        }
     }
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        print("error")
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+         //handle progress here
+        let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+        print(calculatedProgress)
     }
 }
 

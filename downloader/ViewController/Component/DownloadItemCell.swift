@@ -203,6 +203,6 @@ class DownloadItemCell: UITableViewCell {
         }else{
             result.text = "Result"
         }
-        
+        self.downloadItem?.shouldShowCopiesItem = false
     }
 }

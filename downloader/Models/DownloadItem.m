@@ -16,7 +16,6 @@
         self.downloadedCount = (int) self.getDownloadedCopiesFromFile.count;
         self.downloadingCount = 0;
         self.shouldShowCopiesItem = false;
-        self.dowloadedCopiesString = @"";
         self.dispatchQueueForThreadSafe = dispatch_queue_create("dispath-queue-for-thread-safe", DISPATCH_QUEUE_SERIAL);
         self.downloadedCopies = (NSMutableArray*) [self getDownloadedCopiesFromFile];
         self.downloadingTasks = [[NSMutableArray alloc] init];
@@ -34,44 +33,47 @@
         [self.downloadedCopies removeObject:copyName];
     });
 }
-- (void) addNewDownloadingTask:(DownloadingTask *)downloadingTask{
+- (void) addNewDownloadingTask:(NSURLSessionDownloadTask *)downloadingTask{
     dispatch_async(_dispatchQueueForThreadSafe, ^{
         [self.downloadingTasks addObject:downloadingTask];
     });
 }
-- (void) completeDownloadingTask:(NSString *)taskId{
-    dispatch_async(_dispatchQueueForThreadSafe, ^{
-        for (DownloadingTask *completeTask in self.downloadingTasks){
-            if(completeTask.taskId == taskId){
-                [self removeDowloadingTask:completeTask];
-            }
-        }
-    });
-}
-- (void) removeDowloadingTask: (DownloadingTask*) downloadingTask{
+
+- (void) removeDowloadingTask: (NSURLSessionDownloadTask*) downloadingTask{
     dispatch_async(_dispatchQueueForThreadSafe, ^{
         [self.downloadingTasks removeObject: downloadingTask];
     });
 }
+- (NSArray<NSURLSessionDownloadTask *> *)getAllDownloadingTask{
+    __block NSMutableArray<NSURLSessionDownloadTask*>* allDownloadingTasks = [[NSMutableArray alloc] init];
+    dispatch_sync(_dispatchQueueForThreadSafe, ^{
+        for(NSURLSessionDownloadTask* downloadingTask in self.downloadingTasks){
+            [allDownloadingTasks addObject:downloadingTask];
+        }
+    });
+    return allDownloadingTasks;
+}
 
 - (void) cancelRandomDownloadingTask{
     dispatch_async(_dispatchQueueForThreadSafe, ^{
-        uint32_t randomTaskIndex = arc4random_uniform(self.downloadingCount);
-        DownloadingTask *randomTask = [self.downloadingTasks objectAtIndex:randomTaskIndex];
-        [randomTask.task suspend];
-        [self removeDowloadingTask: randomTask];
-        self.downloadingCount -=1;
+        if(self.downloadingCount>0){
+            uint32_t randomTaskIndex = arc4random_uniform(self.downloadingCount);
+            NSURLSessionDownloadTask *randomTask = [self.downloadingTasks objectAtIndex:randomTaskIndex];
+            [randomTask cancel];
+            [self removeDowloadingTask: randomTask];
+            self.downloadingCount -=1;
+        }
     });
 }
 
 - (NSString*) getAllDownloadedCopiesToString{
-    self.dowloadedCopiesString = @"";
+    __block NSString* dowloadedCopiesString = @"";
     dispatch_sync(_dispatchQueueForThreadSafe, ^{
         for(NSString* fileName in self.downloadedCopies){
-            self.dowloadedCopiesString = [self.dowloadedCopiesString stringByAppendingFormat:@"%@\n", fileName];
+            dowloadedCopiesString = [dowloadedCopiesString stringByAppendingFormat:@"%@\n", fileName];
         }
     });
-    return self.dowloadedCopiesString;
+    return dowloadedCopiesString;
 }
 
 - (BOOL)isEqual:(DownloadItem*)object{
@@ -85,7 +87,6 @@
     if(error){
         NSLog(@"%@", @"Error");
         return listFileName;
-        
     }else{
         NSArray<NSURL*> *listFile = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:documentsURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
         
@@ -118,5 +119,6 @@
         }
     }
 }
+
 
 @end

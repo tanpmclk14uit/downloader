@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DownloadingTask.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadItem : NSObject
@@ -14,8 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, atomic) int downloadingCount;
 @property(assign, atomic) int downloadedCount;
 @property(assign, atomic) bool shouldShowCopiesItem;
-@property(strong, atomic) NSString* dowloadedCopiesString;
-@property(strong, atomic) NSMutableArray<DownloadingTask *>* downloadingTasks;
+@property(strong, atomic) NSMutableArray<NSURLSessionDownloadTask *>* downloadingTasks;
 @property(strong, nonatomic) NSString* downloadLink;
 @property(strong, nonatomic) dispatch_queue_t dispatchQueueForThreadSafe;
 @property(strong, atomic) NSMutableArray<NSString*>* downloadedCopies;
@@ -24,8 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (Boolean) removeDownloadedCopySuccess;
 - (void) addNewDownloadedCopy: (NSString*) copyName;
 - (void) deleteDownloadedCopy: (NSString*) copyName;
-- (void) addNewDownloadingTask: (DownloadingTask*) downloadingTask;
-- (void) completeDownloadingTask: (NSString*) taskId;
+- (void) addNewDownloadingTask: (NSURLSessionDownloadTask*) downloadingTask;
+- (void) removeDowloadingTask: (NSURLSessionDownloadTask*) downloadingTask;
+- (NSArray<NSURLSessionDownloadTask*>*) getAllDownloadingTask;
 - (void) cancelRandomDownloadingTask;
 - (NSString*) getAllDownloadedCopiesToString;
 @end
