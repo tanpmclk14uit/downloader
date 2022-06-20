@@ -11,14 +11,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MainController : NSObject
+@interface Downloader : NSObject
 @property NSArray<DownloadItem *>* downloadItems;
-@property(weak, nonatomic) id<DownloadDelegate> updateViewDelegate;
-@property(strong, atomic) NSURLSession* session;
-- (NSArray<DownloadItem*>*) fetchDownloadItems;
-- (instancetype)init;
+
 - (void) downloadItem:(DownloadItem *)item;
 - (DownloadItem*) getItemByDownloadingTask: (NSURLSessionDownloadTask*) downloadingTask;
 - (void) setDownloadViewDelegate:(id<DownloadDelegate> _Nullable)updateViewDelegate;
++ (Downloader *) sharedInstance;
 @end
 NS_ASSUME_NONNULL_END

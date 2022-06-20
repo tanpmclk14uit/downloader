@@ -20,44 +20,49 @@ class MainViewController: UIViewController {
         return tableView
     }()
     
-    private var controller: MainController?
+    private var downloader: Downloader?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         // init main controller
-        controller = MainController()
-        controller?.setDownloadViewDelegate(self)
+        downloader = Downloader.sharedInstance()
+        downloader?.setDownloadViewDelegate(self)
         view.addSubview(downloadItemsView)
         configDownloadItemViewContraints()
         
     }
     private func configDownloadItemViewContraints(){
-        downloadItemsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        downloadItemsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        downloadItemsView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
-        downloadItemsView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
+        downloadItemsView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        downloadItemsView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        downloadItemsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        downloadItemsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
     }
 }
 // MARK: - Conform Table Delegate
 extension MainViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return controller?.downloadItems.count ?? 0
+        return downloader?.downloadItems.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemCell.identifier) as! DownloadItemCell
-        cell.setDownloadItem((controller?.downloadItems[indexPath.row])!, position: indexPath.row)
+        cell.setDownloadItem((downloader?.downloadItems[indexPath.row])!, position: indexPath.row)
         cell.delegate = self
         return cell
     }
 }
 // MARK: - Conform DowloadItemCellDelegate
 extension MainViewController: DownloadItemCellDelegate{
-    func cancelClick(position: Int) {
-        reloadRow(position: position)
+    func deleteClick(dowloadItem: DownloadItem, position: Int) {
+        if(dowloadItem.removeDownloadedCopySuccess()){
+            reloadRow(position: position)
+        }else{
+            print("Error")
+        }
     }
     
-    func deleteClick(position: Int) {
+    func cancelClick(dowloadItem: DownloadItem, position: Int) {
+        dowloadItem.cancelRandomDownloadingTask()
         reloadRow(position: position)
     }
     
@@ -68,7 +73,7 @@ extension MainViewController: DownloadItemCellDelegate{
     
     func downloadClick(downloadItem: DownloadItem, position: Int) {
         DispatchQueue.global(qos: .utility).async { [self] in
-            self.controller?.downloadItem(downloadItem)
+            self.downloader?.downloadItem(downloadItem)
             DispatchQueue.main.async {
                 self.reloadRow(position: position)
             }
@@ -84,7 +89,7 @@ extension MainViewController: DownloadItemCellDelegate{
 extension MainViewController: DownloadDelegate{
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        let currentDownloadItem = self.controller?.getItemByDownloadingTask(downloadTask);
+        let currentDownloadItem = self.downloader?.getItemByDownloadingTask(downloadTask);
         if let downloadItem = currentDownloadItem{
             do {
                 let documentsURL = try
@@ -111,7 +116,7 @@ extension MainViewController: DownloadDelegate{
                     }
                 }while(true)
                 DispatchQueue.main.async {
-                    self.reloadRow(position: self.controller?.downloadItems.firstIndex(of: downloadItem) ?? 0)
+                    self.reloadRow(position: self.downloader?.downloadItems.firstIndex(of: downloadItem) ?? 0)
                 }
             } catch {
                 print("error")

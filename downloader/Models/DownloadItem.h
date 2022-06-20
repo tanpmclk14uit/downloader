@@ -9,14 +9,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadItem : NSObject
+
 @property(strong, nonatomic) NSString* name;
-@property(assign, atomic) int downloadingCount;
-@property(assign, atomic) int downloadedCount;
-@property(assign, atomic) bool shouldShowCopiesItem;
-@property(strong, atomic) NSMutableArray<NSURLSessionDownloadTask *>* downloadingTasks;
+@property(assign, atomic) NSInteger downloadingCount;
+@property(assign, atomic) NSInteger downloadedCount;
+@property(assign, atomic) BOOL shouldShowCopiesItem;
 @property(strong, nonatomic) NSString* downloadLink;
-@property(strong, nonatomic) dispatch_queue_t dispatchQueueForThreadSafe;
-@property(strong, atomic) NSMutableArray<NSString*>* downloadedCopies;
 
 - (instancetype) initWithName: (NSString*) name AndDownloadLink: (NSString*) downloadLink;
 - (Boolean) removeDownloadedCopySuccess;

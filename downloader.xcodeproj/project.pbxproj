@@ -14,7 +14,7 @@
 		47FDFB69284EEFF500FDA80F /* downloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB68284EEFF500FDA80F /* downloaderTests.swift */; };
 		47FDFB73284EEFF500FDA80F /* downloaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */; };
 		47FDFB75284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */; };
-		47FDFB90284F00C100FDA80F /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB8F284F00C100FDA80F /* MainController.m */; };
+		47FDFB90284F00C100FDA80F /* Downloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB8F284F00C100FDA80F /* Downloader.m */; };
 		47FDFB94284F48D600FDA80F /* DownloadItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB93284F48D600FDA80F /* DownloadItem.m */; };
 		47FDFB9A284F647400FDA80F /* DownloadItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB99284F647400FDA80F /* DownloadItemCell.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		474380502852F9E50068AEB9 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
+		4769814328602FAD00555221 /* macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = macros.h; sourceTree = "<group>"; };
 		47FDFB4E284EEFF200FDA80F /* downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB51284EEFF200FDA80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		47FDFB55284EEFF200FDA80F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -49,8 +50,8 @@
 		47FDFB6E284EEFF500FDA80F /* downloaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = downloaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITests.swift; sourceTree = "<group>"; };
 		47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		47FDFB8E284F00C100FDA80F /* MainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
-		47FDFB8F284F00C100FDA80F /* MainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
+		47FDFB8E284F00C100FDA80F /* Downloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Downloader.h; sourceTree = "<group>"; };
+		47FDFB8F284F00C100FDA80F /* Downloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Downloader.m; sourceTree = "<group>"; };
 		47FDFB91284F018C00FDA80F /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		47FDFB92284F48D600FDA80F /* DownloadItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItem.h; sourceTree = "<group>"; };
 		47FDFB93284F48D600FDA80F /* DownloadItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadItem.m; sourceTree = "<group>"; };
@@ -82,6 +83,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4769814228602F9800555221 /* Macros */ = {
+			isa = PBXGroup;
+			children = (
+				4769814328602FAD00555221 /* macros.h */,
+			);
+			path = Macros;
+			sourceTree = "<group>";
+		};
 		47FDFB45284EEFF200FDA80F = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +114,7 @@
 		47FDFB50284EEFF200FDA80F /* downloader */ = {
 			isa = PBXGroup;
 			children = (
+				4769814228602F9800555221 /* Macros */,
 				47FDFB51284EEFF200FDA80F /* AppDelegate.swift */,
 				47FDFB5A284EEFF500FDA80F /* Assets.xcassets */,
 				47FDFB91284F018C00FDA80F /* BridgingHeader.h */,
@@ -155,8 +165,8 @@
 		47FDFB8D284F007D00FDA80F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				47FDFB8E284F00C100FDA80F /* MainController.h */,
-				47FDFB8F284F00C100FDA80F /* MainController.m */,
+				47FDFB8E284F00C100FDA80F /* Downloader.h */,
+				47FDFB8F284F00C100FDA80F /* Downloader.m */,
 				474380502852F9E50068AEB9 /* DownloadDelegate.h */,
 			);
 			path = Controller;
@@ -303,7 +313,7 @@
 			files = (
 				47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */,
 				47FDFB94284F48D600FDA80F /* DownloadItem.m in Sources */,
-				47FDFB90284F00C100FDA80F /* MainController.m in Sources */,
+				47FDFB90284F00C100FDA80F /* Downloader.m in Sources */,
 				47FDFB9A284F647400FDA80F /* DownloadItemCell.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 			);
@@ -403,7 +413,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -457,7 +467,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

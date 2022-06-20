@@ -6,6 +6,14 @@
 //
 
 #import "DownloadItem.h"
+#import "macros.h"
+
+@interface DownloadItem ()
+
+@property(strong, atomic) NSMutableArray<NSURLSessionDownloadTask *>* downloadingTasks;
+@property(strong, atomic) NSMutableArray<NSString*>* downloadedCopies;
+@property(strong, nonatomic) dispatch_queue_t dispatchQueueForThreadSafe;
+@end
 
 @implementation DownloadItem
 - (instancetype)initWithName:(NSString *)name AndDownloadLink:(NSString *)downloadLink{
@@ -18,7 +26,7 @@
         self.shouldShowCopiesItem = false;
         self.dispatchQueueForThreadSafe = dispatch_queue_create("dispath-queue-for-thread-safe", DISPATCH_QUEUE_SERIAL);
         self.downloadedCopies = (NSMutableArray*) [self getDownloadedCopiesFromFile];
-        self.downloadingTasks = [[NSMutableArray alloc] init];
+        _downloadingTasks = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -57,7 +65,7 @@
 - (void) cancelRandomDownloadingTask{
     dispatch_async(_dispatchQueueForThreadSafe, ^{
         if(self.downloadingCount>0){
-            uint32_t randomTaskIndex = arc4random_uniform(self.downloadingCount);
+            NSInteger randomTaskIndex =  arc4random_uniform(self.downloadingCount);
             NSURLSessionDownloadTask *randomTask = [self.downloadingTasks objectAtIndex:randomTaskIndex];
             [randomTask cancel];
             [self removeDowloadingTask: randomTask];

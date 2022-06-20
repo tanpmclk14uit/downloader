@@ -5,10 +5,24 @@
 //  Created by LAP14812 on 07/06/2022.
 //
 
-#import "MainController.h"
+#import "Downloader.h"
 #import "DownloadItem.h"
 
-@implementation MainController
+@interface Downloader ()
+@property(weak, nonatomic) id<DownloadDelegate> updateViewDelegate;
+@property(strong, atomic) NSURLSession* session;
+@end
+
+@implementation Downloader
+
++ (Downloader *) sharedInstance{
+    static Downloader *sharedInstance = nil;
+    static dispatch_once_t onceToken; // onceToken = 0
+    dispatch_once(&onceToken, ^{
+            sharedInstance = [[Downloader alloc] init];
+        });
+    return sharedInstance;
+}
 
 - (instancetype) init{
     self = [super init];
@@ -17,6 +31,7 @@
     }
     return self;
 }
+
 - (void) setDownloadViewDelegate:(id<DownloadDelegate>)updateViewDelegate{
     self.updateViewDelegate = updateViewDelegate;
     NSString *identifier = [[[NSBundle mainBundle] bundleIdentifier]stringByAppendingString: @".background"];

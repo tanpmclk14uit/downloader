@@ -8,6 +8,7 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
-#import "MainController.h"
+#import "Downloader.h"
 #import "DownloadItem.h"
+#import "macros.h"
 #endif /* BridgingHeader_h */
