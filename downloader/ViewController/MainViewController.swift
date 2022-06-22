@@ -20,15 +20,28 @@ class MainViewController: UIViewController {
         return tableView
     }()
     
+    lazy var searchBar: UISearchBar = {
+        var searchBar = UISearchBar()
+        // searchBar.showsCancelButton = true
+        searchBar.delegate = self
+        searchBar.placeholder = "Search for download item"
+        return searchBar
+    }()
+    
+    
     private var downloader: Downloader?
+    private var filterDownloadItems: Array<DownloadItem>?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         // init main controller
         downloader = Downloader.sharedInstance()
         downloader?.setDownloadViewDelegate(self)
+        filterDownloadItems = downloader?.downloadItems
         view.addSubview(downloadItemsView)
         configDownloadItemViewContraints()
+        navigationItem.titleView = searchBar
         
     }
     private func configDownloadItemViewContraints(){
@@ -41,12 +54,12 @@ class MainViewController: UIViewController {
 // MARK: - Conform Table Delegate
 extension MainViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return downloader?.downloadItems.count ?? 0
+        return filterDownloadItems?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemCell.identifier) as! DownloadItemCell
-        cell.setDownloadItem((downloader?.downloadItems[indexPath.row])!, position: indexPath.row)
+        cell.setDownloadItem((filterDownloadItems?[indexPath.row])!, position: indexPath.row)
         cell.delegate = self
         return cell
     }
@@ -125,11 +138,22 @@ extension MainViewController: DownloadDelegate{
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-         //handle progress here
+        //handle progress here
         let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
         print(calculatedProgress)
     }
 }
-
-
+// MARK: - Search bar delegate
+extension MainViewController: UISearchBarDelegate{
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if(!searchText.isEmpty){
+            filterDownloadItems = downloader?.downloadItems.filter({(downloadItem: DownloadItem)->Bool in
+                return downloadItem.name.lowercased().contains(searchText.lowercased())
+            })
+        }else{
+            filterDownloadItems = downloader?.downloadItems
+        }
+        self.downloadItemsView.reloadData()
+    }
+}
 

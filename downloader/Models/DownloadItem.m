@@ -65,7 +65,7 @@
 - (void) cancelRandomDownloadingTask{
     dispatch_async(_dispatchQueueForThreadSafe, ^{
         if(self.downloadingCount>0){
-            NSInteger randomTaskIndex =  arc4random_uniform(self.downloadingCount);
+            NSInteger randomTaskIndex = arc4random_uniform(self.downloadingCount);
             NSURLSessionDownloadTask *randomTask = [self.downloadingTasks objectAtIndex:randomTaskIndex];
             [randomTask cancel];
             [self removeDowloadingTask: randomTask];

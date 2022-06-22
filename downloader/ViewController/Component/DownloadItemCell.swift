@@ -21,7 +21,7 @@ class DownloadItemCell: UITableViewCell {
     private var downloadItem: DownloadItem?
     private var downloadItemPosition: Int = 0
     
-
+    
     //MARK: - Config property UI
     lazy var bookName: UILabel = {
         let lable = UILabel()
@@ -153,7 +153,7 @@ class DownloadItemCell: UITableViewCell {
     }
     
     @objc func onDeleteClick(){
-            self.delegate?.deleteClick(dowloadItem: self.downloadItem!, position: self.downloadItemPosition)
+        self.delegate?.deleteClick(dowloadItem: self.downloadItem!, position: self.downloadItemPosition)
     }
     
     @objc func onPrintClick(){

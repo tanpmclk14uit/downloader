@@ -18,5 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (DownloadItem*) getItemByDownloadingTask: (NSURLSessionDownloadTask*) downloadingTask;
 - (void) setDownloadViewDelegate:(id<DownloadDelegate> _Nullable)updateViewDelegate;
 + (Downloader *) sharedInstance;
+
+-(instancetype)init NS_UNAVAILABLE;
+
 @end
 NS_ASSUME_NONNULL_END
