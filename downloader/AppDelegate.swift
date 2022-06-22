@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             items[1].image = UIImage(named: "download.fill")?.withRenderingMode(.alwaysOriginal)
             items[1].selectedImage = UIImage(named: "download.fill.selected")?.withRenderingMode(.alwaysOriginal)
         }
-        
+        tabBarController.tabBar.backgroundColor = .white
         return tabBarController
     }()
     
