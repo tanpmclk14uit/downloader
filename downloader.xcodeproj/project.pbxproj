@@ -7,14 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */; };
+		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
 		47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB51284EEFF200FDA80F /* AppDelegate.swift */; };
-		47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* MainViewController.swift */; };
+		47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* FolderViewController.swift */; };
 		47FDFB5B284EEFF500FDA80F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47FDFB5A284EEFF500FDA80F /* Assets.xcassets */; };
 		47FDFB5E284EEFF500FDA80F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */; };
 		47FDFB69284EEFF500FDA80F /* downloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB68284EEFF500FDA80F /* downloaderTests.swift */; };
 		47FDFB73284EEFF500FDA80F /* downloaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */; };
 		47FDFB75284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */; };
-		47FDFB90284F00C100FDA80F /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB8F284F00C100FDA80F /* MainController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,9 +36,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewController.swift; sourceTree = "<group>"; };
+		474A60FD2862CF2C0039B3D0 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		47FDFB4E284EEFF200FDA80F /* downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB51284EEFF200FDA80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		47FDFB55284EEFF200FDA80F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		47FDFB55284EEFF200FDA80F /* FolderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewController.swift; sourceTree = "<group>"; };
 		47FDFB5A284EEFF500FDA80F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		47FDFB5D284EEFF500FDA80F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		47FDFB5F284EEFF500FDA80F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -46,8 +49,6 @@
 		47FDFB6E284EEFF500FDA80F /* downloaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = downloaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITests.swift; sourceTree = "<group>"; };
 		47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		47FDFB8E284F00C100FDA80F /* MainController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
-		47FDFB8F284F00C100FDA80F /* MainController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
 		47FDFB91284F018C00FDA80F /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +77,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		474A60FC2862CEF30039B3D0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				47FDFB5A284EEFF500FDA80F /* Assets.xcassets */,
+				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
+				474A60FD2862CF2C0039B3D0 /* Colors.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		47FDFB45284EEFF200FDA80F = {
 			isa = PBXGroup;
 			children = (
@@ -100,13 +111,11 @@
 			isa = PBXGroup;
 			children = (
 				47FDFB51284EEFF200FDA80F /* AppDelegate.swift */,
-				47FDFB5A284EEFF500FDA80F /* Assets.xcassets */,
 				47FDFB91284F018C00FDA80F /* BridgingHeader.h */,
 				47FDFB8D284F007D00FDA80F /* Controller */,
 				47FDFB5F284EEFF500FDA80F /* Info.plist */,
-				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
-				47FDFB55284EEFF200FDA80F /* MainViewController.swift */,
 				47FDFB8C284F007500FDA80F /* Models */,
+				474A60FC2862CEF30039B3D0 /* Resources */,
 				47FDFB8A284F004D00FDA80F /* ViewController */,
 			);
 			path = downloader;
@@ -132,6 +141,8 @@
 		47FDFB8A284F004D00FDA80F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
+				474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -146,8 +157,6 @@
 		47FDFB8D284F007D00FDA80F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				47FDFB8E284F00C100FDA80F /* MainController.h */,
-				47FDFB8F284F00C100FDA80F /* MainController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -283,8 +292,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47FDFB56284EEFF200FDA80F /* MainViewController.swift in Sources */,
-				47FDFB90284F00C100FDA80F /* MainController.m in Sources */,
+				47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */,
+				474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */,
+				474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -383,7 +393,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -437,7 +447,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

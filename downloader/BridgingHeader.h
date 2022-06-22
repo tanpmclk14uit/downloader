@@ -8,5 +8,4 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
-#import "MainController.h"
 #endif /* BridgingHeader_h */
