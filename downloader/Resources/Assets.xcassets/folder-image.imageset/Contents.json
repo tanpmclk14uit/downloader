@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "folder-add (2).png",
+      "filename" : "folder-image@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "folder-image@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "folder-image@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

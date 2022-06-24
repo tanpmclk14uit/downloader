@@ -13,7 +13,7 @@ class DownloadViewController: UIViewController {
         let titleName = UILabel()
         titleName.text = "Downloads"
         titleName.textColor = .black
-        titleName.font = UIFont.boldSystemFont(ofSize: 30)
+        titleName.font = UIFont.boldSystemFont(ofSize: Dimen.screenTitleTextSize)
         return titleName
     }()
     
@@ -27,7 +27,7 @@ class DownloadViewController: UIViewController {
         return searchBar
     }()
     
-    lazy var inputDownloadURLView: UIAlertController = {
+    lazy var inputDownloadURLAlert: UIAlertController = {
         let alert = UIAlertController(
             title: "Download URL",
             message: nil,
@@ -40,8 +40,9 @@ class DownloadViewController: UIViewController {
         }
         // add action to alert
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1; //
         let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { _ in
-            if let fields = alert.textFields, fields.count == 1 {
+            if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let inputURL = fields[0].text, !fields[0].text!.isEmpty {
                     print("Download link: \(inputURL)")
                 }
@@ -72,15 +73,15 @@ class DownloadViewController: UIViewController {
         } else {
             searchBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         }
-        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
         searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     private func configTableViewConstraint(){
-        downloadItemsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10).isActive = true
-        downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
-        downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        downloadItemsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
+        downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
+        downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
     }
     
     // MARK: - CONTROLLER SETUP
@@ -96,7 +97,7 @@ class DownloadViewController: UIViewController {
         configTableViewConstraint()
     }
     @objc func addNewDownloadItemClick(){
-        present(inputDownloadURLView, animated: true)
+        present(inputDownloadURLAlert, animated: true)
     }
 }
 // MARK: - CONFIRM SEARCH BAR DELEGATE

@@ -13,7 +13,7 @@ class DownloadItemViewCell: UITableViewCell {
         let downloadItemTitle = UILabel()
         downloadItemTitle.translatesAutoresizingMaskIntoConstraints = false
         downloadItemTitle.text = "Download item title"
-        downloadItemTitle.font = UIFont.boldSystemFont(ofSize: 20)
+        downloadItemTitle.font = UIFont.boldSystemFont(ofSize: Dimen.itemTitleTextSize)
         return downloadItemTitle
     }()
     
@@ -21,14 +21,14 @@ class DownloadItemViewCell: UITableViewCell {
         let downloadItemStatus = UILabel()
         downloadItemStatus.translatesAutoresizingMaskIntoConstraints = false
         downloadItemStatus.text = "Download item status"
-        downloadItemStatus.font = UIFont.systemFont(ofSize: 18)
+        downloadItemStatus.font = UIFont.systemFont(ofSize: Dimen.itemNormalContentTextSize)
         return downloadItemStatus
     }()
      
     lazy var downloadItemButtonAction: UIButton = {
         let downloadItemButtonAction = UIButton()
         downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
-        downloadItemButtonAction.setImage(UIImage(named: "download.fill.action"), for: .normal)
+        downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
         downloadItemButtonAction.tintColor = .gray
         return downloadItemButtonAction
     }()
@@ -38,11 +38,12 @@ class DownloadItemViewCell: UITableViewCell {
         layout.translatesAutoresizingMaskIntoConstraints = false
         layout.backgroundColor = .white
         layout.addSubview(downloadItemButtonAction)
+        
         // config button download action
-        downloadItemButtonAction.topAnchor.constraint(equalTo: layout.topAnchor).isActive = true
-        downloadItemButtonAction.bottomAnchor.constraint(equalTo: layout.bottomAnchor).isActive = true
-        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: -10).isActive = true
-        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        downloadItemButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
+        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor).isActive = true
+        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        downloadItemButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config content tile & status
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
@@ -51,16 +52,16 @@ class DownloadItemViewCell: UITableViewCell {
         layout.addSubview(contentLayout)
         contentLayout.addArrangedSubview(downloadItemTitle)
         contentLayout.addArrangedSubview(downloadItemStatus)
-        contentLayout.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: 10).isActive = true
-        contentLayout.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: -10).isActive = true
+        contentLayout.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
+        contentLayout.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         contentLayout.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         contentLayout.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return layout
     }()
     //MARK: - CONFIG CELL CONSTRAINT
     private func configItemCellConstraint(){
-        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
-        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
+        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         itemCellLayout.heightAnchor.constraint(equalToConstant: 60).isActive = true
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
      }
@@ -70,13 +71,10 @@ class DownloadItemViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         contentView.addSubview(itemCellLayout)
-        
         configItemCellConstraint()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
 }

@@ -30,12 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarController.setViewControllers([folderViewController, downloadViewController], animated: false)
         
         if let items = tabBarController.tabBar.items{
-            // set up folder tab image
-            items[0].image = UIImage(named: "folder.fill")?.withRenderingMode(.alwaysOriginal)
-            items[0].selectedImage = UIImage(named: "folder.fill.selected")?.withRenderingMode(.alwaysOriginal)
-            // set up download tab image
-            items[1].image = UIImage(named: "download.fill")?.withRenderingMode(.alwaysOriginal)
-            items[1].selectedImage = UIImage(named: "download.fill.selected")?.withRenderingMode(.alwaysOriginal)
+            items[0].image = UIImage(named: "folder.fill")
+            items[1].image = UIImage(named: "download.fill")
         }
         tabBarController.tabBar.backgroundColor = .white
         return tabBarController
