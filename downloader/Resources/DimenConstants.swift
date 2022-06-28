@@ -24,5 +24,6 @@ class Dimen {
     // Margin
     public static let screenDefaultMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
     public static let cellItemMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
+    public static let toolBarMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: -10, right: -15)
     
 }

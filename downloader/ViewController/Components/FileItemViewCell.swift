@@ -70,13 +70,14 @@ class FileItemViewCell: UICollectionViewCell {
         fileIcon.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         // config button download action
         fileButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        fileButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor).isActive = true
+        fileButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         fileButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         fileButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config content layout (title & information)
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
         contentLayout.axis = .vertical
+        contentLayout.alignment = .leading
         contentLayout.distribution = .fillEqually
         layout.addSubview(contentLayout)
         
@@ -84,10 +85,13 @@ class FileItemViewCell: UICollectionViewCell {
         let informationLayout = UIStackView()
         informationLayout.translatesAutoresizingMaskIntoConstraints = false
         informationLayout.axis = .horizontal
+        informationLayout.alignment = .center
+        informationLayout.distribution = .fillProportionally
         // config file name
         informationLayout.addArrangedSubview(fileSize)
         informationLayout.addArrangedSubview(divider)// divider
         informationLayout.addArrangedSubview(fileDate)
+        
         // config information layout constraint
         
         contentLayout.addArrangedSubview(fileName)

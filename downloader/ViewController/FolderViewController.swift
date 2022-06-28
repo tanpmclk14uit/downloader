@@ -65,22 +65,22 @@ class FolderViewController: UIViewController {
         toolBar.addSubview(buttonViewType)
         // config button add file
         buttonAddFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
+        buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
         buttonAddFile.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         buttonAddFile.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         // config button add forder
         buttonAddFolder.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonAddFile.trailingAnchor).isActive = true
+        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonAddFile.trailingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
         buttonAddFolder.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         buttonAddFolder.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config button sort
         buttonSort.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         buttonSort.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
-        buttonSort.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        buttonSort.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
         // config button type view
         buttonViewType.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         buttonViewType.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
         buttonViewType.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
         
         return toolBar
