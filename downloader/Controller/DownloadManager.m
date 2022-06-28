@@ -51,12 +51,12 @@
 - (void) downloadWithURL:(NSString *)downloadURL{
     NSURL *url = [NSURL URLWithString:downloadURL];
     if(url){
+        
         DownloadItem* newDownloadItem = [[DownloadItem alloc] initWithStringURL:downloadURL];
         NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:url];
         newDownloadItem.downloadTask = downloadTask;
         [self.allDownloadItems addObject:newDownloadItem];
         [downloadTask resume];
-        // add to sqlite
     }
 }
 

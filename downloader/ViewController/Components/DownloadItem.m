@@ -14,10 +14,11 @@
         self.name = [[url lastPathComponent] stringByDeletingPathExtension];
         self.url = [NSURL URLWithString: url];
         self.state = @"Downloading";
-        self.saveLocation = @"";
+        self.saveLocation = nil;
         self.totalSizeFitWithUnit = @"";
         self.downloadTask = nil;
         self.dataForResumeDownload = nil;
+        self.durationString = nil;
     }
     return self;
 }

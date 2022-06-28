@@ -14,9 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, atomic) NSURL *url;
 @property(strong, atomic, nullable) NSURLSessionDownloadTask *downloadTask;
 @property(strong, atomic) NSString *state;
-@property(strong, atomic) NSString *saveLocation;
+@property(strong, atomic, nullable) NSString *saveLocation;
 @property(strong, atomic) NSString *totalSizeFitWithUnit;
 @property(strong, atomic, nullable) NSData *dataForResumeDownload;
+@property(strong, atomic, nullable) NSString *durationString;
 - (instancetype)initWithStringURL: (NSString*)url;
 @end
 

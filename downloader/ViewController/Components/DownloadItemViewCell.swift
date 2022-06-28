@@ -106,35 +106,42 @@ class DownloadItemViewCell: UITableViewCell {
     func setUpDataCell(downloadItem: DownloadItem){
         currentDownloadItem = downloadItem
         downloadItemTitle.text = downloadItem.name
-        downloadItemStatus.text = downloadItem.state
-        setUpDownloadItemButtonState(downLoadState: downloadItem.state)
+        setUpCellByDownloadState(downLoadState: downloadItem.state)
     }
     
-    private func setUpDownloadItemButtonState(downLoadState: String){
+    private func setUpCellByDownloadState(downLoadState: String){
         switch(downLoadState){
         case String(describing: DownloadState.Complete):do {
             downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Pause):do {
             downloadItemButtonAction.setImage(UIImage(named: "play"), for: .normal)
             cancelDownloadButton.isHidden = false
+            downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Cancel): do {
             downloadItemButtonAction.setImage(UIImage(named: "cancel.square"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Error):do {
             downloadItemButtonAction.setImage(UIImage(named: "error"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemStatus.text = currentDownloadItem?.state ?? ""
+            break
+        }
+        case String(describing: DownloadState.Downloading):do {
+            downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
+            cancelDownloadButton.isHidden = true
+            downloadItemStatus.text = currentDownloadItem?.durationString ?? String(describing: DownloadState.Downloading)
             break
         }
         default:
-            downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
-            cancelDownloadButton.isHidden = true
             break;
         }
     }
@@ -149,8 +156,10 @@ class DownloadItemViewCell: UITableViewCell {
             break;
         case String(describing: DownloadState.Cancel):
             break;
-        default:
+        case String(describing: DownloadState.Downloading):
             delegate?.pauseClick(downloadItem: currentDownloadItem!)
+            break;
+        default:
             break;
         }
     }

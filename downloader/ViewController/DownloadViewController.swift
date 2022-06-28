@@ -138,7 +138,8 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+        let downloadItem = downloadManager.allDownloadItems[indexPath.row] as! DownloadItem
+        return downloadItem.state != String(describing: DownloadState.Downloading)
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -224,7 +225,7 @@ extension DownloadViewController: DownloadDelegate {
         if(currentDownloadItem.totalSizeFitWithUnit.isEmpty){
             currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
         }
-        currentDownloadItem.state = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) of \(currentDownloadItem.totalSizeFitWithUnit)"
+        currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) of \(currentDownloadItem.totalSizeFitWithUnit)"
         DispatchQueue.main.async {[self] in
             self.reloadRow(downloadItem: currentDownloadItem)
         }
