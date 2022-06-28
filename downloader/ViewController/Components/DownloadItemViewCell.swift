@@ -6,7 +6,11 @@
 //
 
 import UIKit
-
+protocol DownloadItemViewCellDelegate{
+    func pauseClick(downloadItem: DownloadItem);
+    func resumeClick(downloadItem: DownloadItem);
+    func cancelClick(downloadItem: DownloadItem);
+}
 class DownloadItemViewCell: UITableViewCell {
     //MARK: - CONFIG UI
     lazy var downloadItemTitle: UILabel = {
@@ -28,9 +32,17 @@ class DownloadItemViewCell: UITableViewCell {
     lazy var downloadItemButtonAction: UIButton = {
         let downloadItemButtonAction = UIButton()
         downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
-        downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
         downloadItemButtonAction.tintColor = .gray
+        downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
         return downloadItemButtonAction
+    }()
+    
+    lazy var cancelDownloadButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named: "cancel"), for: .normal)
+        button.tintColor = .gray
+        return button
     }()
     
     lazy var itemCellLayout: UIView = {
@@ -38,12 +50,18 @@ class DownloadItemViewCell: UITableViewCell {
         layout.translatesAutoresizingMaskIntoConstraints = false
         layout.backgroundColor = .white
         layout.addSubview(downloadItemButtonAction)
+        layout.addSubview(cancelDownloadButton)
         
         // config button download action
         downloadItemButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor).isActive = true
+        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         downloadItemButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         downloadItemButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        // config cancel download button
+        cancelDownloadButton.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
+        cancelDownloadButton.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        cancelDownloadButton.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        cancelDownloadButton.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config content tile & status
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
@@ -53,7 +71,7 @@ class DownloadItemViewCell: UITableViewCell {
         contentLayout.addArrangedSubview(downloadItemTitle)
         contentLayout.addArrangedSubview(downloadItemStatus)
         contentLayout.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        contentLayout.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        contentLayout.trailingAnchor.constraint(equalTo: cancelDownloadButton.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         contentLayout.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         contentLayout.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return layout
@@ -65,16 +83,78 @@ class DownloadItemViewCell: UITableViewCell {
         itemCellLayout.heightAnchor.constraint(equalToConstant: 60).isActive = true
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
      }
-    // MARK: - SETUP ITEM CELL
+    // MARK: - INIT ITEM CELL
+    public var delegate: DownloadItemViewCellDelegate?
     public static let identifier: String = "DownloadItemCell"
+    private var currentDownloadItem: DownloadItem?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         contentView.addSubview(itemCellLayout)
         configItemCellConstraint()
+        
+        self.downloadItemButtonAction.addTarget(self, action: #selector(actionButtonClick), for: .touchUpInside)
+        
+        self.cancelDownloadButton.addTarget(self, action: #selector(cancelDownloadButtonClick), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setUpDataCell(downloadItem: DownloadItem){
+        currentDownloadItem = downloadItem
+        downloadItemTitle.text = downloadItem.name
+        downloadItemStatus.text = downloadItem.state
+        setUpDownloadItemButtonState(downLoadState: downloadItem.state)
+    }
+    
+    private func setUpDownloadItemButtonState(downLoadState: String){
+        switch(downLoadState){
+        case String(describing: DownloadState.Complete):do {
+            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
+            cancelDownloadButton.isHidden = true
+            break
+        }
+        case String(describing: DownloadState.Pause):do {
+            downloadItemButtonAction.setImage(UIImage(named: "play"), for: .normal)
+            cancelDownloadButton.isHidden = false
+            break
+        }
+        case String(describing: DownloadState.Cancel): do {
+            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
+            cancelDownloadButton.isHidden = true
+            break
+        }
+        case String(describing: DownloadState.Error):do {
+            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
+            cancelDownloadButton.isHidden = true
+            break
+        }
+        default:
+            downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
+            cancelDownloadButton.isHidden = true
+            break;
+        }
+    }
+    // MARK: - CONFIG BUTTON EVENT
+    @objc func actionButtonClick(){
+        switch(currentDownloadItem?.state){
+        case String(describing: DownloadState.Pause):
+            delegate?.resumeClick(downloadItem: currentDownloadItem!)
+        case String(describing: DownloadState.Error):
+            break;
+        case String(describing: DownloadState.Complete):
+            break;
+        case String(describing: DownloadState.Cancel):
+            break;
+        default:
+            delegate?.pauseClick(downloadItem: currentDownloadItem!)
+            break;
+        }
+    }
+    @objc func cancelDownloadButtonClick(){
+        delegate?.cancelClick(downloadItem: currentDownloadItem!)
     }
 }

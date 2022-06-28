@@ -65,7 +65,7 @@ class FolderViewController: UIViewController {
         toolBar.addSubview(buttonViewType)
         // config button add file
         buttonAddFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor).isActive = true
+        buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
         buttonAddFile.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         buttonAddFile.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         // config button add forder
