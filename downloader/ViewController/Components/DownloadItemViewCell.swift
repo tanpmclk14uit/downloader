@@ -123,12 +123,12 @@ class DownloadItemViewCell: UITableViewCell {
             break
         }
         case String(describing: DownloadState.Cancel): do {
-            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
+            downloadItemButtonAction.setImage(UIImage(named: "cancel.square"), for: .normal)
             cancelDownloadButton.isHidden = true
             break
         }
         case String(describing: DownloadState.Error):do {
-            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
+            downloadItemButtonAction.setImage(UIImage(named: "error"), for: .normal)
             cancelDownloadButton.isHidden = true
             break
         }
