@@ -43,7 +43,7 @@ class FolderViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sort by Date", for: .normal)
-        button.setImage(UIImage(named: "expand"), for: .normal)
+        button.setImage(UIImage(named: "sort"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
         return button
@@ -104,17 +104,17 @@ class FolderViewController: UIViewController {
         let alert = UIAlertController(
             title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
         )
-        alert.addAction(UIAlertAction(title: "Sort by date", style: .default, handler: { _ in
-            print("sort by date")
+        alert.addAction(UIAlertAction(title: "Sort by date", style: .default, handler: { [weak self] _ in
+            self?.buttonSort.setTitle("Sort by Date", for: .normal)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { _ in
-            print("sort by name")
+        alert.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { [weak self] _ in
+            self?.buttonSort.setTitle("Sort by Name", for: .normal)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by size", style: .default, handler: { _ in
-            print("sort by size")
+        alert.addAction(UIAlertAction(title: "Sort by size", style: .default, handler: { [weak self] _ in
+            self?.buttonSort.setTitle("Sort by Size", for: .normal)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by type", style: .default, handler: { _ in
-            print("sort by type")
+        alert.addAction(UIAlertAction(title: "Sort by type", style: .default, handler: { [weak self] _ in
+            self?.buttonSort.setTitle("Sort by Type", for: .normal)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
@@ -124,11 +124,11 @@ class FolderViewController: UIViewController {
         let alert = UIAlertController(
             title: "View by", message: "", preferredStyle: .actionSheet
         )
-        alert.addAction(UIAlertAction(title: "View by list", style: .default, handler: { _ in
-            print("View by list")
+        alert.addAction(UIAlertAction(title: "View by list", style: .default, handler: { [weak self] _ in
+            self?.buttonViewType.setImage(UIImage(named: "row"), for: .normal)
         }))
-        alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { _ in
-            print("View by icon")
+        alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { [weak self] _ in
+            self?.buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
