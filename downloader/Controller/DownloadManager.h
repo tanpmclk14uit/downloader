@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) resumeDownload: (DownloadItem*) downloadItem;
 - (void) cancelDownload: (DownloadItem*) downloadItem;
 - (void) pauseAllDownload;
+- (void) removeDownloadItemAtIndext: (NSInteger) index;
 @end
 
 NS_ASSUME_NONNULL_END

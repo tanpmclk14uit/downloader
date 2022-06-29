@@ -125,7 +125,7 @@ class DownloadViewController: UIViewController {
 }
 // MARK: - CONFIRM SEARCH BAR DELEGATE
 extension DownloadViewController: UISearchBarDelegate{
-
+    
 }
 // MARK: - CONFIRM TABLE VIEW DELEGATE
 extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
@@ -146,8 +146,10 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, indexPath in
-            print("Remove item at index: \(indexPath.row)")
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, indexPath in
+            self?.downloadManager.removeDownloadItem(atIndext: indexPath.row)
+            self?.downloadItemsTableView.reloadData()
+            
         }
         let otherAction = UITableViewRowAction(style: .normal, title: "Action") { action, index in
             print("Do some action here")

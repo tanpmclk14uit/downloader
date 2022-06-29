@@ -105,4 +105,8 @@
         }
     }
 }
+
+- (void) removeDownloadItemAtIndext:(NSInteger)index{
+    [self.allDownloadItems removeObjectAtIndex:index];
+}
 @end
