@@ -15,6 +15,7 @@ class Dimen {
     public static let itemTitleTextSize: CGFloat = 18;
     public static let itemNormalContentTextSize: CGFloat = 16;
     public static let itemAdditionalContentTextSize: CGFloat = 16;
+    public static let screenNormalTextSize: CGFloat = 18;
     // button icon size
     public static let buttonIconWidth: CGFloat = 24;
     public static let buttonIconHeight: CGFloat = 24;

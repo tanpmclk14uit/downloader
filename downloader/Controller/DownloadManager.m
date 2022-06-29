@@ -11,6 +11,7 @@
 @interface DownloadManager ()
 @property(weak, nonatomic) id<DownloadDelegate> downloadDelegate;
 @property(strong, atomic) NSURLSession* session;
+@property(assign, atomic) NSInteger downloadingCount;
 @end
 
 @implementation DownloadManager
@@ -96,16 +97,23 @@
     downloadItem.state = @"Cancel";
 }
 
-- (void) pauseAllDownload{
+- (void) pauseAllCurrentlyDownloadingItem{
     for(DownloadItem* downloadItem in self.allDownloadItems){
-        if([downloadItem.state  isEqual: @"Downloading"]){
+        if([downloadItem.state isEqual: @"Downloading"]){
             [self pauseDownload:downloadItem withCompleteHandler:^{
                 
             }];
         }
     }
 }
-
+- (BOOL) pauseAllDownloadingProcessComplete{
+    for(DownloadItem* downloadItem in self.allDownloadItems){
+        if([downloadItem.state isEqual: @"Downloading"]){
+            return false;
+        }
+    }
+    return true;
+}
 - (void) removeDownloadItemAtIndext:(NSInteger)index{
     [self.allDownloadItems removeObjectAtIndex:index];
 }

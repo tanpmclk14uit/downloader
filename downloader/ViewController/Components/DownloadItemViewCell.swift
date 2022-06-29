@@ -86,7 +86,7 @@ class DownloadItemViewCell: UITableViewCell {
     // MARK: - INIT ITEM CELL
     public var delegate: DownloadItemViewCellDelegate?
     public static let identifier: String = "DownloadItemCell"
-    private var currentDownloadItem: DownloadItem?
+    private weak var currentDownloadItem: DownloadItem?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

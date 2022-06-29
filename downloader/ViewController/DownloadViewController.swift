@@ -27,6 +27,26 @@ class DownloadViewController: UIViewController {
         return searchBar
     }()
     
+    lazy var buttonSort: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sort by Date", for: .normal)
+        button.setImage(UIImage(named: "sort"), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    lazy var buttonFilter: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("All process", for: .normal)
+        button.setImage(UIImage(named: "filtered"), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
     func createInputDownloadURLAlert() -> UIAlertController {
         let alert = UIAlertController(
             title: "Download URL",
@@ -45,19 +65,22 @@ class DownloadViewController: UIViewController {
         let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { [weak self] _ in
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let inputURL = fields[0].text, !fields[0].text!.isEmpty {
-                    if((self?.downloadManager.checkValidDownloadURL(inputURL)) != nil){
-                        DispatchQueue.global(qos: .utility).async {[weak self] in
-                            self?.downloadManager.download(withURL: inputURL)
-                            DispatchQueue.main.async {
-                                self?.downloadItemsTableView.reloadData()
-                            }
-                        }
-                        
-                    }else{
-                        let invalidURLNotification = UIAlertController(title: "Error", message: "Invalid download url!", preferredStyle: .alert)
-                        invalidURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-                        self?.present(invalidURLNotification, animated: false)
+                     if let downloadManager = self?.downloadManager{
+                         if(downloadManager.checkValidDownloadURL(inputURL)){
+                             DispatchQueue.global(qos: .utility).async {[weak self] in
+                                 downloadManager.download(withURL: inputURL)
+                                 DispatchQueue.main.async {
+                                     self?.downloadItemsTableView.reloadData()
+                                     self?.setVisibilityOfEmplyListLable()
+                                 }
+                             }
+                         }else{
+                             let invalidURLNotification = UIAlertController(title: "Error", message: "Invalid download url!", preferredStyle: .alert)
+                             invalidURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
+                             self?.present(invalidURLNotification, animated: false)
+                         }
                     }
+                    
                 }else{
                     let emptyURLNotification = UIAlertController(title: "Error", message: "Please enter download url!", preferredStyle: .alert)
                     emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
@@ -68,9 +91,9 @@ class DownloadViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(downloadAction)
         alert.preferredAction = downloadAction
-        
         return alert
     }
+    
     lazy var downloadItemsTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -81,6 +104,14 @@ class DownloadViewController: UIViewController {
         return tableView
     }()
     
+    lazy var emptyListLable: UILabel = {
+        let lable = UILabel()
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        lable.text = "Your download process is empty"
+        lable.textColor = .gray
+        lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        return lable
+    }()
     
     // MARK: - CONFIG UI CONSTRAINT
     private func configSearchBarConstraint(){
@@ -93,11 +124,24 @@ class DownloadViewController: UIViewController {
         searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
         searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    
     private func configTableViewConstraint(){
-        downloadItemsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        downloadItemsTableView.topAnchor.constraint(equalTo: buttonSort.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
         downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
         downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
         downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+    }
+    
+    private func configButtonSortConstraint(){
+        buttonSort.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        buttonSort.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+    }
+    
+    private func configButtonFilterConstraint(){
+        buttonFilter.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        buttonFilter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+        buttonFilter.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
     }
     
     // MARK: - CONTROLLER SETUP
@@ -111,16 +155,34 @@ class DownloadViewController: UIViewController {
         navigationItem.titleView = titleName
         // set up button add new download item
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "add"), style: .plain, target: self, action: #selector(addNewDownloadItemClick))
+        // download view delegate
+        downloadManager.setDownloadViewDelegate(self)
+        // set up screen
         view.addSubview(searchBar)
         configSearchBarConstraint()
+        view.addSubview(buttonFilter)
+        configButtonFilterConstraint()
+        view.addSubview(buttonSort)
+        configButtonSortConstraint()
         view.addSubview(downloadItemsTableView)
         configTableViewConstraint()
+
         
-        downloadManager.setDownloadViewDelegate(self)
+        
+        
+        // set up empty list table
+        view.addSubview(emptyListLable)
+        emptyListLable.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emptyListLable.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        setVisibilityOfEmplyListLable()
     }
     
     @objc func addNewDownloadItemClick(){
         present(createInputDownloadURLAlert(), animated: true)
+    }
+    
+    private func setVisibilityOfEmplyListLable(){
+        emptyListLable.isHidden = (downloadManager.allDownloadItems.count != 0)
     }
 }
 // MARK: - CONFIRM SEARCH BAR DELEGATE
@@ -149,6 +211,7 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, indexPath in
             self?.downloadManager.removeDownloadItem(atIndext: indexPath.row)
             self?.downloadItemsTableView.reloadData()
+            self?.setVisibilityOfEmplyListLable()
             
         }
         let otherAction = UITableViewRowAction(style: .normal, title: "Action") { action, index in
