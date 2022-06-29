@@ -33,6 +33,7 @@ class DownloadViewController: UIViewController {
             message: nil,
             preferredStyle: .alert
         )
+        
         alert.addTextField{ field in
             field.placeholder = "https://example.com"
             field.returnKeyType = .done
@@ -41,26 +42,26 @@ class DownloadViewController: UIViewController {
         // add action to alert
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let alertFieldCount = 1; //
-        let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { _ in
+        let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { [weak self] _ in
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let inputURL = fields[0].text, !fields[0].text!.isEmpty {
-                    if(self.downloadManager.checkValidDownloadURL(inputURL)){
-                        DispatchQueue.global(qos: .utility).async {[self] in
-                            self.downloadManager.download(withURL: inputURL)
+                    if((self?.downloadManager.checkValidDownloadURL(inputURL)) != nil){
+                        DispatchQueue.global(qos: .utility).async {[weak self] in
+                            self?.downloadManager.download(withURL: inputURL)
                             DispatchQueue.main.async {
-                                self.downloadItemsTableView.reloadData()
+                                self?.downloadItemsTableView.reloadData()
                             }
                         }
                         
                     }else{
                         let invalidURLNotification = UIAlertController(title: "Error", message: "Invalid download url!", preferredStyle: .alert)
                         invalidURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-                        self.present(invalidURLNotification, animated: false)
+                        self?.present(invalidURLNotification, animated: false)
                     }
                 }else{
                     let emptyURLNotification = UIAlertController(title: "Error", message: "Please enter download url!", preferredStyle: .alert)
                     emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-                    self.present(emptyURLNotification, animated: false)
+                    self?.present(emptyURLNotification, animated: false)
                 }
             }
         })
@@ -102,6 +103,7 @@ class DownloadViewController: UIViewController {
     // MARK: - CONTROLLER SETUP
     
     private var downloadManager = DownloadManager.sharedInstance()
+    private var downloadItemPersistenceManager = DownloadItemPersistenceManager.sharedInstance()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,6 +118,7 @@ class DownloadViewController: UIViewController {
         
         downloadManager.setDownloadViewDelegate(self)
     }
+    
     @objc func addNewDownloadItemClick(){
         present(createInputDownloadURLAlert(), animated: true)
     }

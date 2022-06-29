@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		472C906E286BF7A800F79ACD /* DownloadItemDTO.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C906D286BF7A800F79ACD /* DownloadItemDTO.m */; };
+		472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
 		474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */; };
 		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
@@ -43,6 +45,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		472C906C286BF7A800F79ACD /* DownloadItemDTO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DownloadItemDTO.h; path = downloader/Constants/DownloadItemDTO.h; sourceTree = SOURCE_ROOT; };
+		472C906D286BF7A800F79ACD /* DownloadItemDTO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DownloadItemDTO.m; path = downloader/Constants/DownloadItemDTO.m; sourceTree = SOURCE_ROOT; };
+		472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItemPersistenceManager.h; sourceTree = "<group>"; };
+		472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadItemPersistenceManager.m; sourceTree = "<group>"; };
 		473B6DFC2869537200747CD8 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
 		473B6DFE2869963200747CD8 /* FileSizeUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeUnits.swift; sourceTree = "<group>"; };
 		474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewController.swift; sourceTree = "<group>"; };
@@ -190,6 +196,8 @@
 			children = (
 				47E8E9D22865B9600005EE4D /* DownloadItem.h */,
 				47E8E9D32865B9600005EE4D /* DownloadItem.m */,
+				472C906C286BF7A800F79ACD /* DownloadItemDTO.h */,
+				472C906D286BF7A800F79ACD /* DownloadItemDTO.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -200,6 +208,8 @@
 				47E8E9D52865BE420005EE4D /* DownloadManager.h */,
 				47E8E9D62865BE420005EE4D /* DownloadManager.m */,
 				473B6DFC2869537200747CD8 /* DownloadDelegate.h */,
+				472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */,
+				472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -341,7 +351,9 @@
 				473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */,
 				474A6100286319980039B3D0 /* DownloadItemViewCell.swift in Sources */,
 				474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */,
+				472C906E286BF7A800F79ACD /* DownloadItemDTO.m in Sources */,
 				474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */,
+				472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */,
 				47E8E9D1286577340005EE4D /* FileItemViewCell.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,

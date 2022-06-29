@@ -95,4 +95,14 @@
     [downloadItem.downloadTask suspend];
     downloadItem.state = @"Cancel";
 }
+
+- (void) pauseAllDownload{
+    for(DownloadItem* downloadItem in self.allDownloadItems){
+        if([downloadItem.state  isEqual: @"Downloading"]){
+            [self pauseDownload:downloadItem withCompleteHandler:^{
+                
+            }];
+        }
+    }
+}
 @end

@@ -10,4 +10,6 @@
 #import "DownloadItem.h"
 #import "DownloadManager.h"
 #import "DownloadDelegate.h"
+#import "DownloadItemDTO.h"
+#import "DownloadItemPersistenceManager.h"
 #endif /* BridgingHeader_h */

@@ -46,10 +46,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = tabBarController
         return true
     }
-    
     func applicationDidBecomeActive(_ application: UIApplication) {
-        print("become active")
+        DownloadItemPersistenceManager.sharedInstance().loadAllDownloadItemDTO()
+        DownloadManager.sharedInstance().allDownloadItems = DownloadItemPersistenceManager.sharedInstance().getAllDownloadItems()
     }
+    
 
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        DownloadManager.sharedInstance().pauseAllDownload()
+        let downloadItems = DownloadManager.sharedInstance().allDownloadItems
+        DownloadItemPersistenceManager.sharedInstance().saveAllDownloadItems(downloadItems as! [DownloadItem])
+    }
 }
 

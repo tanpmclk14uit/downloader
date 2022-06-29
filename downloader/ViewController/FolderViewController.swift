@@ -86,14 +86,25 @@ class FolderViewController: UIViewController {
         return toolBar
     }()
     
-    lazy var fileCollectionView: UICollectionView = {
+    lazy var listLayout: UICollectionViewLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.itemSize.width = view.frame.width-20
         layout.itemSize.height = 60
-        let fileCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return layout
+    }()
+    
+    lazy var gridLayout: UICollectionViewLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.itemSize.width = view.frame.width/2 - 15
+        layout.itemSize.height = layout.itemSize.width * 1.2
+        return layout
+    }()
+    
+    lazy var fileCollectionView: UICollectionView = {
+        let fileCollectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
         fileCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        fileCollectionView.collectionViewLayout = layout
         fileCollectionView.dataSource = self
         fileCollectionView.delegate = self
         fileCollectionView.register(FileItemViewCell.self, forCellWithReuseIdentifier: FileItemViewCell.identifier)
@@ -126,9 +137,17 @@ class FolderViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "View by list", style: .default, handler: { [weak self] _ in
             self?.buttonViewType.setImage(UIImage(named: "row"), for: .normal)
+            self?.fileCollectionView.register(FileItemViewCell.self, forCellWithReuseIdentifier: FileItemViewCell.identifier)
+            self?.fileCollectionView.collectionViewLayout = (self?.listLayout)!
+            self?.viewByList = true
+            self?.fileCollectionView.reloadData()
         }))
         alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { [weak self] _ in
             self?.buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
+            self?.fileCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+            self?.fileCollectionView.collectionViewLayout = (self?.gridLayout)!
+            self?.viewByList = false
+            self?.fileCollectionView.reloadData()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
@@ -168,6 +187,9 @@ class FolderViewController: UIViewController {
         }
     }
     // MARK: - CONTROLLER SETUP
+    
+    var viewByList: Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -205,8 +227,15 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCell.identifier, for: indexPath)
-        return cell
+        if(viewByList){
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCell.identifier, for: indexPath)
+            return cell
+        }else{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .blue
+            return cell
+        }
+        
     }
     
     

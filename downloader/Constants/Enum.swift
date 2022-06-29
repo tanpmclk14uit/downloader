@@ -14,3 +14,9 @@ enum DownloadState {
     case Error
     case Downloading
 }
+
+enum FileCollectionViewBy{
+    case List
+    case Icon
+    case WaterFallImage
+}
