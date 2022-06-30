@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadManager : NSObject
-@property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
 + (DownloadManager*) sharedInstance;
 - (BOOL) checkValidDownloadURL: (NSString*)url;
 - (instancetype)init NS_UNAVAILABLE;
@@ -23,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) cancelDownload: (DownloadItem*) downloadItem;
 - (void) pauseAllCurrentlyDownloadingItem;
 - (void) removeDownloadItemAtIndext: (NSInteger) index;
+- (void) removeDownloadItem: (DownloadItem*) downloadItem;
 - (BOOL) pauseAllDownloadingProcessComplete;
+- (NSArray<DownloadItem*>*) getAllDownloadItems;
+- (void) setDownloadItems: (NSArray<DownloadItem*>*) allDownloadItems;
 @end
 
 NS_ASSUME_NONNULL_END

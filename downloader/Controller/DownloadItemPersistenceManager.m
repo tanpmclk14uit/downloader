@@ -40,12 +40,12 @@
     return sharedInstance;
 }
 
-- (NSMutableArray<DownloadItem *> *)getAllDownloadItems{
+- (NSArray<DownloadItem *> *)getAllDownloadItems{
     NSMutableArray<DownloadItem*>* allDownloadItems = [[NSMutableArray alloc]init];
     for(DownloadItemDTO* downloadItemDTO in self.allDownloadItemDTOs) {
         [allDownloadItems addObject: [downloadItemDTO convertToDownloadItem]];
     }
-    return allDownloadItems;
+    return [NSArray arrayWithArray:allDownloadItems];
 }
 
 - (void) loadAllDownloadItemDTO{

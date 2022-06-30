@@ -31,7 +31,7 @@ class DownloadViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sort by Date", for: .normal)
-        button.setImage(UIImage(named: "sort"), for: .normal)
+        button.setImage(UIImage(named: "sort-asc"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
         return button
@@ -46,53 +46,6 @@ class DownloadViewController: UIViewController {
         button.tintColor = .systemBlue
         return button
     }()
-    
-    func createInputDownloadURLAlert() -> UIAlertController {
-        let alert = UIAlertController(
-            title: "Download URL",
-            message: nil,
-            preferredStyle: .alert
-        )
-        
-        alert.addTextField{ field in
-            field.placeholder = "https://example.com"
-            field.returnKeyType = .done
-            field.keyboardType = .URL
-        }
-        // add action to alert
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let alertFieldCount = 1; //
-        let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { [weak self] _ in
-            if let fields = alert.textFields, fields.count == alertFieldCount {
-                if let inputURL = fields[0].text, !fields[0].text!.isEmpty {
-                     if let downloadManager = self?.downloadManager{
-                         if(downloadManager.checkValidDownloadURL(inputURL)){
-                             DispatchQueue.global(qos: .utility).async {[weak self] in
-                                 downloadManager.download(withURL: inputURL)
-                                 DispatchQueue.main.async {
-                                     self?.downloadItemsTableView.reloadData()
-                                     self?.setVisibilityOfEmplyListLable()
-                                 }
-                             }
-                         }else{
-                             let invalidURLNotification = UIAlertController(title: "Error", message: "Invalid download url!", preferredStyle: .alert)
-                             invalidURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-                             self?.present(invalidURLNotification, animated: false)
-                         }
-                    }
-                    
-                }else{
-                    let emptyURLNotification = UIAlertController(title: "Error", message: "Please enter download url!", preferredStyle: .alert)
-                    emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-                    self?.present(emptyURLNotification, animated: false)
-                }
-            }
-        })
-        alert.addAction(cancelAction)
-        alert.addAction(downloadAction)
-        alert.preferredAction = downloadAction
-        return alert
-    }
     
     lazy var downloadItemsTableView: UITableView = {
         let tableView = UITableView()
@@ -111,6 +64,46 @@ class DownloadViewController: UIViewController {
         lable.textColor = .gray
         lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
         return lable
+    }()
+    
+    lazy var sortBySelectionAlert: UIAlertController = {
+        let alert = UIAlertController(
+            title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Sort by date", style: .default, handler: { [weak self] _ in
+            self?.onSortChange(newSortBy: BasicSort.Date)
+        }))
+        alert.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { [weak self] _ in
+            self?.onSortChange(newSortBy: BasicSort.Name)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        return alert
+    }()
+    
+    lazy var filterBySelectionAlert: UIAlertController = {
+        let alert = UIAlertController(
+            title: "Filter", message: "Select state to filter", preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "All", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.All)
+        }))
+        alert.addAction(UIAlertAction(title: "Downloading", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Downloading)
+        }))
+        alert.addAction(UIAlertAction(title: "Pause", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Pause)
+        }))
+        alert.addAction(UIAlertAction(title: "Complete", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Complete)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Cancel)
+        }))
+        alert.addAction(UIAlertAction(title: "Error", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Error)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        return alert
     }()
     
     // MARK: - CONFIG UI CONSTRAINT
@@ -148,6 +141,10 @@ class DownloadViewController: UIViewController {
     
     private var downloadManager = DownloadManager.sharedInstance()
     private var downloadItemPersistenceManager = DownloadItemPersistenceManager.sharedInstance()
+    private var searchKey: String = ""
+    private var sortBy: BasicSort = BasicSort.Date
+    private var sortDiv: SortDIV = SortDIV.Asc
+    private var filterBy: FilterByState = FilterByState.All
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -166,53 +163,184 @@ class DownloadViewController: UIViewController {
         configButtonSortConstraint()
         view.addSubview(downloadItemsTableView)
         configTableViewConstraint()
-
         
-        
+        buttonSort.addTarget(self, action: #selector(sortButtonClick), for: .touchUpInside)
+        buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
         
         // set up empty list table
         view.addSubview(emptyListLable)
         emptyListLable.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyListLable.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         setVisibilityOfEmplyListLable()
+
     }
     
     @objc func addNewDownloadItemClick(){
-        present(createInputDownloadURLAlert(), animated: true)
+        showInputURLAllert()
+    }
+    
+    @objc func filterButtonClick(){
+        present(filterBySelectionAlert, animated: true)
+    }
+    
+    @objc func sortButtonClick(){
+        present(sortBySelectionAlert, animated: true)
     }
     
     private func setVisibilityOfEmplyListLable(){
-        emptyListLable.isHidden = (downloadManager.allDownloadItems.count != 0)
+        emptyListLable.isHidden = (getAllDownloadItemMatchSearchSortAndFilter().count != 0)
+    }
+    
+    private func onSortChange(newSortBy: BasicSort){
+        if(sortBy == newSortBy){
+            sortDiv.reverse()
+            setIconOfSortButton()
+        }else{
+            sortBy = newSortBy
+            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
+        }
+        downloadItemsTableView.reloadData()
+    }
+    
+    private func onFilterChange(newFilter: FilterByState){
+        buttonFilter.setTitle("\(newFilter) process", for: .normal)
+        filterBy = newFilter
+        downloadItemsTableView.reloadData()
+        setVisibilityOfEmplyListLable()
+    }
+    
+    private func onAddNewInputURL(_ inputURL: String){
+        if(downloadManager.checkValidDownloadURL(inputURL)){
+            DispatchQueue.global(qos: .utility).async {[weak self] in
+                self?.downloadManager.download(withURL: inputURL)
+                DispatchQueue.main.async {
+                    self?.downloadItemsTableView.reloadData()
+                    self?.setVisibilityOfEmplyListLable()
+                }
+            }
+        }else{
+            showErrorNotification(message: "Invalid download url!")
+        }
+    }
+    
+    private func showErrorNotification(message: String){
+        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(emptyURLNotification, animated: true)
+    }
+    
+    private func showInputURLAllert(){
+        let alert = UIAlertController(
+            title: "Download URL",
+            message: nil,
+            preferredStyle: .alert
+        )
+        
+        alert.addTextField{ field in
+            field.placeholder = "https://example.com"
+            field.returnKeyType = .done
+            field.keyboardType = .URL
+        }
+        // add action to alert
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1;
+        let downloadAction = UIAlertAction(title: "Download", style: .default, handler: { [weak self] _ in
+            if let fields = alert.textFields, fields.count == alertFieldCount {
+                if let inputURL = fields[0].text, !fields[0].text!.isEmpty {
+                    self?.onAddNewInputURL(inputURL)
+                }else{
+                    self?.showErrorNotification(message: "Please enter download url!")
+                }
+            }
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(downloadAction)
+        alert.preferredAction = downloadAction
+        present(alert, animated: true)
+    }
+    
+    
+    private func setIconOfSortButton(){
+        if(sortDiv == SortDIV.Asc){
+            buttonSort.setImage(UIImage(named: "sort-asc"), for: .normal)
+        }else{
+            buttonSort.setImage(UIImage(named: "sort-desc"), for: .normal)
+        }
+    }
+    
+    private func getAllDownloadItemMatchSearchSortAndFilter()-> [DownloadItem]{
+        // get all original list
+        var downloadItems = downloadManager.getAllDownloadItems()
+        // filter
+        if(filterBy != FilterByState.All){
+            downloadItems = downloadItems.filter({ downloadItem in
+                return downloadItem.state == String(describing: filterBy)
+            })
+        }
+        // search
+        if(!searchKey.isEmpty){
+            downloadItems = downloadItems.filter({ downloadItem in
+                return downloadItem.name.lowercased().contains(searchKey.lowercased())
+            })
+        }
+        // sort
+        switch(sortBy){
+        case BasicSort.Name: do{
+            downloadItems.sort { hls, fls in
+                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+            }
+            break
+        }
+        case BasicSort.Date: do{
+            if(sortDiv == SortDIV.Asc){
+                downloadItems.reverse()
+            }
+        }
+        }
+        return downloadItems
+    }
+    
+    private func compareObjectToSort<T: Comparable>(sortDiv: SortDIV, ObjFirst: T, ObjSecond: T)-> Bool{
+        if(sortDiv == SortDIV.Asc){
+            return ObjFirst < ObjSecond
+        }else{
+            return ObjFirst > ObjSecond
+        }
     }
 }
 // MARK: - CONFIRM SEARCH BAR DELEGATE
 extension DownloadViewController: UISearchBarDelegate{
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchKey = searchText
+        self.downloadItemsTableView.reloadData()
+    }
 }
 // MARK: - CONFIRM TABLE VIEW DELEGATE
 extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return downloadManager.allDownloadItems.count
+        return getAllDownloadItemMatchSearchSortAndFilter().count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemViewCell.identifier) as! DownloadItemViewCell
-        cell.setUpDataCell(downloadItem: downloadManager.allDownloadItems[indexPath.row] as! DownloadItem)
+        cell.setUpDataCell(downloadItem: getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row] )
         cell.delegate = self
         return cell
     }
     
+    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let downloadItem = downloadManager.allDownloadItems[indexPath.row] as! DownloadItem
+        let downloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
         return downloadItem.state != String(describing: DownloadState.Downloading)
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, indexPath in
-            self?.downloadManager.removeDownloadItem(atIndext: indexPath.row)
-            self?.downloadItemsTableView.reloadData()
-            self?.setVisibilityOfEmplyListLable()
-            
+            let downloadItem = self?.getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
+            if let downloadItem = downloadItem{
+                self?.downloadManager.remove(downloadItem)
+                self?.reloadTableViewData()
+            }
         }
         let otherAction = UITableViewRowAction(style: .normal, title: "Action") { action, index in
             print("Do some action here")
@@ -221,31 +349,51 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func reloadRow(downloadItem: DownloadItem){
-        let position = self.downloadManager.allDownloadItems.index(of: downloadItem)
-        let indexPath = IndexPath(row: position, section: 0)
-        self.downloadItemsTableView.reloadRows(at: [indexPath], with: .none)
+        let position = getAllDownloadItemMatchSearchSortAndFilter().firstIndex(of: downloadItem)
+        if let position = position{
+            let indexPath = IndexPath(row: position, section: 0)
+            self.downloadItemsTableView.reloadRows(at: [indexPath], with: .none)
+        }
     }
+    
+    func reloadTableViewData(){
+        self.downloadItemsTableView.reloadData()
+        self.setVisibilityOfEmplyListLable()
+    }
+    
 }
 //MARK: - CONFORM DOWNLOAD ITEM CELL DELEGATE
 extension DownloadViewController: DownloadItemViewCellDelegate{
     
     func cancelClick(downloadItem: DownloadItem) {
         self.downloadManager.cancelDownload(downloadItem)
-        self.reloadRow(downloadItem: downloadItem)
+        if(filterBy == FilterByState.Pause){
+            self.reloadTableViewData()
+        }else{
+            self.reloadRow(downloadItem: downloadItem)
+        }
     }
     
     func resumeClick(downloadItem: DownloadItem) {
         self.downloadManager.resumeDownload(downloadItem)
-        self.reloadRow(downloadItem: downloadItem)
+        if(filterBy == FilterByState.Pause){
+            self.reloadTableViewData()
+        }else{
+            self.reloadRow(downloadItem: downloadItem)
+        }
     }
     
     func pauseClick(downloadItem: DownloadItem) {
         self.downloadManager.pauseDownload(downloadItem) {
             DispatchQueue.main.async { [self] in
-                self.reloadRow(downloadItem: downloadItem)
+                if(filterBy == FilterByState.Downloading){
+                    self.reloadTableViewData()
+                }else{
+                    self.reloadRow(downloadItem: downloadItem)
+                }
+               
             }
         }
-        
     }
 }
 //MARK: - CONFORM DOWNLOAD DELEGATE
@@ -277,7 +425,11 @@ extension DownloadViewController: DownloadDelegate {
                     }
                 }while(true)
                 DispatchQueue.main.async {[self] in
-                    self.reloadRow(downloadItem: currentDownloadItem)
+                    if(filterBy == FilterByState.Downloading){
+                        reloadTableViewData()
+                    }else{
+                        self.reloadRow(downloadItem: currentDownloadItem)
+                    }
                 }
             } catch {
                 print("error")
@@ -293,7 +445,9 @@ extension DownloadViewController: DownloadDelegate {
         if(currentDownloadItem.totalSizeFitWithUnit.isEmpty){
             currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
         }
+        
         currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) of \(currentDownloadItem.totalSizeFitWithUnit)"
+        
         DispatchQueue.main.async {[self] in
             self.reloadRow(downloadItem: currentDownloadItem)
         }

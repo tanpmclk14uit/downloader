@@ -20,3 +20,32 @@ enum FileCollectionViewBy{
     case Icon
     case WaterFallImage
 }
+
+enum SortDIV{
+    case Asc
+    case Desc
+    
+    mutating func reverse(){
+        if(self == SortDIV.Asc){
+            self = SortDIV.Desc
+        }else{
+            self = SortDIV.Asc
+        }
+    }
+}
+
+enum FilterByState{
+    case Complete
+    case Cancel
+    case Pause
+    case Error
+    case Downloading
+    case All
+}
+
+enum BasicSort{
+    case Name
+    case Date
+}
+
+

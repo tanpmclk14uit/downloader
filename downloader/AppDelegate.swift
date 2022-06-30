@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.backgroundColor = .white
         window?.rootViewController = tabBarController
         DownloadItemPersistenceManager.sharedInstance().loadAllDownloadItemDTO()
-        DownloadManager.sharedInstance().allDownloadItems = DownloadItemPersistenceManager.sharedInstance().getAllDownloadItems()
+        DownloadManager.sharedInstance().setDownloadItems(DownloadItemPersistenceManager.sharedInstance().getAllDownloadItems())
         return true
     }
 
@@ -56,8 +56,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         DownloadManager.sharedInstance().pauseAllCurrentlyDownloadingItem()
         while(DownloadManager.sharedInstance().pauseAllDownloadingProcessComplete() == false){}
-        let downloadItems = DownloadManager.sharedInstance().allDownloadItems
-        DownloadItemPersistenceManager.sharedInstance().saveAllDownloadItems(downloadItems as! [DownloadItem])
+        let downloadItems = DownloadManager.sharedInstance().getAllDownloadItems()
+        DownloadItemPersistenceManager.sharedInstance().saveAllDownloadItems(downloadItems )
     }
 }
 

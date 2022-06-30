@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DownloadItemPersistenceManager : NSObject
 + (DownloadItemPersistenceManager*) sharedInstance;
 - (void) saveAllDownloadItems: (NSArray<DownloadItem*>*) allDownloadItems;
-- (NSMutableArray<DownloadItem*>*) getAllDownloadItems;
+- (NSArray<DownloadItem*>*) getAllDownloadItems;
 - (instancetype) init NS_UNAVAILABLE;
 - (void) loadAllDownloadItemDTO;
 @end

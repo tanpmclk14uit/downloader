@@ -11,7 +11,7 @@
 @interface DownloadManager ()
 @property(weak, nonatomic) id<DownloadDelegate> downloadDelegate;
 @property(strong, atomic) NSURLSession* session;
-@property(assign, atomic) NSInteger downloadingCount;
+@property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
 @end
 
 @implementation DownloadManager
@@ -52,7 +52,6 @@
 - (void) downloadWithURL:(NSString *)downloadURL{
     NSURL *url = [NSURL URLWithString:downloadURL];
     if(url){
-        
         DownloadItem* newDownloadItem = [[DownloadItem alloc] initWithStringURL:downloadURL];
         NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:url];
         newDownloadItem.downloadTask = downloadTask;
@@ -106,6 +105,7 @@
         }
     }
 }
+
 - (BOOL) pauseAllDownloadingProcessComplete{
     for(DownloadItem* downloadItem in self.allDownloadItems){
         if([downloadItem.state isEqual: @"Downloading"]){
@@ -114,7 +114,21 @@
     }
     return true;
 }
+
 - (void) removeDownloadItemAtIndext:(NSInteger)index{
     [self.allDownloadItems removeObjectAtIndex:index];
 }
+
+- (void) removeDownloadItem:(DownloadItem *)downloadItem{
+    [self.allDownloadItems removeObject:downloadItem];
+}
+
+- (NSArray<DownloadItem *> *)getAllDownloadItems{
+    return [NSArray arrayWithArray: self.allDownloadItems];
+}
+
+- (void) setDownloadItems:(NSArray<DownloadItem *> *)allDownloadItems{
+    self.allDownloadItems = [NSMutableArray arrayWithArray:allDownloadItems];
+}
+
 @end
