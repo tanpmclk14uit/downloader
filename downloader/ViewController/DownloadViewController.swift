@@ -93,11 +93,11 @@ class DownloadViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Pause", style: .default, handler: { [weak self] _ in
             self?.onFilterChange(newFilter: FilterByState.Pause)
         }))
-        alert.addAction(UIAlertAction(title: "Complete", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Complete)
+        alert.addAction(UIAlertAction(title: "Completed", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Completed)
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Cancel)
+        alert.addAction(UIAlertAction(title: "Canceled", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByState.Canceled)
         }))
         alert.addAction(UIAlertAction(title: "Error", style: .default, handler: { [weak self] _ in
             self?.onFilterChange(newFilter: FilterByState.Error)
@@ -138,14 +138,16 @@ class DownloadViewController: UIViewController {
     }
     
     // MARK: - CONTROLLER SETUP
-    
+    // MARK: - property
     private var downloadManager = DownloadManager.sharedInstance()
     private var downloadItemPersistenceManager = DownloadItemPersistenceManager.sharedInstance()
     private var searchKey: String = ""
     private var sortBy: BasicSort = BasicSort.Date
     private var sortDiv: SortDIV = SortDIV.Asc
     private var filterBy: FilterByState = FilterByState.All
+    private let mapDownloadItemToCell: NSMapTable = NSMapTable<DownloadItem, DownloadItemViewCell>.weakToWeakObjects()
     
+    //MARK: - function
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -259,7 +261,6 @@ class DownloadViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    
     private func setIconOfSortButton(){
         if(sortDiv == SortDIV.Asc){
             buttonSort.setImage(UIImage(named: "sort-asc"), for: .normal)
@@ -323,8 +324,10 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemViewCell.identifier) as! DownloadItemViewCell
-        cell.setUpDataCell(downloadItem: getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row] )
+        let displayingDownloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
+        cell.setUpDataCell(downloadItem: displayingDownloadItem)
         cell.delegate = self
+        mapDownloadItemToCell.setObject(cell, forKey: displayingDownloadItem)
         return cell
     }
     
@@ -417,7 +420,7 @@ extension DownloadViewController: DownloadDelegate {
                         fileName)
                     do{
                         try FileManager.default.moveItem(at: location, to: savedURL)
-                        currentDownloadItem.state = String(describing: DownloadState.Complete)
+                        currentDownloadItem.state = String(describing: DownloadState.Completed)
                         print(savedURL)
                         break;
                     }catch{
@@ -442,14 +445,14 @@ extension DownloadViewController: DownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let currentDownloadItem = self.downloadManager.getItemBy(downloadTask);
-        if(currentDownloadItem.totalSizeFitWithUnit.isEmpty){
-            currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
-        }
-        
+        currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
         currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) of \(currentDownloadItem.totalSizeFitWithUnit)"
         
         DispatchQueue.main.async {[self] in
-            self.reloadRow(downloadItem: currentDownloadItem)
+            let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)
+            if(cell?.getCurrentDownloadItem() == currentDownloadItem){
+                cell?.setDownloadItemDownloadDuration(currentDownloadItem.durationString)
+            }
         }
     }
 }

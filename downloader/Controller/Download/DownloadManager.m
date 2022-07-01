@@ -93,7 +93,7 @@
 
 - (void) cancelDownload:(DownloadItem *)downloadItem{
     [downloadItem.downloadTask suspend];
-    downloadItem.state = @"Cancel";
+    downloadItem.state = @"Canceled";
 }
 
 - (void) pauseAllCurrentlyDownloadingItem{

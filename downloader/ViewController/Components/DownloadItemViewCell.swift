@@ -13,7 +13,7 @@ protocol DownloadItemViewCellDelegate{
 }
 class DownloadItemViewCell: UITableViewCell {
     //MARK: - CONFIG UI
-    lazy var downloadItemTitle: UILabel = {
+    private lazy var downloadItemTitle: UILabel = {
         let downloadItemTitle = UILabel()
         downloadItemTitle.translatesAutoresizingMaskIntoConstraints = false
         downloadItemTitle.text = "Download item title"
@@ -21,7 +21,7 @@ class DownloadItemViewCell: UITableViewCell {
         return downloadItemTitle
     }()
     
-    lazy var downloadItemStatus: UILabel = {
+    private lazy var downloadItemStatus: UILabel = {
         let downloadItemStatus = UILabel()
         downloadItemStatus.translatesAutoresizingMaskIntoConstraints = false
         downloadItemStatus.text = "Download item status"
@@ -29,7 +29,7 @@ class DownloadItemViewCell: UITableViewCell {
         return downloadItemStatus
     }()
      
-    lazy var downloadItemButtonAction: UIButton = {
+    private lazy var downloadItemButtonAction: UIButton = {
         let downloadItemButtonAction = UIButton()
         downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
         downloadItemButtonAction.tintColor = .gray
@@ -37,7 +37,7 @@ class DownloadItemViewCell: UITableViewCell {
         return downloadItemButtonAction
     }()
     
-    lazy var cancelDownloadButton: UIButton = {
+    private lazy var cancelDownloadButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(named: "cancel"), for: .normal)
@@ -45,7 +45,7 @@ class DownloadItemViewCell: UITableViewCell {
         return button
     }()
     
-    lazy var itemCellLayout: UIView = {
+    private lazy var itemCellLayout: UIView = {
         let layout = UIView()
         layout.translatesAutoresizingMaskIntoConstraints = false
         layout.backgroundColor = .white
@@ -86,7 +86,8 @@ class DownloadItemViewCell: UITableViewCell {
     // MARK: - INIT ITEM CELL
     public var delegate: DownloadItemViewCellDelegate?
     public static let identifier: String = "DownloadItemCell"
-    private weak var currentDownloadItem: DownloadItem?
+    private var currentDownloadItem: DownloadItem?
+    // DownloadProcessViewModel : contain: (DownloadItem, DownloadCell : displayningCell)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -102,6 +103,9 @@ class DownloadItemViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    func setDownloadItemDownloadDuration(_ durationString: String?){
+        self.downloadItemStatus.text = durationString
+    }
     
     func setUpDataCell(downloadItem: DownloadItem){
         currentDownloadItem = downloadItem
@@ -109,9 +113,13 @@ class DownloadItemViewCell: UITableViewCell {
         setUpCellByDownloadState(downLoadState: downloadItem.state)
     }
     
+    func getCurrentDownloadItem()-> DownloadItem?{
+        return self.currentDownloadItem
+    }
+    
     private func setUpCellByDownloadState(downLoadState: String){
         switch(downLoadState){
-        case String(describing: DownloadState.Complete):do {
+        case String(describing: DownloadState.Completed):do {
             downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
             cancelDownloadButton.isHidden = true
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
@@ -123,7 +131,7 @@ class DownloadItemViewCell: UITableViewCell {
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
-        case String(describing: DownloadState.Cancel): do {
+        case String(describing: DownloadState.Canceled): do {
             downloadItemButtonAction.setImage(UIImage(named: "cancel.square"), for: .normal)
             cancelDownloadButton.isHidden = true
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
@@ -152,9 +160,9 @@ class DownloadItemViewCell: UITableViewCell {
             delegate?.resumeClick(downloadItem: currentDownloadItem!)
         case String(describing: DownloadState.Error):
             break;
-        case String(describing: DownloadState.Complete):
+        case String(describing: DownloadState.Completed):
             break;
-        case String(describing: DownloadState.Cancel):
+        case String(describing: DownloadState.Canceled):
             break;
         case String(describing: DownloadState.Downloading):
             delegate?.pauseClick(downloadItem: currentDownloadItem!)

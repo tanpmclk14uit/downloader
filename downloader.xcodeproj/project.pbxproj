@@ -120,6 +120,18 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		479B2938286ED77A00854350 /* Download */ = {
+			isa = PBXGroup;
+			children = (
+				47E8E9D52865BE420005EE4D /* DownloadManager.h */,
+				47E8E9D62865BE420005EE4D /* DownloadManager.m */,
+				473B6DFC2869537200747CD8 /* DownloadDelegate.h */,
+				472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */,
+				472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */,
+			);
+			path = Download;
+			sourceTree = "<group>";
+		};
 		47E8E9D82865BFA40005EE4D /* Constants */ = {
 			isa = PBXGroup;
 			children = (
@@ -205,11 +217,7 @@
 		47FDFB8D284F007D00FDA80F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				47E8E9D52865BE420005EE4D /* DownloadManager.h */,
-				47E8E9D62865BE420005EE4D /* DownloadManager.m */,
-				473B6DFC2869537200747CD8 /* DownloadDelegate.h */,
-				472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */,
-				472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */,
+				479B2938286ED77A00854350 /* Download */,
 			);
 			path = Controller;
 			sourceTree = "<group>";

@@ -8,8 +8,8 @@
 import Foundation
 
 enum DownloadState {
-    case Complete
-    case Cancel
+    case Completed
+    case Canceled
     case Pause
     case Error
     case Downloading
@@ -35,8 +35,8 @@ enum SortDIV{
 }
 
 enum FilterByState{
-    case Complete
-    case Cancel
+    case Completed
+    case Canceled
     case Pause
     case Error
     case Downloading
