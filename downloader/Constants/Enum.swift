@@ -15,9 +15,9 @@ enum DownloadState {
     case Downloading
 }
 
-enum FileCollectionViewBy{
+enum LayoutState{
     case List
-    case Icon
+    case Grid
     case WaterFallImage
 }
 

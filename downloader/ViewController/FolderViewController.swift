@@ -136,18 +136,11 @@ class FolderViewController: UIViewController {
             title: "View by", message: "", preferredStyle: .actionSheet
         )
         alert.addAction(UIAlertAction(title: "View by list", style: .default, handler: { [weak self] _ in
-            self?.buttonViewType.setImage(UIImage(named: "row"), for: .normal)
-            self?.fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
-            self?.fileCollectionView.collectionViewLayout = (self?.listLayout)!
-            self?.viewByList = true
-            self?.fileCollectionView.reloadData()
+            self?.onViewByChange(newLayoutState: LayoutState.List)
         }))
         alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { [weak self] _ in
-            self?.buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
-            self?.fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
-            self?.fileCollectionView.collectionViewLayout = (self?.gridLayout)!
-            self?.viewByList = false
-            self?.fileCollectionView.reloadData()
+
+            self?.onViewByChange(newLayoutState: LayoutState.Grid)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
@@ -164,6 +157,7 @@ class FolderViewController: UIViewController {
         searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
         searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    
     private func configToolbarConstraint(){
         toolBar.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
         if #available(iOS 11.0, *){
@@ -175,6 +169,7 @@ class FolderViewController: UIViewController {
         }
         toolBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    
     private func configFileCollectionViewConstraint(){
         fileCollectionView.topAnchor.constraint(equalTo: toolBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
         fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
@@ -186,9 +181,10 @@ class FolderViewController: UIViewController {
             fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
         }
     }
+    
     // MARK: - CONTROLLER SETUP
     
-    private var viewByList: Bool = true
+    private var currentLayoutState: LayoutState = LayoutState.List
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
     
     override func viewDidLoad() {
@@ -218,6 +214,24 @@ class FolderViewController: UIViewController {
             }
         }
     }
+    
+    private func onViewByChange(newLayoutState: LayoutState){
+        let transitionManager: TransitionManager
+        if(newLayoutState != currentLayoutState){
+            if(newLayoutState == LayoutState.List){
+                buttonViewType.setImage(UIImage(named: "row"), for: .normal)
+                fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
+                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: listLayout)
+            }else{
+                buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
+                fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
+                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
+            }
+            currentLayoutState = newLayoutState
+            transitionManager.startInteractiveTransition()
+            fileCollectionView.reloadData()
+        }
+    }
     //MARK: - BUTTON EVENT
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
@@ -238,14 +252,20 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if(viewByList){
+        if(currentLayoutState == LayoutState.List){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
             cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
             return cell
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
             cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
+            
             return cell
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
+        let customTransitionLayout = UICollectionViewTransitionLayout(currentLayout: fromLayout, nextLayout: toLayout)
+            return customTransitionLayout
     }
 }
