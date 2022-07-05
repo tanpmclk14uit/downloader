@@ -413,7 +413,7 @@ extension DownloadViewController: DownloadDelegate {
                                         create: true)
                 var i: Int = 0;
                 repeat{
-                    let pathExtension = URL(fileURLWithPath: downloadTask.response?.mimeType ?? "/tmp").lastPathComponent
+                    let pathExtension = URL(fileURLWithPath: downloadTask.response?.mimeType ?? "/octet-stream").lastPathComponent
                     let fileExtension: String = (i > 0) ? ("(\(i)).\(pathExtension)") : (".\(pathExtension)")
                     let fileName = "\(currentDownloadItem.name)\(fileExtension)"
                     let savedURL = documentsURL.appendingPathComponent(

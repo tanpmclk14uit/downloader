@@ -38,7 +38,7 @@ public struct FileSizeUnits {
     case (1_024 * 1_024 * 1_024)...Int64.max:
       return "\(String(format: "%.2f", gigabytes)) GB"
     default:
-      return "\(bytes) bytes"
+      return "Undefine"
     }
   }
 }

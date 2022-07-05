@@ -22,8 +22,33 @@ class Dimen {
     // image size
     public static let imageIconWidth: CGFloat = 50;
     public static let imageIconHeight: CGFloat = 50;
+    public static let imageTinyIconWidth: CGFloat = 24;
+    public static let imageTinyIconHeight: CGFloat = 24;
     // Margin
     public static let screenDefaultMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
     public static let cellItemMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
     public static let toolBarMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: -10, right: -15)
+    public static let cellItemByIconMargin: UIEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: -5, right: -5)
+
+    // get font height
+    public static func getFontHeight(font: UIFont)-> CGFloat{
+        let temp: String = "temp"
+        return temp.height(withConstrainedWidth: CGFloat.infinity, font: font)
+    }
+}
+
+extension String {
+    func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+    
+        return ceil(boundingBox.height)
+    }
+
+    func width(withConstrainedHeight height: CGFloat, font: UIFont) -> CGFloat {
+        let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+        
+        return ceil(boundingBox.width)
+    }
 }

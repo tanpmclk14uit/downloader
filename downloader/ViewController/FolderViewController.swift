@@ -107,7 +107,7 @@ class FolderViewController: UIViewController {
         fileCollectionView.translatesAutoresizingMaskIntoConstraints = false
         fileCollectionView.dataSource = self
         fileCollectionView.delegate = self
-        fileCollectionView.register(FileItemViewCell.self, forCellWithReuseIdentifier: FileItemViewCell.identifier)
+        fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
         return fileCollectionView
     }()
     
@@ -137,14 +137,14 @@ class FolderViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "View by list", style: .default, handler: { [weak self] _ in
             self?.buttonViewType.setImage(UIImage(named: "row"), for: .normal)
-            self?.fileCollectionView.register(FileItemViewCell.self, forCellWithReuseIdentifier: FileItemViewCell.identifier)
+            self?.fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
             self?.fileCollectionView.collectionViewLayout = (self?.listLayout)!
             self?.viewByList = true
             self?.fileCollectionView.reloadData()
         }))
         alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { [weak self] _ in
             self?.buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
-            self?.fileCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+            self?.fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
             self?.fileCollectionView.collectionViewLayout = (self?.gridLayout)!
             self?.viewByList = false
             self?.fileCollectionView.reloadData()
@@ -188,7 +188,8 @@ class FolderViewController: UIViewController {
     }
     // MARK: - CONTROLLER SETUP
     
-    var viewByList: Bool = true
+    private var viewByList: Bool = true
+    private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -207,6 +208,16 @@ class FolderViewController: UIViewController {
         buttonSort.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            self?.fileManager.fetchAllFileOfDownloadFolder {
+                DispatchQueue.main.async {
+                    self?.fileCollectionView.reloadData()
+                }
+            }
+        }
+    }
     //MARK: - BUTTON EVENT
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
@@ -223,20 +234,18 @@ extension FolderViewController: UISearchBarDelegate{
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return fileManager.getFileItems().count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(viewByList){
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCell.identifier, for: indexPath)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
+            cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
             return cell
         }else{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .blue
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
+            cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
             return cell
         }
-        
     }
-    
-    
 }
