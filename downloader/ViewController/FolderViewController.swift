@@ -86,16 +86,16 @@ class FolderViewController: UIViewController {
         return toolBar
     }()
     
-    lazy var listLayout: UICollectionViewLayout = {
-        let layout = UICollectionViewFlowLayout()
+    lazy var listLayout: MaintainOffsetFlowLayout = {
+        let layout = MaintainOffsetFlowLayout()
         layout.scrollDirection = .vertical
         layout.itemSize.width = view.frame.width-20
         layout.itemSize.height = 60
         return layout
     }()
     
-    lazy var gridLayout: UICollectionViewLayout = {
-        let layout = UICollectionViewFlowLayout()
+    lazy var gridLayout: MaintainOffsetFlowLayout = {
+        let layout = MaintainOffsetFlowLayout()
         layout.scrollDirection = .vertical
         layout.itemSize.width = view.frame.width/2 - 15
         layout.itemSize.height = layout.itemSize.width * 1.2
@@ -124,9 +124,6 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Sort by size", style: .default, handler: { [weak self] _ in
             self?.buttonSort.setTitle("Sort by Size", for: .normal)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by type", style: .default, handler: { [weak self] _ in
-            self?.buttonSort.setTitle("Sort by Type", for: .normal)
-        }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
     }()
@@ -139,7 +136,6 @@ class FolderViewController: UIViewController {
             self?.onViewByChange(newLayoutState: LayoutState.List)
         }))
         alert.addAction(UIAlertAction(title: "View by icon", style: .default, handler: { [weak self] _ in
-
             self?.onViewByChange(newLayoutState: LayoutState.Grid)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))

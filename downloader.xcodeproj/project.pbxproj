@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */; };
 		472C906E286BF7A800F79ACD /* DownloadItemDTO.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C906D286BF7A800F79ACD /* DownloadItemDTO.m */; };
 		472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintainOffsetFlowLayout.swift; sourceTree = "<group>"; };
 		472C906C286BF7A800F79ACD /* DownloadItemDTO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DownloadItemDTO.h; path = downloader/Models/Download/DownloadItemDTO.h; sourceTree = SOURCE_ROOT; };
 		472C906D286BF7A800F79ACD /* DownloadItemDTO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DownloadItemDTO.m; path = downloader/Models/Download/DownloadItemDTO.m; sourceTree = SOURCE_ROOT; };
 		472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItemPersistenceManager.h; sourceTree = "<group>"; };
@@ -131,9 +133,17 @@
 				474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */,
 				47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */,
 				475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */,
-				475FED95287443020007838F /* TransitionManager.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		475FED972874491C0007838F /* CollectionViewTransition */ = {
+			isa = PBXGroup;
+			children = (
+				475FED95287443020007838F /* TransitionManager.swift */,
+				47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */,
+			);
+			path = CollectionViewTransition;
 			sourceTree = "<group>";
 		};
 		479B2938286ED77A00854350 /* Download */ = {
@@ -243,6 +253,7 @@
 		47FDFB8A284F004D00FDA80F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				475FED972874491C0007838F /* CollectionViewTransition */,
 				474A61012863199E0039B3D0 /* Components */,
 				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
 				474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */,
@@ -414,6 +425,7 @@
 				47E8E9D1286577340005EE4D /* FileItemViewCellByList.swift in Sources */,
 				479B2944286F066100854350 /* TimeSizeUnits.swift in Sources */,
 				475FED9428741F660007838F /* FileTypeConstants.swift in Sources */,
+				47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */,
 				479B293E286EDE2900854350 /* FileItem.m in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
