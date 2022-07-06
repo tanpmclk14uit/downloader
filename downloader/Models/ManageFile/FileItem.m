@@ -8,7 +8,7 @@
 #import "FileItem.h"
 
 @implementation FileItem
-- (instancetype)initWithName:(NSString *)name andSize:(NSNumber *)size andCreateDate:(NSDate *)createdDate andType:(NSString*)type andURL:(NSURL*) url{
+- (instancetype)initWithName:(NSString *)name andSize:(NSNumber *)size andCreateDate:(NSDate *)createdDate andType:(FileTypeEnum*)type andURL:(NSURL*) url{
     self = [super init];
     if(self){
         self.name = name;
@@ -19,8 +19,6 @@
     }
     return self;
 }
-
-
 
 - (NSInteger) countDaysFromCreatedToNow{
     return -[self.createdDate timeIntervalSinceNow];

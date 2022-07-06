@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */; };
+		47244D5E2875AB69005066FB /* FileTypeConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 47244D5D2875AB69005066FB /* FileTypeConstants.m */; };
+		47244D612875ABD8005066FB /* FileTypeEnum.m in Sources */ = {isa = PBXBuildFile; fileRef = 47244D602875ABD8005066FB /* FileTypeEnum.m */; };
 		472C906E286BF7A800F79ACD /* DownloadItemDTO.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C906D286BF7A800F79ACD /* DownloadItemDTO.m */; };
 		472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
@@ -15,7 +17,6 @@
 		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
 		474A6100286319980039B3D0 /* DownloadItemViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */; };
 		475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */; };
-		475FED9428741F660007838F /* FileTypeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED9328741F660007838F /* FileTypeConstants.swift */; };
 		475FED96287443020007838F /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED95287443020007838F /* TransitionManager.swift */; };
 		479B293E286EDE2900854350 /* FileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B293D286EDE2900854350 /* FileItem.m */; };
 		479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B2941286EE8DD00854350 /* DownloadFileManager.m */; };
@@ -53,6 +54,10 @@
 
 /* Begin PBXFileReference section */
 		47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintainOffsetFlowLayout.swift; sourceTree = "<group>"; };
+		47244D5C2875AB69005066FB /* FileTypeConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileTypeConstants.h; sourceTree = "<group>"; };
+		47244D5D2875AB69005066FB /* FileTypeConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileTypeConstants.m; sourceTree = "<group>"; };
+		47244D5F2875ABD8005066FB /* FileTypeEnum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileTypeEnum.h; sourceTree = "<group>"; };
+		47244D602875ABD8005066FB /* FileTypeEnum.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileTypeEnum.m; sourceTree = "<group>"; };
 		472C906C286BF7A800F79ACD /* DownloadItemDTO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DownloadItemDTO.h; path = downloader/Models/Download/DownloadItemDTO.h; sourceTree = SOURCE_ROOT; };
 		472C906D286BF7A800F79ACD /* DownloadItemDTO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DownloadItemDTO.m; path = downloader/Models/Download/DownloadItemDTO.m; sourceTree = SOURCE_ROOT; };
 		472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItemPersistenceManager.h; sourceTree = "<group>"; };
@@ -63,7 +68,6 @@
 		474A60FD2862CF2C0039B3D0 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemViewCell.swift; sourceTree = "<group>"; };
 		475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemViewCellByIcon.swift; sourceTree = "<group>"; };
-		475FED9328741F660007838F /* FileTypeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTypeConstants.swift; sourceTree = "<group>"; };
 		475FED95287443020007838F /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		479B293C286EDE2900854350 /* FileItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileItem.h; sourceTree = "<group>"; };
 		479B293D286EDE2900854350 /* FileItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileItem.m; sourceTree = "<group>"; };
@@ -163,6 +167,8 @@
 			children = (
 				479B2940286EE8DD00854350 /* DownloadFileManager.h */,
 				479B2941286EE8DD00854350 /* DownloadFileManager.m */,
+				47244D5C2875AB69005066FB /* FileTypeConstants.h */,
+				47244D5D2875AB69005066FB /* FileTypeConstants.m */,
 			);
 			path = ManageFile;
 			sourceTree = "<group>";
@@ -183,6 +189,8 @@
 			children = (
 				479B293C286EDE2900854350 /* FileItem.h */,
 				479B293D286EDE2900854350 /* FileItem.m */,
+				47244D5F2875ABD8005066FB /* FileTypeEnum.h */,
+				47244D602875ABD8005066FB /* FileTypeEnum.m */,
 			);
 			path = ManageFile;
 			sourceTree = "<group>";
@@ -193,7 +201,6 @@
 				47E8E9D92865BFC70005EE4D /* Enum.swift */,
 				473B6DFE2869963200747CD8 /* FileSizeUnits.swift */,
 				479B2943286F066100854350 /* TimeSizeUnits.swift */,
-				475FED9328741F660007838F /* FileTypeConstants.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -410,8 +417,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47244D612875ABD8005066FB /* FileTypeEnum.m in Sources */,
 				475FED96287443020007838F /* TransitionManager.swift in Sources */,
 				47E8E9D42865B9600005EE4D /* DownloadItem.m in Sources */,
+				47244D5E2875AB69005066FB /* FileTypeConstants.m in Sources */,
 				47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */,
 				47E8E9CF286563A80005EE4D /* DimenConstants.swift in Sources */,
 				475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */,
@@ -424,7 +433,6 @@
 				472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */,
 				47E8E9D1286577340005EE4D /* FileItemViewCellByList.swift in Sources */,
 				479B2944286F066100854350 /* TimeSizeUnits.swift in Sources */,
-				475FED9428741F660007838F /* FileTypeConstants.swift in Sources */,
 				47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */,
 				479B293E286EDE2900854350 /* FileItem.m in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,

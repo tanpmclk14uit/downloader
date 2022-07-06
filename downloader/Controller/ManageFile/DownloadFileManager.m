@@ -50,7 +50,7 @@
             }else{
                 NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
                 NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
-                NSString* fileType = [file pathExtension];
+                FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
                 NSString* fileName = [file lastPathComponent];
                 FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
                 [self.allFileItems addObject:fileItem];
@@ -59,4 +59,27 @@
         completionHandler();
     }
 }
+
+- (FileTypeEnum*) getFileTypeFromFileExtension: (NSString*) extension{
+    if([FileTypeConstants.pdf.extensionList containsObject:extension]){
+        return FileTypeConstants.pdf;
+    }
+    if([FileTypeConstants.image.extensionList containsObject:extension]){
+        return FileTypeConstants.image;
+    }
+    if([FileTypeConstants.text.extensionList containsObject:extension]){
+        return FileTypeConstants.text;
+    }
+    if([FileTypeConstants.video.extensionList containsObject:extension]){
+        return FileTypeConstants.video;
+    }
+    if([FileTypeConstants.audio.extensionList containsObject:extension]){
+        return FileTypeConstants.audio;
+    }
+    if([FileTypeConstants.zip.extensionList containsObject:extension]){
+        return FileTypeConstants.zip;
+    }
+    return FileTypeConstants.unknown;
+}
+
 @end

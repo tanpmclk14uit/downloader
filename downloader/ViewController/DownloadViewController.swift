@@ -57,11 +57,12 @@ class DownloadViewController: UIViewController {
         return tableView
     }()
     
-    lazy var emptyListLable: UILabel = {
+    lazy var emptyListMessage: UILabel = {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
-        lable.text = "Your download process is empty"
         lable.textColor = .gray
+        lable.numberOfLines = 2
+        lable.textAlignment = .center
         lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
         return lable
     }()
@@ -170,10 +171,10 @@ class DownloadViewController: UIViewController {
         buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
         
         // set up empty list table
-        view.addSubview(emptyListLable)
-        emptyListLable.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        emptyListLable.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        setVisibilityOfEmplyListLable()
+        view.addSubview(emptyListMessage)
+        emptyListMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emptyListMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        setUpEmptyListMessage()
 
     }
     
@@ -189,8 +190,16 @@ class DownloadViewController: UIViewController {
         present(sortBySelectionAlert, animated: true)
     }
     
-    private func setVisibilityOfEmplyListLable(){
-        emptyListLable.isHidden = (getAllDownloadItemMatchSearchSortAndFilter().count != 0)
+    private func setUpEmptyListMessage(){
+        if(getAllDownloadItemMatchSearchSortAndFilter().isEmpty){
+            if(filterBy == FilterByState.All){
+                emptyListMessage.text = "Your download process is empty!"
+            }else{
+                emptyListMessage.text = "Filter result is empty\nplease choose other state!"
+            }
+        }else{
+            emptyListMessage.text = nil
+        }
     }
     
     private func onSortChange(newSortBy: BasicSort){
@@ -201,14 +210,15 @@ class DownloadViewController: UIViewController {
             sortBy = newSortBy
             buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
         }
-        downloadItemsTableView.reloadData()
+        reloadTableViewData()
     }
     
     private func onFilterChange(newFilter: FilterByState){
-        buttonFilter.setTitle("\(newFilter) process", for: .normal)
-        filterBy = newFilter
-        downloadItemsTableView.reloadData()
-        setVisibilityOfEmplyListLable()
+        if(newFilter != filterBy){
+            buttonFilter.setTitle("\(newFilter) process", for: .normal)
+            filterBy = newFilter
+            reloadTableViewData()
+        }
     }
     
     private func onAddNewInputURL(_ inputURL: String){
@@ -216,8 +226,7 @@ class DownloadViewController: UIViewController {
             DispatchQueue.global(qos: .utility).async {[weak self] in
                 self?.downloadManager.download(withURL: inputURL)
                 DispatchQueue.main.async {
-                    self?.downloadItemsTableView.reloadData()
-                    self?.setVisibilityOfEmplyListLable()
+                    self?.reloadTableViewData()
                 }
             }
         }else{
@@ -313,7 +322,7 @@ class DownloadViewController: UIViewController {
 extension DownloadViewController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchKey = searchText
-        self.downloadItemsTableView.reloadData()
+        reloadTableViewData()
     }
 }
 // MARK: - CONFIRM TABLE VIEW DELEGATE
@@ -361,7 +370,7 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     
     func reloadTableViewData(){
         self.downloadItemsTableView.reloadData()
-        self.setVisibilityOfEmplyListLable()
+        self.setUpEmptyListMessage()
     }
     
 }

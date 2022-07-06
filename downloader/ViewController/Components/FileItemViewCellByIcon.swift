@@ -130,7 +130,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         self.fileName.text = fileItem.name
         self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
         generateThumbnailRepresentations(url: fileItem.url)
-        getIconFromFileExtension(fileExtension: fileItem.type)
+        drawIconFromFileType(fileType: fileItem.type)
     }
     
     func generateThumbnailRepresentations(url: URL) {
@@ -156,28 +156,28 @@ class FileItemViewCellByIcon: UICollectionViewCell {
                 }
             }
         }else{
-            
+            // handle for ios below ios 13
         }
     }
     
-    func getIconFromFileExtension(fileExtension: String){
-        switch(fileExtension){
-        case _ where FileType.pdf.contains(fileExtension):
+    func drawIconFromFileType(fileType: FileTypeEnum){
+        switch(fileType.name){
+        case FileTypeConstants.pdf().name:
             fileTypeIcon.image = UIImage(named: "pdf")
             break
-        case _ where FileType.image.contains(fileExtension):
+        case FileTypeConstants.image().name:
             fileTypeIcon.image = UIImage(named: "image")
             break
-        case _ where FileType.audio.contains(fileExtension):
+        case FileTypeConstants.audio().name:
             fileTypeIcon.image = UIImage(named: "audio")
             break
-        case _ where FileType.video.contains(fileExtension):
+        case FileTypeConstants.video().name:
             fileTypeIcon.image = UIImage(named: "video")
             break
-        case _ where FileType.zip.contains(fileExtension):
+        case FileTypeConstants.zip().name:
             fileTypeIcon.image = UIImage(named: "zip")
             break
-        case _ where FileType.text.contains(fileExtension):
+        case FileTypeConstants.text().name:
             fileTypeIcon.image = UIImage(named: "text")
             break
         default:

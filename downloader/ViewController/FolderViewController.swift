@@ -19,6 +19,16 @@ class FolderViewController: UIViewController {
         return searchBar
     }()
     
+    lazy var emptyMessage: UILabel = {
+        let lable = UILabel()
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        lable.textColor = .gray
+        lable.numberOfLines = 2
+        lable.textAlignment = .center
+        lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        return lable
+    }()
+    
     lazy var titleName: UILabel = {
         let titleName = UILabel()
         titleName.text = "Folders"
@@ -39,11 +49,21 @@ class FolderViewController: UIViewController {
         button.tintColor = .systemBlue
         return button
     }()
+    
     lazy var buttonSort: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sort by Date", for: .normal)
-        button.setImage(UIImage(named: "sort"), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    lazy var buttonFilter: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("All file", for: .normal)
+        button.setImage(UIImage(named: "filtered"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
         return button
@@ -59,10 +79,12 @@ class FolderViewController: UIViewController {
     lazy var toolBar: UIView = {
         let toolBar = UIView()
         toolBar.translatesAutoresizingMaskIntoConstraints = false
+        toolBar.addSubview(buttonFilter)
         toolBar.addSubview(buttonAddFile)
         toolBar.addSubview(buttonAddFolder)
         toolBar.addSubview(buttonSort)
         toolBar.addSubview(buttonViewType)
+        
         // config button add file
         buttonAddFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
         buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
@@ -73,10 +95,14 @@ class FolderViewController: UIViewController {
         buttonAddFolder.leadingAnchor.constraint(equalTo: buttonAddFile.trailingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
         buttonAddFolder.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         buttonAddFolder.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        // config button filter
+        buttonFilter.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
+        buttonFilter.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
+        buttonFilter.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
         // config button sort
         buttonSort.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         buttonSort.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
-        buttonSort.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
+        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
         // config button type view
         buttonViewType.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         buttonViewType.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
@@ -111,18 +137,46 @@ class FolderViewController: UIViewController {
         return fileCollectionView
     }()
     
+    
+    
     lazy var sortBySelectionAlert: UIAlertController = {
         let alert = UIAlertController(
             title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
         )
         alert.addAction(UIAlertAction(title: "Sort by date", style: .default, handler: { [weak self] _ in
-            self?.buttonSort.setTitle("Sort by Date", for: .normal)
+            self?.onSortChange(newSortBy: BasicSort.Date)
         }))
         alert.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { [weak self] _ in
-            self?.buttonSort.setTitle("Sort by Name", for: .normal)
+            self?.onSortChange(newSortBy: BasicSort.Name)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by size", style: .default, handler: { [weak self] _ in
-            self?.buttonSort.setTitle("Sort by Size", for: .normal)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        return alert
+    }()
+    
+    lazy var filterBySelectionAlert: UIAlertController = {
+        let alert = UIAlertController(
+            title: "Filter", message: "Select state to filter", preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "All", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.All)
+        }))
+        alert.addAction(UIAlertAction(title: "PDF", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.PDF)
+        }))
+        alert.addAction(UIAlertAction(title: "Text", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Text)
+        }))
+        alert.addAction(UIAlertAction(title: "Video", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Video)
+        }))
+        alert.addAction(UIAlertAction(title: "Audio", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Audio)
+        }))
+        alert.addAction(UIAlertAction(title: "Zip", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Zip)
+        }))
+        alert.addAction(UIAlertAction(title: "Unknown", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Unknown)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
@@ -182,6 +236,10 @@ class FolderViewController: UIViewController {
     
     private var currentLayoutState: LayoutState = LayoutState.List
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
+    private var searchKey: String = ""
+    private var sortBy: BasicSort = BasicSort.Date
+    private var sortDiv: SortDIV = SortDIV.Asc
+    private var filterBy: FilterByFileType = FilterByFileType.All
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -192,20 +250,25 @@ class FolderViewController: UIViewController {
         view.addSubview(searchBar)
         view.addSubview(toolBar)
         view.addSubview(fileCollectionView)
-        
+        setIconOfSortButton()
         configSearchBarConstraint()
         configToolbarConstraint()
         configFileCollectionViewConstraint()
         
         buttonSort.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
+        buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
+        
+        view.addSubview(emptyMessage)
+        emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             self?.fileManager.fetchAllFileOfDownloadFolder {
                 DispatchQueue.main.async {
-                    self?.fileCollectionView.reloadData()
+                    self?.reloadCollectionView()
                 }
             }
         }
@@ -225,12 +288,97 @@ class FolderViewController: UIViewController {
             }
             currentLayoutState = newLayoutState
             transitionManager.startInteractiveTransition()
-            fileCollectionView.reloadData()
+            reloadCollectionView()
         }
     }
-    //MARK: - BUTTON EVENT
+    
+    private func setIconOfSortButton(){
+        if(sortDiv == SortDIV.Asc){
+            buttonSort.setImage(UIImage(named: "sort-asc"), for: .normal)
+        }else{
+            buttonSort.setImage(UIImage(named: "sort-desc"), for: .normal)
+        }
+    }
+    
+    private func onSortChange(newSortBy: BasicSort){
+        if(sortBy == newSortBy){
+            sortDiv.reverse()
+            setIconOfSortButton()
+        }else{
+            sortBy = newSortBy
+            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
+        }
+        reloadCollectionView()
+    }
+    
+    private func onFilterChange(newFilter: FilterByFileType){
+        if(newFilter != filterBy){
+            buttonFilter.setTitle("\(newFilter)", for: .normal)
+            filterBy = newFilter
+            reloadCollectionView()
+        }
+    }
+    
+    private func getAllFileMatchSearchSortAndFilter()-> [FileItem]{
+        // get all original list
+        var fileItems = fileManager.getFileItems()
+        // filter
+        if(filterBy != FilterByFileType.All){
+            fileItems = fileItems.filter({ fileItem in
+                return fileItem.type.name == String(describing: filterBy).lowercased()
+            })
+        }
+        // search
+        if(!searchKey.isEmpty){
+            fileItems = fileItems.filter({ downloadItem in
+                return downloadItem.name.lowercased().contains(searchKey.lowercased())
+            })
+        }
+        // sort
+        switch(sortBy){
+        case BasicSort.Name: do{
+            fileItems.sort { hls, fls in
+                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+            }
+            break
+        }
+        case BasicSort.Date: do{
+            let sortTime: SortDIV = (sortDiv == SortDIV.Asc) ? SortDIV.Desc : SortDIV.Asc
+            fileItems.sort { hls, fls in
+                compareObjectToSort(sortDiv: sortTime, ObjFirst: hls.createdDate, ObjSecond: fls.createdDate)
+            }
+            break
+        }
+        }
+        return fileItems
+    }
+    
+    private func compareObjectToSort<T: Comparable>(sortDiv: SortDIV, ObjFirst: T, ObjSecond: T)-> Bool{
+        if(sortDiv == SortDIV.Asc){
+            return ObjFirst < ObjSecond
+        }else{
+            return ObjFirst > ObjSecond
+        }
+    }
+    
+    private func setUpEmptyListMessage(){
+        if(getAllFileMatchSearchSortAndFilter().isEmpty){
+            if(filterBy == FilterByFileType.All){
+                emptyMessage.text = "Your folder is empty!"
+            }else{
+                emptyMessage.text = "Filter result is empty\nplease choose other type!"
+            }
+        }else{
+            emptyMessage.text = nil
+        }
+    }
+    
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
+    }
+    
+    @objc func filterButtonClick(){
+        present(filterBySelectionAlert, animated: true)
     }
     
     @objc func onViewTypeClick(){
@@ -239,22 +387,25 @@ class FolderViewController: UIViewController {
 }
 //MARK: - CONFIRM UI SEARCH BAR DELEGATE
 extension FolderViewController: UISearchBarDelegate{
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchKey = searchText
+        reloadCollectionView()
+    }
 }
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fileManager.getFileItems().count
+        return getAllFileMatchSearchSortAndFilter().count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(currentLayoutState == LayoutState.List){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
-            cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
+            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
             return cell
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
-            cell.setCellData(fileItem: fileManager.getFileItems()[indexPath.row])
+            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
             
             return cell
         }
@@ -262,6 +413,11 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
         let customTransitionLayout = UICollectionViewTransitionLayout(currentLayout: fromLayout, nextLayout: toLayout)
-            return customTransitionLayout
+        return customTransitionLayout
+    }
+    
+    func reloadCollectionView(){
+        self.fileCollectionView.reloadData()
+        setUpEmptyListMessage()
     }
 }

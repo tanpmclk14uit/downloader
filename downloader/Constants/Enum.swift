@@ -48,5 +48,17 @@ enum BasicSort{
     case Date
 }
 
+enum FilterByFileType{
+    case All;
+    case PDF;
+    case Audio;
+    case Video;
+    case Zip;
+    case Image;
+    case Text;
+    case Unknown;
+}
+
+
 
 

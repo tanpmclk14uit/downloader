@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FileItem.h"
-
+#import "FileTypeConstants.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadFileManager : NSObject
