@@ -12,6 +12,9 @@
 		47244D612875ABD8005066FB /* FileTypeEnum.m in Sources */ = {isa = PBXBuildFile; fileRef = 47244D602875ABD8005066FB /* FileTypeEnum.m */; };
 		472C906E286BF7A800F79ACD /* DownloadItemDTO.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C906D286BF7A800F79ACD /* DownloadItemDTO.m */; };
 		472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */; };
+		4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942728768B9200045AFE /* DownloadItemCellDelegate.swift */; };
+		4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942928768BDF00045AFE /* FileItemCellDelegate.swift */; };
+		4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942C2876E83A00045AFE /* PopAnimator.swift */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
 		474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */; };
 		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
@@ -62,6 +65,9 @@
 		472C906D286BF7A800F79ACD /* DownloadItemDTO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DownloadItemDTO.m; path = downloader/Models/Download/DownloadItemDTO.m; sourceTree = SOURCE_ROOT; };
 		472C906F286C025000F79ACD /* DownloadItemPersistenceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadItemPersistenceManager.h; sourceTree = "<group>"; };
 		472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadItemPersistenceManager.m; sourceTree = "<group>"; };
+		4738942728768B9200045AFE /* DownloadItemCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemCellDelegate.swift; sourceTree = "<group>"; };
+		4738942928768BDF00045AFE /* FileItemCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemCellDelegate.swift; sourceTree = "<group>"; };
+		4738942C2876E83A00045AFE /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		473B6DFC2869537200747CD8 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
 		473B6DFE2869963200747CD8 /* FileSizeUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeUnits.swift; sourceTree = "<group>"; };
 		474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewController.swift; sourceTree = "<group>"; };
@@ -120,6 +126,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4738942628768B2700045AFE /* CollectionCellDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				4738942728768B9200045AFE /* DownloadItemCellDelegate.swift */,
+				4738942928768BDF00045AFE /* FileItemCellDelegate.swift */,
+			);
+			path = CollectionCellDelegate;
+			sourceTree = "<group>";
+		};
+		4738942B2876E82000045AFE /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				4738942C2876E83A00045AFE /* PopAnimator.swift */,
+			);
+			path = Animation;
+			sourceTree = "<group>";
+		};
 		474A60FC2862CEF30039B3D0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +251,7 @@
 		47FDFB50284EEFF200FDA80F /* downloader */ = {
 			isa = PBXGroup;
 			children = (
+				4738942B2876E82000045AFE /* Animation */,
 				47E8E9D82865BFA40005EE4D /* Constants */,
 				47FDFB51284EEFF200FDA80F /* AppDelegate.swift */,
 				47FDFB91284F018C00FDA80F /* BridgingHeader.h */,
@@ -260,6 +284,7 @@
 		47FDFB8A284F004D00FDA80F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4738942628768B2700045AFE /* CollectionCellDelegate */,
 				475FED972874491C0007838F /* CollectionViewTransition */,
 				474A61012863199E0039B3D0 /* Components */,
 				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
@@ -436,7 +461,10 @@
 				47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */,
 				479B293E286EDE2900854350 /* FileItem.m in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
+				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
+				4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */,
+				4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */,
 				47E8E9D72865BE420005EE4D /* DownloadManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

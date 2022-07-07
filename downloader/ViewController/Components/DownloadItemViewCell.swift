@@ -6,11 +6,7 @@
 //
 
 import UIKit
-protocol DownloadItemViewCellDelegate{
-    func pauseClick(downloadItem: DownloadItem);
-    func resumeClick(downloadItem: DownloadItem);
-    func cancelClick(downloadItem: DownloadItem);
-}
+
 class DownloadItemViewCell: UITableViewCell {
     //MARK: - CONFIG UI
     private lazy var downloadItemTitle: UILabel = {
@@ -84,7 +80,7 @@ class DownloadItemViewCell: UITableViewCell {
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
      }
     // MARK: - INIT ITEM CELL
-    public var delegate: DownloadItemViewCellDelegate?
+    public var delegate: DownloadItemCellDelegate?
     public static let identifier: String = "DownloadItemCell"
     private var currentDownloadItem: DownloadItem?
     // DownloadProcessViewModel : contain: (DownloadItem, DownloadCell : displayningCell)

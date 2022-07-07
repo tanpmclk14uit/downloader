@@ -38,7 +38,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         return lable
     }()
     
-    private lazy var fileButtonAction: UIButton = {
+    private lazy var fileActionMenu: UIButton = {
         let downloadItemButtonAction = UIButton(type: .system)
         downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
         downloadItemButtonAction.setImage(UIImage(named: "menu"), for: .normal)
@@ -92,10 +92,10 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     }
     
     private func configFileButtonActionConstraint(){
-        fileButtonAction.topAnchor.constraint(equalTo: fileSize.bottomAnchor, constant: Dimen.cellItemByIconMargin.top).isActive = true
-        fileButtonAction.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-        fileButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        fileButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        fileActionMenu.topAnchor.constraint(equalTo: fileSize.bottomAnchor, constant: Dimen.cellItemByIconMargin.top).isActive = true
+        fileActionMenu.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        fileActionMenu.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        fileActionMenu.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
     }
     private func configFileTypeIconConstraint(){
         fileTypeIcon.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: Dimen.cellItemByIconMargin.bottom).isActive = true
@@ -106,6 +106,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     //MARK: - INIT CELL
     public static let identifier: String = "FileItemCellByIcon"
     private var fileItem: FileItem?
+    var delegate: FileCellDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -115,10 +116,18 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         configFileNameConstraint()
         contentView.addSubview(fileSize)
         configFileSizeConstraint()
-        contentView.addSubview(fileButtonAction)
+        contentView.addSubview(fileActionMenu)
         configFileButtonActionConstraint()
         contentView.addSubview(fileTypeIcon)
         configFileTypeIconConstraint()
+        
+        self.fileActionMenu.addTarget(self, action: #selector(onFileActionMenuClick), for: .touchUpInside)
+    }
+    
+    @objc private func onFileActionMenuClick(){
+        if let fileItem = fileItem {
+            delegate?.menuActionClick(fileItem: fileItem)
+        }
     }
     
     required init?(coder: NSCoder) {

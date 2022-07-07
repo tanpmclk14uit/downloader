@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import AVKit
+import AVFoundation
+import WebKit
 
 class FolderViewController: UIViewController {
     // MARK: - CONFIG UI
@@ -240,6 +243,9 @@ class FolderViewController: UIViewController {
     private var sortBy: BasicSort = BasicSort.Date
     private var sortDiv: SortDIV = SortDIV.Asc
     private var filterBy: FilterByFileType = FilterByFileType.All
+    private var currentSelectedFile: FileItem?
+    private var transition = PopAnimator()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -373,6 +379,30 @@ class FolderViewController: UIViewController {
         }
     }
     
+    private func showMenuActionOfFileItem(_ fileItem: FileItem){
+        let alert = UIAlertController(
+            title: "\(fileItem.name)", message: nil, preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
+            self?.onRenameFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Move", style: .default, handler: { [weak self] _ in
+            self?.onMoveFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Copy", style: .default, handler: { [weak self] _ in
+            self?.onCopyFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Detail", style: .default, handler: { [weak self] _ in
+            self?.onDetailFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            self?.onDeleteFileClick(fileItem: fileItem)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
     }
@@ -383,6 +413,90 @@ class FolderViewController: UIViewController {
     
     @objc func onViewTypeClick(){
         present(viewBySelectionAlert, animated: true)
+    }
+    
+    private func onRenameFileClick(fileItem: FileItem){
+        
+    }
+    
+    private func onMoveFileClick(fileItem: FileItem){
+        
+    }
+    
+    private func onCopyFileClick(fileItem: FileItem){
+        
+    }
+    
+    private func onDetailFileClick(fileItem: FileItem){
+        switch(fileItem.type.name){
+        case FileTypeConstants.pdf().name:
+            showPDFFile(fileItem: fileItem)
+            break
+        case FileTypeConstants.video().name:
+            showVideoFile(fileItem: fileItem)
+            break
+        case FileTypeConstants.audio().name:
+            showVideoFile(fileItem: fileItem)
+            break
+        case FileTypeConstants.image().name:
+            showImageFile(fileItem: fileItem)
+            break
+        default:
+            showErrorNotification(message: "This file format is not supported!")
+            break
+        }
+    }
+    private func showPDFFile(fileItem: FileItem){
+        
+        let webView = WKWebView(frame: self.view.frame)
+        let urlRequest = URLRequest(url: fileItem.url)
+        webView.load(urlRequest)
+        
+        let pdfVC = UIViewController()
+        
+        pdfVC.view.addSubview(webView)
+        pdfVC.title = fileItem.name
+        pdfVC.transitioningDelegate = self
+        
+        present(pdfVC, animated: true)
+    }
+    
+    
+    private func showVideoFile(fileItem: FileItem){
+        let player = AVPlayer(url: fileItem.url)
+        let videoViewController = AVPlayerViewController()
+        videoViewController.player = player
+        player.play()
+        videoViewController.transitioningDelegate = self
+        present(videoViewController, animated: true)
+    }
+    
+    private func showImageFile(fileItem: FileItem){
+        do{
+            let imageView = try UIImageView(image: UIImage(data: Data(contentsOf: fileItem.url)))
+            imageView.contentMode = .scaleAspectFit
+            let imageVC = UIViewController()
+            imageVC.view.backgroundColor = .black
+            imageVC.title = fileItem.name
+            imageView.frame = imageVC.view.frame
+            imageVC.view.addSubview(imageView)
+            imageVC.transitioningDelegate = self
+        
+            present(imageVC, animated: true)
+        }catch{
+            
+        }
+        
+    }
+    
+    private func onDeleteFileClick(fileItem: FileItem){
+        
+    }
+    
+    private func showErrorNotification(message: String){
+        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(emptyURLNotification, animated: true)
     }
 }
 //MARK: - CONFIRM UI SEARCH BAR DELEGATE
@@ -402,11 +516,12 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
         if(currentLayoutState == LayoutState.List){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
             cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.delegate = self
             return cell
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
             cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
-            
+            cell.delegate = self
             return cell
         }
     }
@@ -416,8 +531,56 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
         return customTransitionLayout
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let currentFileItem = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
+        onDetailFileClick(fileItem: currentFileItem)
+    }
+    
     func reloadCollectionView(){
         self.fileCollectionView.reloadData()
         setUpEmptyListMessage()
+    }
+}
+
+// MARK: - CONFIRM FileCellDelegate
+extension FolderViewController: FileCellDelegate{
+    func menuActionClick(fileItem: FileItem) {
+        showMenuActionOfFileItem(fileItem)
+    }
+}
+// MARK: - CONRIRM UIViewControllerTransitioningDelegate
+extension FolderViewController: UIViewControllerTransitioningDelegate{
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard
+            let selectedIndexPathCell = fileCollectionView.indexPathsForSelectedItems
+        else {
+            return nil
+        }
+        let selectedCellSuperview: UIView
+        if(self.currentLayoutState == LayoutState.List){
+            let selectedItems = fileCollectionView.cellForItem(at: selectedIndexPathCell[0])
+                as? FileItemViewCellByList
+            selectedCellSuperview = selectedItems?.superview ?? UIView()
+            transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
+        }else{
+            let selectedItems = fileCollectionView.cellForItem(at: selectedIndexPathCell[0])
+                as? FileItemViewCellByIcon
+            selectedCellSuperview = selectedItems?.superview ?? UIView()
+            transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
+        }
+        
+        transition.originFrame = CGRect(
+            x: transition.originFrame.origin.x + 20,
+            y: transition.originFrame.origin.y + 20,
+            width: transition.originFrame.size.width - 40,
+            height: transition.originFrame.size.height - 40
+        )
+        
+        transition.presenting = true
+        
+        return transition
+    }
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return nil
     }
 }

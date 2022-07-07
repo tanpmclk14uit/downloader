@@ -107,6 +107,8 @@ class DownloadViewController: UIViewController {
         return alert
     }()
     
+    
+    
     // MARK: - CONFIG UI CONSTRAINT
     private func configSearchBarConstraint(){
         if #available(iOS 11.0, *) {
@@ -123,7 +125,11 @@ class DownloadViewController: UIViewController {
         downloadItemsTableView.topAnchor.constraint(equalTo: buttonSort.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
         downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
         downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-        downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        if #available(iOS 11.0, *) {
+            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        } else {
+            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        }
     }
     
     private func configButtonSortConstraint(){
@@ -134,12 +140,15 @@ class DownloadViewController: UIViewController {
     
     private func configButtonFilterConstraint(){
         buttonFilter.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
-        buttonFilter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+        if #available(iOS 11.0, *) {
+            buttonFilter.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+        } else {
+            buttonFilter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+        }
         buttonFilter.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
     }
     
     // MARK: - CONTROLLER SETUP
-    // MARK: - property
     private var downloadManager = DownloadManager.sharedInstance()
     private var downloadItemPersistenceManager = DownloadItemPersistenceManager.sharedInstance()
     private var searchKey: String = ""
@@ -148,7 +157,6 @@ class DownloadViewController: UIViewController {
     private var filterBy: FilterByState = FilterByState.All
     private let mapDownloadItemToCell: NSMapTable = NSMapTable<DownloadItem, DownloadItemViewCell>.weakToWeakObjects()
     
-    //MARK: - function
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -375,7 +383,7 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     
 }
 //MARK: - CONFORM DOWNLOAD ITEM CELL DELEGATE
-extension DownloadViewController: DownloadItemViewCellDelegate{
+extension DownloadViewController: DownloadItemCellDelegate{
     
     func cancelClick(downloadItem: DownloadItem) {
         self.downloadManager.cancelDownload(downloadItem)
@@ -422,7 +430,8 @@ extension DownloadViewController: DownloadDelegate {
                                         create: true)
                 var i: Int = 0;
                 repeat{
-                    let pathExtension = URL(fileURLWithPath: downloadTask.response?.mimeType ?? "/octet-stream").lastPathComponent
+                    let suggestedFileName = downloadTask.response?.suggestedFilename
+                    let pathExtension = URL(fileURLWithPath: suggestedFileName ?? ".octet-stream").pathExtension
                     let fileExtension: String = (i > 0) ? ("(\(i)).\(pathExtension)") : (".\(pathExtension)")
                     let fileName = "\(currentDownloadItem.name)\(fileExtension)"
                     let savedURL = documentsURL.appendingPathComponent(
@@ -452,10 +461,11 @@ extension DownloadViewController: DownloadDelegate {
         print("error")
     }
     
+    
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let currentDownloadItem = self.downloadManager.getItemBy(downloadTask);
         currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
-        currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) of \(currentDownloadItem.totalSizeFitWithUnit)"
+        currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) / \(currentDownloadItem.totalSizeFitWithUnit)"
         
         DispatchQueue.main.async {[self] in
             let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)

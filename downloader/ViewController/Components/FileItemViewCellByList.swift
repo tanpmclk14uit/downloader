@@ -36,7 +36,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         return lable
     }()
     
-    lazy var fileButtonAction: UIButton = {
+    lazy var fileActionMenu: UIButton = {
         let downloadItemButtonAction = UIButton(type: .system)
         downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
         downloadItemButtonAction.setImage(UIImage(named: "menu"), for: .normal)
@@ -63,7 +63,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         let layout = UIView()
         layout.translatesAutoresizingMaskIntoConstraints = false
         layout.backgroundColor = .white
-        layout.addSubview(fileButtonAction)
+        layout.addSubview(fileActionMenu)
         layout.addSubview(fileIcon)
         // config file icon constraint
         fileIcon.widthAnchor.constraint(equalToConstant: Dimen.imageIconWidth).isActive = true
@@ -71,10 +71,10 @@ class FileItemViewCellByList: UICollectionViewCell {
         fileIcon.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
         fileIcon.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         // config button download action
-        fileButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        fileButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
-        fileButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        fileButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        fileActionMenu.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
+        fileActionMenu.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        fileActionMenu.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        fileActionMenu.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config content layout (title & information)
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
@@ -103,7 +103,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         
         // config content layout constraint
         contentLayout.leadingAnchor.constraint(equalTo: fileIcon.trailingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        contentLayout.trailingAnchor.constraint(equalTo: fileButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        contentLayout.trailingAnchor.constraint(equalTo: fileActionMenu.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
         contentLayout.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         contentLayout.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return layout
@@ -116,16 +116,28 @@ class FileItemViewCellByList: UICollectionViewCell {
         itemCellLayout.heightAnchor.constraint(equalToConstant: 60).isActive = true
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
     }
+    
     // MARK: - INIT CELL
     public static let identifier: String = "FileItemCellByList"
     private var fileItem: FileItem?
+    var delegate: FileCellDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(itemCellLayout)
         configItemCellConstraint()
+        
+        fileActionMenu.addTarget(self, action: #selector(onFileActionMenuClick), for: .touchUpInside)
+        
+        
     }
     
+    @objc private func onFileActionMenuClick(){
+        if let fileItem = fileItem {
+            delegate?.menuActionClick(fileItem: fileItem)
+        }
+    }
+     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

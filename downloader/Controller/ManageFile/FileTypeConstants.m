@@ -9,10 +9,10 @@
 
 @implementation FileTypeConstants
 + (FileTypeEnum *)audio{
-    return [[FileTypeEnum alloc] initWithName:@"audio" andExtension: @[@"mp3", @"m4a",@"flac",@"wav",@"wma",@"aac"]];
+    return [[FileTypeEnum alloc] initWithName:@"audio" andExtension: @[@"mp3", @"m4a",@"flac",@"wav",@"wma",@"aac",@"mpeg", @"mpeg3"]];
 }
 + (FileTypeEnum *)video{
-    return [[FileTypeEnum alloc] initWithName:@"video" andExtension:@[@"mp4",@"mov",@"wmv",@"flv",@"avi",@"avchd",@"webm",@"mkv"]];
+    return [[FileTypeEnum alloc] initWithName:@"video" andExtension:@[@"mp4",@"mov",@"wmv",@"flv",@"avi",@"avchd",@"webm",@"mkv",@"x-m4v"]];
 }
 + (FileTypeEnum *)pdf{
     return [[FileTypeEnum alloc] initWithName:@"pdf" andExtension:@[@"pdf"]];
