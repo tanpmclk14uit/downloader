@@ -8,8 +8,10 @@
 #import "DownloadFileManager.h"
 #import "FileItem.h"
 
+
 @interface DownloadFileManager ()
 @property(strong, atomic) NSMutableArray<FileItem*> *allFileItems;
+@property(strong, atomic) NSFileManager* fileManager;
 @end
 
 @implementation DownloadFileManager
@@ -26,9 +28,12 @@
     self = [super init];
     if(self){
         self.allFileItems = [[NSMutableArray alloc] init];
+        self.fileManager = [NSFileManager defaultManager];
     }
     return self;
 }
+
+
 
 - (NSArray<FileItem*>*) getFileItems{
     return [NSArray arrayWithArray: self.allFileItems];
@@ -36,7 +41,7 @@
 
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler:(void (^)(void))completionHandler{
     NSError* error = nil;
-    NSURL* downloadsURL = [[NSFileManager defaultManager] URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
+    NSURL* downloadsURL = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
     if(error){
         NSLog(@"%@", @"Error");
     }else{
@@ -60,6 +65,38 @@
     }
 }
 
+
+
+- (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
+    NSURL* currentWorkingPath = [url URLByDeletingLastPathComponent];
+    NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
+    NSURL* destinationURL = [currentWorkingPath URLByAppendingPathComponent: destinationFileName];
+    return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
+}
+
+- (BOOL) renameFileOf:(FileItem *)fileItem toNewName:(NSString *)newName{
+    NSURL* currentWorkingPath = [fileItem.url URLByDeletingLastPathComponent];
+    NSString* destinationFileName = [newName stringByAppendingPathExtension: fileItem.url.pathExtension];
+    NSURL* destinationURL = [currentWorkingPath URLByAppendingPathComponent: destinationFileName];
+    NSError *error = nil;
+    if([_fileManager moveItemAtURL:fileItem.url toURL:destinationURL error: &error]){
+        fileItem.name = [destinationURL lastPathComponent];
+        fileItem.url = destinationURL;
+        return true;
+    }else{
+        return false;
+    }
+}
+
+- (void)decompressZipFile:(FileItem *)fileItem{
+    NSURL* currentWorkingPath = [fileItem.url URLByDeletingLastPathComponent];
+    NSString* folderName = [fileItem.name stringByDeletingPathExtension];
+    NSURL* destinationURL = [currentWorkingPath URLByAppendingPathComponent: folderName];
+    NSError * error = nil;
+    
+    [_fileManager createDirectoryAtURL:destinationURL withIntermediateDirectories:YES attributes:nil error: &error];
+}
+
 - (FileTypeEnum*) getFileTypeFromFileExtension: (NSString*) extension{
     if([FileTypeConstants.pdf.extensionList containsObject:extension]){
         return FileTypeConstants.pdf;
@@ -81,5 +118,6 @@
     }
     return FileTypeConstants.unknown;
 }
+
 
 @end

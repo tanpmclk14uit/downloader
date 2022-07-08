@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (DownloadFileManager*) sharedInstance;
 - (NSArray<FileItem*>*) getFileItems;
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler: (void (^)(void)) completionHandler;
+- (void) decompressZipFile: (FileItem*) fileItem;
+- (BOOL) isExitsFileName: (NSString*) fileName inURL: (NSURL*) url;
+- (BOOL) renameFileOf: (FileItem*) fileItem toNewName: (NSString*) newName;
 @end
 
 NS_ASSUME_NONNULL_END

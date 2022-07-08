@@ -12,7 +12,7 @@
     return [[FileTypeEnum alloc] initWithName:@"audio" andExtension: @[@"mp3", @"m4a",@"flac",@"wav",@"wma",@"aac",@"mpeg", @"mpeg3"]];
 }
 + (FileTypeEnum *)video{
-    return [[FileTypeEnum alloc] initWithName:@"video" andExtension:@[@"mp4",@"mov",@"wmv",@"flv",@"avi",@"avchd",@"webm",@"mkv",@"x-m4v"]];
+    return [[FileTypeEnum alloc] initWithName:@"video" andExtension:@[@"mp4",@"mov",@"wmv",@"flv",@"avi",@"avchd",@"webm",@"mkv",@"x-m4v",@"mpg"]];
 }
 + (FileTypeEnum *)pdf{
     return [[FileTypeEnum alloc] initWithName:@"pdf" andExtension:@[@"pdf"]];
@@ -24,7 +24,7 @@
     return [[FileTypeEnum alloc] initWithName:@"image" andExtension:@[@"jpeg",@"jpg",@"png",@"gif",@"tiff",@"psd",@"eps",@"ai",@"indd",@"raw"]];
 }
 + (FileTypeEnum *)zip{
-    return [[FileTypeEnum alloc] initWithName:@"zip" andExtension:@[@"zip", @"7z"]];
+    return [[FileTypeEnum alloc] initWithName:@"zip" andExtension:@[@"zip", @"7z", @"rar", @"zipx"]];
 }
 + (FileTypeEnum*)unknown{
     return [[FileTypeEnum alloc] initWithName:@"unknown" andExtension:nil];

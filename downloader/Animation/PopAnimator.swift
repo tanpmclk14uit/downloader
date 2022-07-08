@@ -8,7 +8,7 @@
 import UIKit
 
 class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let duration = 1.5
+    let duration = 1.0
     var presenting = true
     var originFrame = CGRect.zero
     
@@ -52,8 +52,8 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         UIView.animate(
             withDuration: duration,
             delay:0.0,
-            usingSpringWithDamping: 0.5,
-            initialSpringVelocity: 0.2,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 0.5,
             animations: {
                 recipeView.transform = self.presenting ? .identity : scaleTransform
                 recipeView.center = CGPoint(x: finalFrame.midX, y: finalFrame.midY)

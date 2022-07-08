@@ -166,6 +166,9 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "PDF", style: .default, handler: { [weak self] _ in
             self?.onFilterChange(newFilter: FilterByFileType.PDF)
         }))
+        alert.addAction(UIAlertAction(title: "Image", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Image)
+        }))
         alert.addAction(UIAlertAction(title: "Text", style: .default, handler: { [weak self] _ in
             self?.onFilterChange(newFilter: FilterByFileType.Text)
         }))
@@ -392,9 +395,15 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Copy", style: .default, handler: { [weak self] _ in
             self?.onCopyFileClick(fileItem: fileItem)
         }))
-        alert.addAction(UIAlertAction(title: "Detail", style: .default, handler: { [weak self] _ in
-            self?.onDetailFileClick(fileItem: fileItem)
-        }))
+        if(fileItem.type.name == FileTypeConstants.zip().name){
+            alert.addAction(UIAlertAction(title: "Decompress", style: .default, handler: { [weak self] _ in
+                self?.onDetailFileClick(fileItem: fileItem)
+            }))
+        }else{
+            alert.addAction(UIAlertAction(title: "Detail", style: .default, handler: { [weak self] _ in
+                self?.onDetailFileClick(fileItem: fileItem)
+            }))
+        }
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
             self?.onDeleteFileClick(fileItem: fileItem)
         }))
@@ -416,7 +425,7 @@ class FolderViewController: UIViewController {
     }
     
     private func onRenameFileClick(fileItem: FileItem){
-        
+        showInputNewFileNameOfFile(fileItem)
     }
     
     private func onMoveFileClick(fileItem: FileItem){
@@ -441,24 +450,22 @@ class FolderViewController: UIViewController {
         case FileTypeConstants.image().name:
             showImageFile(fileItem: fileItem)
             break
+            
         default:
             showErrorNotification(message: "This file format is not supported!")
             break
         }
     }
     private func showPDFFile(fileItem: FileItem){
-        
-        let webView = WKWebView(frame: self.view.frame)
-        let urlRequest = URLRequest(url: fileItem.url)
-        webView.load(urlRequest)
-        
-        let pdfVC = UIViewController()
-        
-        pdfVC.view.addSubview(webView)
+        let pdfVC = PDFViewController()
         pdfVC.title = fileItem.name
-        pdfVC.transitioningDelegate = self
+        pdfVC.fileURL = fileItem.url
         
-        present(pdfVC, animated: true)
+        let navigationPDFController = UINavigationController(rootViewController: pdfVC)
+        navigationPDFController.transitioningDelegate = self
+        navigationPDFController.modalPresentationStyle = .fullScreen
+        
+        present(navigationPDFController, animated: true)
     }
     
     
@@ -468,25 +475,20 @@ class FolderViewController: UIViewController {
         videoViewController.player = player
         player.play()
         videoViewController.transitioningDelegate = self
+        
         present(videoViewController, animated: true)
     }
     
     private func showImageFile(fileItem: FileItem){
-        do{
-            let imageView = try UIImageView(image: UIImage(data: Data(contentsOf: fileItem.url)))
-            imageView.contentMode = .scaleAspectFit
-            let imageVC = UIViewController()
-            imageVC.view.backgroundColor = .black
-            imageVC.title = fileItem.name
-            imageView.frame = imageVC.view.frame
-            imageVC.view.addSubview(imageView)
-            imageVC.transitioningDelegate = self
+        let imageVC = ImageViewController()
+        imageVC.setImageDataByImageURL(fileItem.url)
+        imageVC.title = fileItem.name
         
-            present(imageVC, animated: true)
-        }catch{
-            
-        }
+        let navigationImageVC = UINavigationController(rootViewController: imageVC)
+        navigationImageVC.transitioningDelegate = self
+        navigationImageVC.modalPresentationStyle = .fullScreen
         
+        present(navigationImageVC, animated: true)
     }
     
     private func onDeleteFileClick(fileItem: FileItem){
@@ -497,6 +499,47 @@ class FolderViewController: UIViewController {
         let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
         present(emptyURLNotification, animated: true)
+    }
+    
+    private func showInputNewFileNameOfFile(_ fileItem: FileItem){
+        let alert = UIAlertController(
+            title: "Rename file",
+            message: nil,
+            preferredStyle: .alert
+        )
+        let fileNameWithoutExtension = URL(fileURLWithPath: fileItem.name).deletingPathExtension().lastPathComponent
+        alert.addTextField{ field in
+            field.placeholder = "example"
+            field.text = (fileNameWithoutExtension)
+            field.returnKeyType = .done
+            field.keyboardType = .default
+        }
+        // add action to alert
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1;
+        let renameAction = UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
+            if let fields = alert.textFields, fields.count == alertFieldCount {
+                if let self = self {
+                    if let newName = fields[0].text, !fields[0].text!.isEmpty {
+                        if(self.fileManager.isExitsFileName(newName, in: fileItem.url)){
+                            self.showErrorNotification(message: "File name is exist!")
+                        }else{
+                            if(self.fileManager.renameFile(of: fileItem, toNewName: newName)){
+                                self.reloadCollectionViewItem(of: fileItem)
+                            }else{
+                                self.showErrorNotification(message: "Rename fail!")
+                            }
+                        }
+                    }else{
+                        self.showErrorNotification(message: "File name can not place empty!")
+                    }
+                }
+            }
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(renameAction)
+        alert.preferredAction = renameAction
+        present(alert, animated: true)
     }
 }
 //MARK: - CONFIRM UI SEARCH BAR DELEGATE
@@ -532,8 +575,17 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let currentFileItem = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
-        onDetailFileClick(fileItem: currentFileItem)
+        currentSelectedFile = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
+        if let currentSelectedFile = currentSelectedFile{
+            onDetailFileClick(fileItem: currentSelectedFile)
+        }
+    }
+    
+    func reloadCollectionViewItem(of fileItem: FileItem){
+        if let itemPosition = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem){
+            let indexPath = IndexPath(item: itemPosition, section: 0)
+            self.fileCollectionView.reloadItems(at: [indexPath]
+        }
     }
     
     func reloadCollectionView(){
@@ -545,26 +597,30 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
 // MARK: - CONFIRM FileCellDelegate
 extension FolderViewController: FileCellDelegate{
     func menuActionClick(fileItem: FileItem) {
+        currentSelectedFile = fileItem
         showMenuActionOfFileItem(fileItem)
     }
 }
 // MARK: - CONRIRM UIViewControllerTransitioningDelegate
 extension FolderViewController: UIViewControllerTransitioningDelegate{
+    
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard
-            let selectedIndexPathCell = fileCollectionView.indexPathsForSelectedItems
+            let selectedFile  = currentSelectedFile,
+            let currentSelectedFileIndex = getAllFileMatchSearchSortAndFilter().firstIndex(of: selectedFile)
         else {
             return nil
         }
         let selectedCellSuperview: UIView
+        let currentSelectedFileIndexPath = IndexPath(row: currentSelectedFileIndex, section: 0)
         if(self.currentLayoutState == LayoutState.List){
-            let selectedItems = fileCollectionView.cellForItem(at: selectedIndexPathCell[0])
-                as? FileItemViewCellByList
+            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
+            as? FileItemViewCellByList
             selectedCellSuperview = selectedItems?.superview ?? UIView()
             transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
         }else{
-            let selectedItems = fileCollectionView.cellForItem(at: selectedIndexPathCell[0])
-                as? FileItemViewCellByIcon
+            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
+            as? FileItemViewCellByIcon
             selectedCellSuperview = selectedItems?.superview ?? UIView()
             transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
         }
@@ -580,7 +636,14 @@ extension FolderViewController: UIViewControllerTransitioningDelegate{
         
         return transition
     }
+    
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return nil
+        if(currentLayoutState == LayoutState.Grid){
+            transition.presenting = false
+            return transition
+        }else{
+            return nil
+        }
+        
     }
 }
