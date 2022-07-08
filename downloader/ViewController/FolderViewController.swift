@@ -584,7 +584,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func reloadCollectionViewItem(of fileItem: FileItem){
         if let itemPosition = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem){
             let indexPath = IndexPath(item: itemPosition, section: 0)
-            self.fileCollectionView.reloadItems(at: [indexPath]
+            self.fileCollectionView.reloadItems(at: [indexPath])
         }
     }
     
