@@ -33,8 +33,6 @@
     return self;
 }
 
-
-
 - (NSArray<FileItem*>*) getFileItems{
     return [NSArray arrayWithArray: self.allFileItems];
 }
@@ -65,8 +63,6 @@
     }
 }
 
-
-
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
     NSURL* currentWorkingPath = [url URLByDeletingLastPathComponent];
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
@@ -87,6 +83,30 @@
         return false;
     }
 }
+
+- (BOOL)removeFile:(FileItem *)fileItem{
+    NSError *error = nil;
+    [_fileManager removeItemAtURL:fileItem.url error:&error];
+    if(error){
+        return false;
+    }else{
+        [_allFileItems removeObject:fileItem];
+        return true;
+    }
+}
+
+- (void)removeTempFolder{
+    if(_allFileItems.count != 0){
+        NSURL* currentWorkingPath = [_allFileItems[0].url URLByDeletingLastPathComponent];
+        NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:currentWorkingPath includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+        for(NSURL* file in listFile){
+            if([file.lastPathComponent containsString:@"(A Document Being Saved By downloader"]){
+                [_fileManager removeItemAtURL:file error:nil];
+            }
+        }
+    }
+}
+
 
 - (void)decompressZipFile:(FileItem *)fileItem{
     NSURL* currentWorkingPath = [fileItem.url URLByDeletingLastPathComponent];

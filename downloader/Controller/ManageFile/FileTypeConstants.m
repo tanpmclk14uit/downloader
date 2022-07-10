@@ -21,7 +21,7 @@
     return [[FileTypeEnum alloc] initWithName:@"text" andExtension:@[@"html", @"txt", @"doc", @"docx", @"odt", @"rtf", @"wpd", @"tex"]];
 }
 + (FileTypeEnum *)image{
-    return [[FileTypeEnum alloc] initWithName:@"image" andExtension:@[@"jpeg",@"jpg",@"png",@"gif",@"tiff",@"psd",@"eps",@"ai",@"indd",@"raw"]];
+    return [[FileTypeEnum alloc] initWithName:@"image" andExtension:@[@"jpeg",@"jpg",@"png",@"gif",@"tiff",@"psd",@"eps",@"ai",@"indd",@"raw",@"webp"]];
 }
 + (FileTypeEnum *)zip{
     return [[FileTypeEnum alloc] initWithName:@"zip" andExtension:@[@"zip", @"7z", @"rar", @"zipx"]];

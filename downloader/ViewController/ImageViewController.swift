@@ -53,7 +53,11 @@ class ImageViewController: UIViewController {
     
     func setImageDataByImageURL(_ url: URL){
         do{
-            imageView.image = try UIImage(data: Data(contentsOf: url))
+            if(url.pathExtension == "gif"){
+                imageView.image = try UIImage.gifImageWithData(Data(contentsOf: url))
+            }else{
+                imageView.image = try UIImage(data: Data(contentsOf: url))
+            }
         }catch{
             imageView.isHidden = true
             view.addSubview(errorMessage)

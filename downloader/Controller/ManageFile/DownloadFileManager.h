@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) decompressZipFile: (FileItem*) fileItem;
 - (BOOL) isExitsFileName: (NSString*) fileName inURL: (NSURL*) url;
 - (BOOL) renameFileOf: (FileItem*) fileItem toNewName: (NSString*) newName;
+- (BOOL) removeFile: (FileItem*) fileItem;
+- (void) removeTempFolder;
 @end
 
 NS_ASSUME_NONNULL_END

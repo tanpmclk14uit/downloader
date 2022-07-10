@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import AVFoundation
 import WebKit
+import QuickLook
 
 class FolderViewController: UIViewController {
     // MARK: - CONFIG UI
@@ -70,6 +71,15 @@ class FolderViewController: UIViewController {
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
         return button
+    }()
+    
+    lazy var qlPreviewController: QLPreviewController = {
+        let qlPreviewController = QLPreviewController()
+        qlPreviewController.dataSource = self
+        qlPreviewController.delegate = self
+        qlPreviewController.modalPresentationStyle = .fullScreen
+        qlPreviewController.transitioningDelegate = self
+        return qlPreviewController
     }()
     
     lazy var buttonViewType: UIButton = {
@@ -450,12 +460,38 @@ class FolderViewController: UIViewController {
         case FileTypeConstants.image().name:
             showImageFile(fileItem: fileItem)
             break
-            
+        case FileTypeConstants.text().name:
+            showPDFFile(fileItem: fileItem)
+            break
         default:
             showErrorNotification(message: "This file format is not supported!")
             break
         }
     }
+    
+    private func onDeleteFileClick(fileItem: FileItem){
+        showDeleteConfirmAlert(fileItem: fileItem)
+    }
+    
+    private func showDeleteConfirmAlert(fileItem: FileItem){
+        let alert = UIAlertController(
+            title: nil,
+            message: "Ensure to delete this file?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            if let self = self{
+                if(self.fileManager.removeFile(fileItem)){
+                    self.reloadCollectionView()
+                }else{
+                    self.showErrorNotification(message: "Can not delete this file!")
+                }
+            }
+        }))
+        present(alert, animated: true)
+    }
+    
     private func showPDFFile(fileItem: FileItem){
         let pdfVC = PDFViewController()
         pdfVC.title = fileItem.name
@@ -467,7 +503,6 @@ class FolderViewController: UIViewController {
         
         present(navigationPDFController, animated: true)
     }
-    
     
     private func showVideoFile(fileItem: FileItem){
         let player = AVPlayer(url: fileItem.url)
@@ -489,10 +524,6 @@ class FolderViewController: UIViewController {
         navigationImageVC.modalPresentationStyle = .fullScreen
         
         present(navigationImageVC, animated: true)
-    }
-    
-    private func onDeleteFileClick(fileItem: FileItem){
-        
     }
     
     private func showErrorNotification(message: String){
@@ -575,10 +606,14 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        currentSelectedFile = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
-        if let currentSelectedFile = currentSelectedFile{
-            onDetailFileClick(fileItem: currentSelectedFile)
-        }
+//        currentSelectedFile = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
+//        if let currentSelectedFile = currentSelectedFile{
+//            onDetailFileClick(fileItem: currentSelectedFile)
+//        }
+//
+        
+        qlPreviewController.currentPreviewItemIndex = indexPath.row
+        present(qlPreviewController, animated: true)
     }
     
     func reloadCollectionViewItem(of fileItem: FileItem){
@@ -646,4 +681,25 @@ extension FolderViewController: UIViewControllerTransitioningDelegate{
         }
         
     }
+}
+//MARK: - COMFRIM QLPreviewDataSource, QLPreviewDelegate
+extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControllerDelegate{
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return getAllFileMatchSearchSortAndFilter().count
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return getAllFileMatchSearchSortAndFilter()[index].url as QLPreviewItem
+    }
+    
+    func previewControllerWillDismiss(_ controller: QLPreviewController) {
+        // remove temp folder
+        self.fileManager.removeTempFolder()
+    }
+    
+    func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
+        return nil
+    }
+
+    
 }
