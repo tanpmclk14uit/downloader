@@ -62,9 +62,8 @@
 }
 
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
-    NSURL* currentWorkingPath = [url URLByDeletingLastPathComponent];
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
-    NSURL* destinationURL = [currentWorkingPath URLByAppendingPathComponent: destinationFileName];
+    NSURL* destinationURL = [_currentFolderDirectory URLByAppendingPathComponent: destinationFileName];
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 

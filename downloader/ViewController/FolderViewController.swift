@@ -482,7 +482,9 @@ class FolderViewController: UIViewController {
                             self.showErrorNotification(message: "Folder name is exist!")
                         }else{
                             if(self.fileManager.createNewFolder(folderName)){
-                                
+                                self.fileManager.fetchAllFileOfDownloadFolder {
+                                    self.reloadCollectionView()
+                                }
                             }else{
                                 self.showErrorNotification(message: "Create folder fail!")
                             }
