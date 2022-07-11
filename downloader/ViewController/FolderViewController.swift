@@ -276,6 +276,7 @@ class FolderViewController: UIViewController {
         buttonSort.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
         buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
+        buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -337,7 +338,7 @@ class FolderViewController: UIViewController {
             reloadCollectionView()
         }
     }
-    
+
     private func getAllFileMatchSearchSortAndFilter()-> [FileItem]{
         // get all original list
         var fileItems = fileManager.getFileItems()
@@ -461,9 +462,47 @@ class FolderViewController: UIViewController {
         showDeleteConfirmAlert(fileItem: fileItem)
     }
     
+    @objc private func showCreateFolderAlert(){
+        let alert = UIAlertController(
+            title: "Create folder", message: "Please enter folder name", preferredStyle: .alert
+        )
+        alert.addTextField{ field in
+            field.placeholder = "example"
+            field.returnKeyType = .done
+            field.keyboardType = .default
+        }
+        // add action to alert
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1;
+        let renameAction = UIAlertAction(title: "Create", style: .default, handler: { [weak self] _ in
+            if let fields = alert.textFields, fields.count == alertFieldCount {
+                if let self = self {
+                    if let folderName = fields[0].text, !fields[0].text!.isEmpty {
+                        if(self.fileManager.isExitsFileName(folderName, in: self.fileManager.currentFolderDirectory)){
+                            self.showErrorNotification(message: "Folder name is exist!")
+                        }else{
+                            if(self.fileManager.createNewFolder(folderName)){
+                                
+                            }else{
+                                self.showErrorNotification(message: "Create folder fail!")
+                            }
+                        }
+                    }else{
+                        self.showErrorNotification(message: "Folder name can not place empty!")
+                    }
+                }
+            }
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(renameAction)
+        alert.preferredAction = renameAction
+        
+        present(alert, animated: true)
+    }
+    
     private func showDeleteConfirmAlert(fileItem: FileItem){
         let alert = UIAlertController(
-            title: nil,
+            title: "Delete",
             message: "Ensure to delete this file?",
             preferredStyle: .alert
         )
@@ -611,8 +650,6 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
                 return cell.fileIcon
             }
         }
-        
-        
         return nil
     }
     
@@ -621,3 +658,4 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
         .updateContents
     }
 }
+

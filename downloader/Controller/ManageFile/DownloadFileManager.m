@@ -29,6 +29,7 @@
     if(self){
         self.allFileItems = [[NSMutableArray alloc] init];
         self.fileManager = [NSFileManager defaultManager];
+        self.currentFolderDirectory = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil];
     }
     return self;
 }
@@ -38,31 +39,26 @@
 }
 
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler:(void (^)(void))completionHandler{
-    NSError* error = nil;
-    NSURL* downloadsURL = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
-    if(error){
-        NSLog(@"%@", @"Error");
-    }else{
-        [self.allFileItems removeAllObjects];
-        NSArray<NSURL*> *listFile = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:downloadsURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
-        for(NSURL* file in listFile){
-            if(![self isTempFile:file]){
-                NSError* attributeError = nil;
-                NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
-                if(error){
-                    NSLog(@"%@", @"Get attribute error");
-                }else{
-                    NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-                    NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
-                    FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
-                    NSString* fileName = [file lastPathComponent];
-                    FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
-                    [self.allFileItems addObject:fileItem];
-                }
+    
+    [self.allFileItems removeAllObjects];
+    NSArray<NSURL*> *listFile = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:_currentFolderDirectory includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    for(NSURL* file in listFile){
+        if(![self isTempFile:file]){
+            NSError* attributeError = nil;
+            NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
+            if(attributeError){
+                NSLog(@"%@", @"Get attribute error");
+            }else{
+                NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+                NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
+                FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
+                NSString* fileName = [file lastPathComponent];
+                FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
+                [self.allFileItems addObject:fileItem];
             }
         }
-        completionHandler();
     }
+    completionHandler();
 }
 
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
@@ -150,5 +146,9 @@
     return FileTypeConstants.unknown;
 }
 
+- (BOOL)createNewFolder:(NSString *)folderName{
+    NSURL* directoryPath = [_currentFolderDirectory URLByAppendingPathComponent:folderName];
+    return [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil];
+}
 
 @end
