@@ -293,10 +293,6 @@ class FolderViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        self.qlPreviewController.reloadData()
-    }
-    
     private func onViewByChange(newLayoutState: LayoutState){
         let transitionManager: TransitionManager
         if(newLayoutState != currentLayoutState){
@@ -605,11 +601,6 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
         return getAllFileMatchSearchSortAndFilter()[index].url as QLPreviewItem
     }
     
-    func previewControllerWillDismiss(_ controller: QLPreviewController) {
-        // remove temp folder
-        self.fileManager.removeTempFolder()
-    }
-    
     func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
         if let indexPath = currentSelectedFilePath{
             if(currentLayoutState == LayoutState.Grid){
@@ -623,5 +614,10 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
         
         
         return nil
+    }
+    
+    @available(iOS 13.0, *)
+    func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
+        .updateContents
     }
 }

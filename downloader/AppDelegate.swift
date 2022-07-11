@@ -58,6 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         while(DownloadManager.sharedInstance().pauseAllDownloadingProcessComplete() == false){}
         let downloadItems = DownloadManager.sharedInstance().getAllDownloadItems()
         DownloadItemPersistenceManager.sharedInstance().saveAllDownloadItems(downloadItems )
+        DownloadFileManager.sharedInstance().removeTempFolder()
     }
 }
 

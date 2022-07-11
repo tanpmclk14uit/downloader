@@ -46,7 +46,7 @@
         [self.allFileItems removeAllObjects];
         NSArray<NSURL*> *listFile = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:downloadsURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
         for(NSURL* file in listFile){
-            if(![file.lastPathComponent containsString:@"(A Document Being Saved By"]){
+            if(![self isTempFile:file]){
                 NSError* attributeError = nil;
                 NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
                 if(error){
@@ -102,11 +102,20 @@
         NSURL* currentWorkingPath = [_allFileItems[0].url URLByDeletingLastPathComponent];
         NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:currentWorkingPath includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
         for(NSURL* file in listFile){
-            if([file.lastPathComponent containsString:@"(A Document Being Saved By downloader"]){
+            if([self isTempFile:file]){
                 [_fileManager removeItemAtURL:file error:nil];
             }
         }
     }
+}
+
+- (BOOL) isTempFile: (NSURL*)file{
+    NSString* downloaderTempFilePath = @"(A Document Being Saved By downloader";
+    NSString* archieveTempFilePath = @"(A Document Being Saved By ArchiveService";
+    NSString* quickLookTempFilePath = @"com.apple.quicklook.extension.previewUI";
+    return [file.lastPathComponent containsString: downloaderTempFilePath] ||
+    [file.lastPathComponent containsString:archieveTempFilePath] ||
+    [file.lastPathComponent containsString:quickLookTempFilePath];
 }
 
 
