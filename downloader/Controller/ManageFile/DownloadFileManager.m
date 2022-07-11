@@ -46,17 +46,19 @@
         [self.allFileItems removeAllObjects];
         NSArray<NSURL*> *listFile = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:downloadsURL includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
         for(NSURL* file in listFile){
-            NSError* attributeError = nil;
-            NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
-            if(error){
-                NSLog(@"%@", @"Get attribute error");
-            }else{
-                NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-                NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
-                FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
-                NSString* fileName = [file lastPathComponent];
-                FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
-                [self.allFileItems addObject:fileItem];
+            if(![file.lastPathComponent containsString:@"(A Document Being Saved By"]){
+                NSError* attributeError = nil;
+                NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
+                if(error){
+                    NSLog(@"%@", @"Get attribute error");
+                }else{
+                    NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+                    NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
+                    FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
+                    NSString* fileName = [file lastPathComponent];
+                    FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
+                    [self.allFileItems addObject:fileItem];
+                }
             }
         }
         completionHandler();

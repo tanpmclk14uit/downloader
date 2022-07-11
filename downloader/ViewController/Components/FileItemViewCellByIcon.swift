@@ -10,7 +10,7 @@ import QuickLook
 
 class FileItemViewCellByIcon: UICollectionViewCell {
     //MARK: - CONFIG UI VIEW
-    private lazy var thumbnail: UIImageView = {
+    lazy var thumbnail: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit

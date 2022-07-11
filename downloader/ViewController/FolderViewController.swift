@@ -78,7 +78,6 @@ class FolderViewController: UIViewController {
         qlPreviewController.dataSource = self
         qlPreviewController.delegate = self
         qlPreviewController.modalPresentationStyle = .fullScreen
-        qlPreviewController.transitioningDelegate = self
         return qlPreviewController
     }()
     
@@ -256,7 +255,7 @@ class FolderViewController: UIViewController {
     private var sortBy: BasicSort = BasicSort.Date
     private var sortDiv: SortDIV = SortDIV.Asc
     private var filterBy: FilterByFileType = FilterByFileType.All
-    private var currentSelectedFile: FileItem?
+    private var currentSelectedFilePath: IndexPath?
     private var transition = PopAnimator()
     
     
@@ -287,10 +286,15 @@ class FolderViewController: UIViewController {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             self?.fileManager.fetchAllFileOfDownloadFolder {
                 DispatchQueue.main.async {
-                    self?.reloadCollectionView()
+                    self?.fileCollectionView.reloadData()
+                    self?.setUpEmptyListMessage()
                 }
             }
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.qlPreviewController.reloadData()
     }
     
     private func onViewByChange(newLayoutState: LayoutState){
@@ -447,25 +451,13 @@ class FolderViewController: UIViewController {
     }
     
     private func onDetailFileClick(fileItem: FileItem){
-        switch(fileItem.type.name){
-        case FileTypeConstants.pdf().name:
-            showPDFFile(fileItem: fileItem)
-            break
-        case FileTypeConstants.video().name:
-            showVideoFile(fileItem: fileItem)
-            break
-        case FileTypeConstants.audio().name:
-            showVideoFile(fileItem: fileItem)
-            break
-        case FileTypeConstants.image().name:
-            showImageFile(fileItem: fileItem)
-            break
-        case FileTypeConstants.text().name:
-            showPDFFile(fileItem: fileItem)
-            break
-        default:
-            showErrorNotification(message: "This file format is not supported!")
-            break
+        if(fileItem.type.name == FileTypeConstants.unknown().name){
+            showErrorNotification(message: "This file type is not supported!")
+        }else{
+            if let indexPath = currentSelectedFilePath {
+                qlPreviewController.currentPreviewItemIndex = indexPath.item
+                present(qlPreviewController, animated: true)
+            }
         }
     }
     
@@ -490,40 +482,6 @@ class FolderViewController: UIViewController {
             }
         }))
         present(alert, animated: true)
-    }
-    
-    private func showPDFFile(fileItem: FileItem){
-        let pdfVC = PDFViewController()
-        pdfVC.title = fileItem.name
-        pdfVC.fileURL = fileItem.url
-        
-        let navigationPDFController = UINavigationController(rootViewController: pdfVC)
-        navigationPDFController.transitioningDelegate = self
-        navigationPDFController.modalPresentationStyle = .fullScreen
-        
-        present(navigationPDFController, animated: true)
-    }
-    
-    private func showVideoFile(fileItem: FileItem){
-        let player = AVPlayer(url: fileItem.url)
-        let videoViewController = AVPlayerViewController()
-        videoViewController.player = player
-        player.play()
-        videoViewController.transitioningDelegate = self
-        
-        present(videoViewController, animated: true)
-    }
-    
-    private func showImageFile(fileItem: FileItem){
-        let imageVC = ImageViewController()
-        imageVC.setImageDataByImageURL(fileItem.url)
-        imageVC.title = fileItem.name
-        
-        let navigationImageVC = UINavigationController(rootViewController: imageVC)
-        navigationImageVC.transitioningDelegate = self
-        navigationImageVC.modalPresentationStyle = .fullScreen
-        
-        present(navigationImageVC, animated: true)
     }
     
     private func showErrorNotification(message: String){
@@ -606,13 +564,8 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        currentSelectedFile = self.getAllFileMatchSearchSortAndFilter()[indexPath.row]
-//        if let currentSelectedFile = currentSelectedFile{
-//            onDetailFileClick(fileItem: currentSelectedFile)
-//        }
-//
-        
-        qlPreviewController.currentPreviewItemIndex = indexPath.row
+        currentSelectedFilePath = indexPath
+        qlPreviewController.currentPreviewItemIndex = indexPath.item
         present(qlPreviewController, animated: true)
     }
     
@@ -626,62 +579,22 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func reloadCollectionView(){
         self.fileCollectionView.reloadData()
         setUpEmptyListMessage()
+        self.qlPreviewController.reloadData()
     }
 }
 
 // MARK: - CONFIRM FileCellDelegate
 extension FolderViewController: FileCellDelegate{
     func menuActionClick(fileItem: FileItem) {
-        currentSelectedFile = fileItem
+        let position = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem)
+        if let index = position{
+            let indexPath = IndexPath(item: index, section: 0)
+            currentSelectedFilePath = indexPath
+        }
         showMenuActionOfFileItem(fileItem)
     }
 }
-// MARK: - CONRIRM UIViewControllerTransitioningDelegate
-extension FolderViewController: UIViewControllerTransitioningDelegate{
-    
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard
-            let selectedFile  = currentSelectedFile,
-            let currentSelectedFileIndex = getAllFileMatchSearchSortAndFilter().firstIndex(of: selectedFile)
-        else {
-            return nil
-        }
-        let selectedCellSuperview: UIView
-        let currentSelectedFileIndexPath = IndexPath(row: currentSelectedFileIndex, section: 0)
-        if(self.currentLayoutState == LayoutState.List){
-            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
-            as? FileItemViewCellByList
-            selectedCellSuperview = selectedItems?.superview ?? UIView()
-            transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
-        }else{
-            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
-            as? FileItemViewCellByIcon
-            selectedCellSuperview = selectedItems?.superview ?? UIView()
-            transition.originFrame = selectedCellSuperview.convert(selectedItems!.frame, to: nil)
-        }
-        
-        transition.originFrame = CGRect(
-            x: transition.originFrame.origin.x + 20,
-            y: transition.originFrame.origin.y + 20,
-            width: transition.originFrame.size.width - 40,
-            height: transition.originFrame.size.height - 40
-        )
-        
-        transition.presenting = true
-        
-        return transition
-    }
-    
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if(currentLayoutState == LayoutState.Grid){
-            transition.presenting = false
-            return transition
-        }else{
-            return nil
-        }
-        
-    }
-}
+
 //MARK: - COMFRIM QLPreviewDataSource, QLPreviewDelegate
 extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControllerDelegate{
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
@@ -698,8 +611,17 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     }
     
     func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
+        if let indexPath = currentSelectedFilePath{
+            if(currentLayoutState == LayoutState.Grid){
+                let cell = self.fileCollectionView.cellForItem(at: indexPath) as! FileItemViewCellByIcon
+                return cell.thumbnail
+            }else{
+                let cell = self.fileCollectionView.cellForItem(at: indexPath) as! FileItemViewCellByList
+                return cell.fileIcon
+            }
+        }
+        
+        
         return nil
     }
-
-    
 }
