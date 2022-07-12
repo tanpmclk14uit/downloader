@@ -16,6 +16,7 @@
         self.createdDate = createdDate;
         self.type = type;
         self.url = url;
+        self.isDir = false;
     }
     return self;
 }

@@ -137,7 +137,7 @@ class FileItemViewCellByList: UICollectionViewCell {
             delegate?.menuActionClick(fileItem: fileItem)
         }
     }
-     
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -145,9 +145,15 @@ class FileItemViewCellByList: UICollectionViewCell {
     func setCellData(fileItem: FileItem){
         self.fileItem = fileItem
         self.fileName.text = fileItem.name
-        self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
+        if(fileItem.isDir){
+            self.fileSize.text = "\(fileItem.size) item(s)"
+        }else{
+            self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
+        }
+        
         self.fileDate.text = TimeSizeUnits(seconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
         generateThumbnailRepresentations(url: fileItem.url)
+        
     }
     
     func generateThumbnailRepresentations(url: URL) {
@@ -163,12 +169,18 @@ class FileItemViewCellByList: UICollectionViewCell {
                                                        representationTypes: .all)
             // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
             let generator = QLThumbnailGenerator.shared
-            generator.generateRepresentations(for: request) { (thumbnail, type, error) in
+            generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
                 DispatchQueue.main.async {
                     if thumbnail == nil || error != nil {
-                        // Handle the error case gracefully.
+                        if let fileItem = self?.fileItem {
+                            if(fileItem.isDir){
+                                self?.fileIcon.image = UIImage(named: "folder-image")
+                            }else{
+                                self?.fileIcon.image = UIImage(named: "file")
+                            }
+                        }
                     } else {
-                        self.fileIcon.image = thumbnail?.uiImage
+                        self?.fileIcon.image = thumbnail?.uiImage
                     }
                 }
             }

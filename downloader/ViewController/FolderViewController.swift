@@ -211,6 +211,33 @@ class FolderViewController: UIViewController {
         return alert
     }()
     
+    lazy var backButton: UIButton = {
+        let backButton = UIButton(type: .system)
+        backButton.setImage(UIImage(named: "back"), for: .normal)
+        backButton.widthAnchor.constraint(equalToConstant: Dimen.normalButtonWidth).isActive = true
+        backButton.contentHorizontalAlignment = .left
+        return backButton
+    }()
+    
+    lazy var contextParentsFolderMenu: ContentSizedTableView = {
+        let tableView = ContentSizedTableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.layer.cornerRadius = 10
+        tableView.sizeToFit()
+        tableView.register(ContextMenuCell.self, forCellReuseIdentifier: ContextMenuCell.identifier)
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.singleLine
+        return tableView
+    }()
+    
+    lazy var transparentBackground: UIView = {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = UIColor(white: 0.6, alpha: 0.1)
+        return container
+    }()
+    
     //MARK: - CONFIG UI CONSTRAINT
     private func configSearchBarConstraint(){
         if #available(iOS 11.0, *) {
@@ -247,6 +274,25 @@ class FolderViewController: UIViewController {
         }
     }
     
+    private func configTransparentBackgroundConstraint(){
+        transparentBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        transparentBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        transparentBackground.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        transparentBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    private func configParentsFolderContextMenuConstraint(){
+        contextParentsFolderMenu.topAnchor.constraint(equalTo: (navigationController?.navigationBar.bottomAnchor)! , constant: Dimen.screenDefaultMargin.top).isActive = true
+        if #available(iOS 11.0, *) {
+            contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
+        } else {
+            contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        }
+        let halfViewFrameWidth = view.frame.width/2
+        let width = (halfViewFrameWidth > Dimen.menuMaxWidth) ? Dimen.menuMaxWidth : halfViewFrameWidth
+        contextParentsFolderMenu.widthAnchor.constraint(equalToConstant: width).isActive = true
+    }
+    
     // MARK: - CONTROLLER SETUP
     
     private var currentLayoutState: LayoutState = LayoutState.List
@@ -259,15 +305,18 @@ class FolderViewController: UIViewController {
     private var transition = PopAnimator()
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         // add title view
+        titleName.text = fileManager.folderName
         navigationItem.titleView = titleName
         // add search view
         view.addSubview(searchBar)
         view.addSubview(toolBar)
         view.addSubview(fileCollectionView)
+        setHeader()
         setIconOfSortButton()
         configSearchBarConstraint()
         configToolbarConstraint()
@@ -275,42 +324,53 @@ class FolderViewController: UIViewController {
         
         buttonSort.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
-        buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
+        buttonFilter.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onCancelContextMenu))
+        transparentBackground.addGestureRecognizer(tapGesture)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             self?.fileManager.fetchAllFileOfDownloadFolder {
                 DispatchQueue.main.async {
-                    self?.fileCollectionView.reloadData()
-                    self?.setUpEmptyListMessage()
+                    self?.reloadCollectionView()
                 }
             }
         }
     }
     
-    private func onViewByChange(newLayoutState: LayoutState){
-        let transitionManager: TransitionManager
-        if(newLayoutState != currentLayoutState){
-            if(newLayoutState == LayoutState.List){
-                buttonViewType.setImage(UIImage(named: "row"), for: .normal)
-                fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
-                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: listLayout)
-            }else{
-                buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
-                fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
-                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
-            }
-            currentLayoutState = newLayoutState
-            transitionManager.startInteractiveTransition()
-            reloadCollectionView()
+    private func setHeader(){
+        if(fileManager.isRootDirectory){
+            navigationItem.leftBarButtonItem = nil
+        }else{
+            backButton.setTitle(fileManager.directParentFolderName, for: .normal)
+            
+            backButton.addTarget(self, action: #selector(onBackButtonClick), for: .touchUpInside)
+            let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(onBackButtonLongClick))
+            
+            backButton.addGestureRecognizer(longPressGesture)
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         }
     }
+    
+    private func setEmptyListMessage(){
+        if(getAllFileMatchSearchSortAndFilter().isEmpty){
+            if(filterBy == FilterByFileType.All){
+                emptyMessage.text = "Your folder is empty!"
+            }else{
+                emptyMessage.text = "Filter result is empty\nplease choose other type!"
+            }
+        }else{
+            emptyMessage.text = nil
+        }
+    }
+    
     
     private func setIconOfSortButton(){
         if(sortDiv == SortDIV.Asc){
@@ -320,24 +380,7 @@ class FolderViewController: UIViewController {
         }
     }
     
-    private func onSortChange(newSortBy: BasicSort){
-        if(sortBy == newSortBy){
-            sortDiv.reverse()
-            setIconOfSortButton()
-        }else{
-            sortBy = newSortBy
-            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
-        }
-        reloadCollectionView()
-    }
     
-    private func onFilterChange(newFilter: FilterByFileType){
-        if(newFilter != filterBy){
-            buttonFilter.setTitle("\(newFilter)", for: .normal)
-            filterBy = newFilter
-            reloadCollectionView()
-        }
-    }
 
     private func getAllFileMatchSearchSortAndFilter()-> [FileItem]{
         // get all original list
@@ -381,53 +424,69 @@ class FolderViewController: UIViewController {
         }
     }
     
-    private func setUpEmptyListMessage(){
-        if(getAllFileMatchSearchSortAndFilter().isEmpty){
-            if(filterBy == FilterByFileType.All){
-                emptyMessage.text = "Your folder is empty!"
-            }else{
-                emptyMessage.text = "Filter result is empty\nplease choose other type!"
-            }
-        }else{
-            emptyMessage.text = nil
+    @objc private func onBackButtonClick(){
+        fileManager.backToParentDirectory()
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func onBackButtonLongClick(sender: UILongPressGestureRecognizer){
+        if(sender.state == UIGestureRecognizer.State.ended){
+            
+            view.addSubview(transparentBackground)
+            configTransparentBackgroundConstraint()
+            
+            view.addSubview(contextParentsFolderMenu)
+            configParentsFolderContextMenuConstraint()
         }
     }
     
-    private func showMenuActionOfFileItem(_ fileItem: FileItem){
-        let alert = UIAlertController(
-            title: "\(fileItem.name)", message: nil, preferredStyle: .actionSheet
-        )
-        alert.addAction(UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
-            self?.onRenameFileClick(fileItem: fileItem)
-        }))
-        alert.addAction(UIAlertAction(title: "Move", style: .default, handler: { [weak self] _ in
-            self?.onMoveFileClick(fileItem: fileItem)
-        }))
-        alert.addAction(UIAlertAction(title: "Copy", style: .default, handler: { [weak self] _ in
-            self?.onCopyFileClick(fileItem: fileItem)
-        }))
-        if(fileItem.type.name == FileTypeConstants.zip().name){
-            alert.addAction(UIAlertAction(title: "Decompress", style: .default, handler: { [weak self] _ in
-                self?.onDetailFileClick(fileItem: fileItem)
-            }))
-        }else{
-            alert.addAction(UIAlertAction(title: "Detail", style: .default, handler: { [weak self] _ in
-                self?.onDetailFileClick(fileItem: fileItem)
-            }))
+    @objc private func onCancelContextMenu(){
+        transparentBackground.removeFromSuperview()
+        contextParentsFolderMenu.removeFromSuperview()
+    }
+    
+    private func onViewByChange(newLayoutState: LayoutState){
+        let transitionManager: TransitionManager
+        if(newLayoutState != currentLayoutState){
+            if(newLayoutState == LayoutState.List){
+                buttonViewType.setImage(UIImage(named: "row"), for: .normal)
+                fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
+                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: listLayout)
+            }else{
+                buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
+                fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
+                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
+            }
+            currentLayoutState = newLayoutState
+            transitionManager.startInteractiveTransition()
+            reloadCollectionView()
         }
-        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
-            self?.onDeleteFileClick(fileItem: fileItem)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        present(alert, animated: true)
+    }
+    
+    private func onSortChange(newSortBy: BasicSort){
+        if(sortBy == newSortBy){
+            sortDiv.reverse()
+            setIconOfSortButton()
+        }else{
+            sortBy = newSortBy
+            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
+        }
+        reloadCollectionView()
+    }
+    
+    private func onFilterChange(newFilter: FilterByFileType){
+        if(newFilter != filterBy){
+            buttonFilter.setTitle("\(newFilter)", for: .normal)
+            filterBy = newFilter
+            reloadCollectionView()
+        }
     }
     
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
     }
     
-    @objc func filterButtonClick(){
+    @objc func onFilterClick(){
         present(filterBySelectionAlert, animated: true)
     }
     
@@ -447,12 +506,25 @@ class FolderViewController: UIViewController {
         
     }
     
+    private func onPasteFileClick(fileItem: FileItem){
+        
+    }
+    
+    private func onDecompressFileClick(fileItem: FileItem){
+        
+    }
+    
     private func onDetailFileClick(fileItem: FileItem){
-        if(fileItem.type.name == FileTypeConstants.unknown().name){
-            showErrorNotification(message: "This file type is not supported!")
+        if(fileItem.isDir){
+            let folderVC = FolderViewController()
+            fileManager.navigate(toDirectory: fileItem.url)
+            
+            navigationController?.pushViewController(folderVC, animated: true)
         }else{
-            if let indexPath = currentSelectedFilePath {
-                qlPreviewController.currentPreviewItemIndex = indexPath.item
+            if(fileItem.type.name == FileTypeConstants.unknown().name){
+                showErrorNotification(message: "This file type is not supported!")
+            }else{
+                qlPreviewController.reloadData()
                 present(qlPreviewController, animated: true)
             }
         }
@@ -460,6 +532,40 @@ class FolderViewController: UIViewController {
     
     private func onDeleteFileClick(fileItem: FileItem){
         showDeleteConfirmAlert(fileItem: fileItem)
+    }
+    
+    private func showMenuActionOfFileItem(_ fileItem: FileItem){
+        let alert = UIAlertController(
+            title: "\(fileItem.name)", message: nil, preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
+            self?.onRenameFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Move", style: .default, handler: { [weak self] _ in
+            self?.onMoveFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Copy", style: .default, handler: { [weak self] _ in
+            self?.onCopyFileClick(fileItem: fileItem)
+        }))
+        if(fileItem.isDir){
+            alert.addAction(UIAlertAction(title: "Paste", style: .default, handler: { [weak self] _ in
+                self?.onPasteFileClick(fileItem: fileItem)
+            }))
+        }
+        if(fileItem.type.name == FileTypeConstants.zip().name){
+            alert.addAction(UIAlertAction(title: "Decompress", style: .default, handler: { [weak self] _ in
+                self?.onDecompressFileClick(fileItem: fileItem)
+            }))
+        }
+        alert.addAction(UIAlertAction(title: "Detail", style: .default, handler: { [weak self] _ in
+            self?.onDetailFileClick(fileItem: fileItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            self?.onDeleteFileClick(fileItem: fileItem)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
     
     @objc private func showCreateFolderAlert(){
@@ -602,8 +708,8 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentSelectedFilePath = indexPath
-        qlPreviewController.currentPreviewItemIndex = indexPath.item
-        present(qlPreviewController, animated: true)
+        let currentSelectedItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
+        onDetailFileClick(fileItem: currentSelectedItem)
     }
     
     func reloadCollectionViewItem(of fileItem: FileItem){
@@ -615,8 +721,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func reloadCollectionView(){
         self.fileCollectionView.reloadData()
-        setUpEmptyListMessage()
-        self.qlPreviewController.reloadData()
+        setEmptyListMessage()
     }
 }
 
@@ -635,10 +740,13 @@ extension FolderViewController: FileCellDelegate{
 //MARK: - COMFRIM QLPreviewDataSource, QLPreviewDelegate
 extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControllerDelegate{
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-        return getAllFileMatchSearchSortAndFilter().count
+        return 1
     }
     
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        if let path = currentSelectedFilePath{
+            return getAllFileMatchSearchSortAndFilter()[path.item].url as QLPreviewItem
+        }
         return getAllFileMatchSearchSortAndFilter()[index].url as QLPreviewItem
     }
     
@@ -658,6 +766,31 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     @available(iOS 13.0, *)
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
         .updateContents
+    }
+}
+//MARK: - CONFIRM Table View
+extension FolderViewController: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return fileManager.parentDirectories.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: ContextMenuCell.identifier) as! ContextMenuCell
+        let currentDirectory = fileManager.parentDirectories.object(at: indexPath.row) as! URL
+        cell.setTitle(title: currentDirectory.lastPathComponent)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(indexPath.row < navigationController?.viewControllers.count ?? 0){
+            let targetController = (navigationController?.viewControllers[indexPath.row])
+            if let targetController = targetController{
+                let targetDirectory = fileManager.parentDirectories[indexPath.row] as! URL
+                fileManager.back(toSelectedParentDirectory: targetDirectory)
+                navigationController?.popToViewController(targetController, animated: true)
+            }
+        }
     }
 }
 

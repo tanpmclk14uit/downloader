@@ -137,9 +137,14 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     func setCellData(fileItem: FileItem){
         self.fileItem = fileItem
         self.fileName.text = fileItem.name
-        self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
+        if(fileItem.isDir){
+            self.fileSize.text = "\(fileItem.size) item(s)"
+            self.fileTypeIcon.image = UIImage(named: "folder-image")
+        }else{
+            self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
+            drawIconFromFileType(fileType: fileItem.type)
+        }
         generateThumbnailRepresentations(url: fileItem.url)
-        drawIconFromFileType(fileType: fileItem.type)
     }
     
     func generateThumbnailRepresentations(url: URL) {
@@ -155,12 +160,18 @@ class FileItemViewCellByIcon: UICollectionViewCell {
                                                        representationTypes: .all)
             // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
             let generator = QLThumbnailGenerator.shared
-            generator.generateRepresentations(for: request) { (thumbnail, type, error) in
+            generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
                 DispatchQueue.main.async {
                     if thumbnail == nil || error != nil {
-                        // Handle the error case gracefully.
+                        if let fileItem = self?.fileItem {
+                            if(fileItem.isDir){
+                                self?.thumbnail.image = UIImage(named: "folder-image")
+                            }else{
+                                self?.thumbnail.image = UIImage(named: "file")
+                            }
+                        }
                     } else {
-                        self.thumbnail.image = thumbnail?.uiImage
+                        self?.thumbnail.image = thumbnail?.uiImage
                     }
                 }
             }

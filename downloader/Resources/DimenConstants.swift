@@ -19,6 +19,7 @@ class Dimen {
     // button icon size
     public static let buttonIconWidth: CGFloat = 24;
     public static let buttonIconHeight: CGFloat = 24;
+    public static let normalButtonWidth: CGFloat = 80;
     // image size
     public static let imageIconWidth: CGFloat = 50;
     public static let imageIconHeight: CGFloat = 50;
@@ -35,6 +36,8 @@ class Dimen {
         let temp: String = "temp"
         return temp.height(withConstrainedWidth: CGFloat.infinity, font: font)
     }
+    // menu max width
+    public static let menuMaxWidth: CGFloat = 250.0
 }
 
 extension String {

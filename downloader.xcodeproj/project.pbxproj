@@ -22,6 +22,8 @@
 		474CCDA02878338600F940FF /* GifImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474CCD9F2878338600F940FF /* GifImage.swift */; };
 		475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */; };
 		475FED96287443020007838F /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED95287443020007838F /* TransitionManager.swift */; };
+		477D34B6287D765100D3FCBD /* ContentSizedTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */; };
+		477D34B8287D7E9D00D3FCBD /* ContextMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */; };
 		479B293E286EDE2900854350 /* FileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B293D286EDE2900854350 /* FileItem.m */; };
 		479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B2941286EE8DD00854350 /* DownloadFileManager.m */; };
 		479B2944286F066100854350 /* TimeSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479B2943286F066100854350 /* TimeSizeUnits.swift */; };
@@ -77,6 +79,8 @@
 		474CCD9F2878338600F940FF /* GifImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifImage.swift; sourceTree = "<group>"; };
 		475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemViewCellByIcon.swift; sourceTree = "<group>"; };
 		475FED95287443020007838F /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
+		477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedTableView.swift; sourceTree = "<group>"; };
+		477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuCell.swift; sourceTree = "<group>"; };
 		479B293C286EDE2900854350 /* FileItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileItem.h; sourceTree = "<group>"; };
 		479B293D286EDE2900854350 /* FileItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileItem.m; sourceTree = "<group>"; };
 		479B2940286EE8DD00854350 /* DownloadFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadFileManager.h; sourceTree = "<group>"; };
@@ -160,9 +164,11 @@
 			isa = PBXGroup;
 			children = (
 				474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */,
+				477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */,
 				47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */,
 				475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */,
 				474CCD9F2878338600F940FF /* GifImage.swift */,
+				477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -448,6 +454,7 @@
 				47244D612875ABD8005066FB /* FileTypeEnum.m in Sources */,
 				475FED96287443020007838F /* TransitionManager.swift in Sources */,
 				474CCDA02878338600F940FF /* GifImage.swift in Sources */,
+				477D34B8287D7E9D00D3FCBD /* ContextMenuCell.swift in Sources */,
 				47E8E9D42865B9600005EE4D /* DownloadItem.m in Sources */,
 				47244D5E2875AB69005066FB /* FileTypeConstants.m in Sources */,
 				47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */,
@@ -468,6 +475,7 @@
 				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
 				4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */,
+				477D34B6287D765100D3FCBD /* ContentSizedTableView.swift in Sources */,
 				4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */,
 				47E8E9D72865BE420005EE4D /* DownloadManager.m in Sources */,
 			);

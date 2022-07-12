@@ -16,8 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, atomic) NSDate* createdDate;
 @property(strong, atomic) FileTypeEnum* type;
 @property(strong, atomic) NSURL* url;
+@property(assign, atomic) BOOL isDir;
 - (instancetype)initWithName: (NSString*) name andSize: (NSNumber*) size andCreateDate: (NSDate*) createdDate andType: (FileTypeEnum*) type andURL:(NSURL*) url;
 - (NSInteger) countDaysFromCreatedToNow;
+
 @end
 
 NS_ASSUME_NONNULL_END
