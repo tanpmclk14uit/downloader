@@ -10,9 +10,7 @@
 
 
 @interface DownloadFileManager ()
-@property(strong, atomic) NSMutableArray<FileItem*> *allFileItems;
 @property(strong, nonatomic) NSFileManager* fileManager;
-@property(assign, nonatomic) BOOL isRootDirectory;
 @end
 
 @implementation DownloadFileManager
@@ -28,62 +26,15 @@
 - (instancetype)init{
     self = [super init];
     if(self){
-        self.allFileItems = [[NSMutableArray alloc] init];
         self.fileManager = [NSFileManager defaultManager];
-        self.currentDirectory = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil];
-        self.isRootDirectory = true;
-        self.parentDirectories = [[NSMutableArray alloc]init];
-        self.directoryName = [_currentDirectory lastPathComponent];
-        self.directParentName= @"";
+        self.currentFolder = [[FolderItem alloc] initRootFolder];
     }
     return self;
 }
 
-- (void)backToSelectedParentDirectory:(NSURL *)selectedDirectory{
-    for(NSInteger i = _parentDirectories.count-1; i>=0; i--){
-        if(_parentDirectories[i] == selectedDirectory){
-            self.currentDirectory = _parentDirectories[i];
-            self.directoryName = [_currentDirectory lastPathComponent];
-            self.directParentName = [[self.parentDirectories lastObject] lastPathComponent];
-            [_parentDirectories removeObject:_parentDirectories[i]];
-            return;
-        }else{
-            [_parentDirectories removeObject:_parentDirectories[i]];
-        }
-    }
-}
-
-- (void)navigateToDirectory:(NSURL *)url{
-    if(url == [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil]){
-        self.isRootDirectory = true;
-    }else{
-        self.isRootDirectory = false;
-    }
-    [self removeTempFolder];
-    [self.parentDirectories addObject:self.currentDirectory];
-    self.directoryName = [url lastPathComponent];
-    self.directParentName = [self.currentDirectory lastPathComponent];
-    self.currentDirectory = url;
-}
-
-- (void)backToParentDirectory{
-    self.currentDirectory = [self.parentDirectories lastObject];
-    self.directoryName = _currentDirectory.lastPathComponent;
-    self.directParentName = [[self.parentDirectories lastObject] lastPathComponent];
-    [self.parentDirectories removeLastObject];
-    [self removeTempFolder];
-    _isRootDirectory = self.parentDirectories.count == 0;
-    
-}
-
-- (NSArray<FileItem*>*) getFileItems{
-    return [NSArray arrayWithArray: self.allFileItems];
-}
-
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler:(void (^)(void))completionHandler{
-    
-    [self.allFileItems removeAllObjects];
-    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:_currentDirectory includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    [_currentFolder.allFileItems removeAllObjects];
+    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: _currentFolder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
     if(listFile){
         for(NSURL* file in listFile){
             if(![self isTempFile:file]){
@@ -103,8 +54,15 @@
                         fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
                     }
                     FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
-                    fileItem.isDir = isDir;
-                    [self.allFileItems addObject:fileItem];
+                    if(isDir){
+                        NSMutableArray <NSURL*>* parentFolders = [NSMutableArray arrayWithArray:_currentFolder.parentFolders];
+                        [parentFolders addObject: _currentFolder.url];
+                        FileItem* folderItem = [[FolderItem alloc] initWithFileItem:fileItem andParentFolders: parentFolders];
+                        [_currentFolder.allFileItems addObject:folderItem];
+                    }else{
+                        [_currentFolder.allFileItems addObject:fileItem];
+                    }
+                    
                 }
             }
         }
@@ -125,7 +83,7 @@
 
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
-    NSURL* destinationURL = [_currentDirectory URLByAppendingPathComponent: destinationFileName];
+    NSURL* destinationURL = [_currentFolder.url URLByAppendingPathComponent: destinationFileName];
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 
@@ -149,15 +107,14 @@
     if(error){
         return false;
     }else{
-        [_allFileItems removeObject:fileItem];
+        [_currentFolder.allFileItems removeObject:fileItem];
         return true;
     }
 }
 
 - (void)removeTempFolder{
-    if(_allFileItems.count != 0){
-        NSURL* currentWorkingPath = [_allFileItems[0].url URLByDeletingLastPathComponent];
-        NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:currentWorkingPath includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    if(_currentFolder.allFileItems.count != 0){
+        NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: _currentFolder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
         for(NSURL* file in listFile){
             if([self isTempFile:file]){
                 [_fileManager removeItemAtURL:file error:nil];
@@ -208,7 +165,7 @@
 }
 
 - (BOOL)createNewFolder:(NSString *)folderName{
-    NSURL* directoryPath = [_currentDirectory URLByAppendingPathComponent:folderName];
+    NSURL* directoryPath = [_currentFolder.url URLByAppendingPathComponent:folderName];
     return [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil];
 }
 

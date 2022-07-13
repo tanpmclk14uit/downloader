@@ -60,7 +60,6 @@ class MoveFileViewController: UIViewController {
     
     //MARK: - CONFIG UI CONSTRAINT
     private func configTextGuideConstraint(){
-        
         if #available(iOS 11.0, *) {
             textGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
             textGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true

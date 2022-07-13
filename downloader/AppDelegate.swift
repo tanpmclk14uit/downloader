@@ -14,8 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     let folderViewController: UINavigationController = {
-        let folderViewController = UINavigationController(rootViewController: FolderViewController())
+        let folderVC = FolderViewController()
+        let currentFolder = FolderItem(rootFolder: ())
+        folderVC.currentFolder = currentFolder
+        let folderViewController = UINavigationController(rootViewController: folderVC)
         folderViewController.title = "Folders"
+        
         return folderViewController
     }()
     

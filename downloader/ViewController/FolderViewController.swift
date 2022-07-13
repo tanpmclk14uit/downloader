@@ -310,20 +310,18 @@ class FolderViewController: UIViewController {
     private var filterBy: FilterByFileType = FilterByFileType.All
     private var currentSelectedFilePath: IndexPath?
     private var transition = PopAnimator()
-    
+    var currentFolder: FolderItem?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        // add title view
-        titleName.text = fileManager.directoryName
-        navigationItem.titleView = titleName
+        
         // add search view
         view.addSubview(searchBar)
         view.addSubview(toolBar)
         view.addSubview(fileCollectionView)
-        setHeader()
+        
         setIconOfSortButton()
         configSearchBarConstraint()
         configToolbarConstraint()
@@ -339,10 +337,17 @@ class FolderViewController: UIViewController {
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        if let currentFolder = currentFolder {
+            fileManager.currentFolder = currentFolder
+            fetchAllFileOfFolder()
+            setHeader()
+        }
+    }
+    
+    private func fetchAllFileOfFolder(){
         DispatchQueue.global(qos: .utility).async { [weak self] in
             self?.fileManager.fetchAllFileOfDownloadFolder {
                 DispatchQueue.main.async {
@@ -353,10 +358,14 @@ class FolderViewController: UIViewController {
     }
     
     private func setHeader(){
-        if(fileManager.isRootDirectory){
+        // add title view
+        titleName.text = fileManager.currentFolder.name
+        navigationItem.titleView = titleName
+        
+        if(fileManager.currentFolder.isRootFolder){
             navigationItem.leftBarButtonItem = nil
         }else{
-            backButton.setTitle(fileManager.directParentName, for: .normal)
+            backButton.setTitle(fileManager.currentFolder.directParentName, for: .normal)
             
             backButton.addTarget(self, action: #selector(onBackButtonClick), for: .touchUpInside)
             let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(onBackButtonLongClick))
@@ -391,7 +400,7 @@ class FolderViewController: UIViewController {
 
     private func getAllFileMatchSearchSortAndFilter()-> [FileItem]{
         // get all original list
-        var fileItems = fileManager.getFileItems()
+        var fileItems = fileManager.currentFolder.getFileItems()
         // filter
         if(filterBy != FilterByFileType.All){
             fileItems = fileItems.filter({ fileItem in
@@ -432,7 +441,6 @@ class FolderViewController: UIViewController {
     }
     
     @objc private func onBackButtonClick(){
-        fileManager.backToParentDirectory()
         navigationController?.popViewController(animated: true)
     }
     
@@ -531,7 +539,8 @@ class FolderViewController: UIViewController {
     private func onDetailFileClick(fileItem: FileItem){
         if(fileItem.isDir){
             let folderVC = FolderViewController()
-            fileManager.navigate(toDirectory: fileItem.url)
+            let folderItem = fileItem as! FolderItem
+            folderVC.currentFolder = folderItem
             
             navigationController?.pushViewController(folderVC, animated: true)
         }else{
@@ -598,7 +607,7 @@ class FolderViewController: UIViewController {
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let folderName = fields[0].text, !fields[0].text!.isEmpty {
-                        if(self.fileManager.isExitsFileName(folderName, in: self.fileManager.currentDirectory)){
+                        if(self.fileManager.isExitsFileName(folderName, in: self.fileManager.currentFolder.url)){
                             self.showErrorNotification(message: "Folder name is exist!")
                         }else{
                             if(self.fileManager.createNewFolder(folderName)){
@@ -786,12 +795,12 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
 extension FolderViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return fileManager.parentDirectories.count
+        return fileManager.currentFolder.parentFolders.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ContextMenuCell.identifier) as! ContextMenuCell
-        let currentDirectory = fileManager.parentDirectories.object(at: indexPath.row) as! URL
+        let currentDirectory = fileManager.currentFolder.parentFolders.object(at: indexPath.row) as! URL
         cell.setTitle(title: currentDirectory.lastPathComponent)
         return cell
     }
@@ -800,8 +809,6 @@ extension FolderViewController: UITableViewDelegate, UITableViewDataSource{
         if(indexPath.row < navigationController?.viewControllers.count ?? 0){
             let targetController = (navigationController?.viewControllers[indexPath.row])
             if let targetController = targetController{
-                let targetDirectory = fileManager.parentDirectories[indexPath.row] as! URL
-                fileManager.back(toSelectedParentDirectory: targetDirectory)
                 navigationController?.popToViewController(targetController, animated: true)
             }
         }
