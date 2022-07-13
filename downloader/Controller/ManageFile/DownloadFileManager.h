@@ -11,11 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadFileManager : NSObject
-@property(strong, nonatomic) NSURL* currentFolderDirectory;
+@property(strong, nonatomic) NSURL* currentDirectory;
 @property(assign, nonatomic, readonly) BOOL isRootDirectory;
 @property(strong, nonatomic) NSMutableArray<NSURL*>* parentDirectories;
-@property(strong, nonatomic) NSString* folderName;
-@property(strong, nonatomic) NSString* directParentFolderName;
+@property(strong, nonatomic) NSString* directoryName;
+@property(strong, nonatomic) NSString* directParentName;
 + (DownloadFileManager*) sharedInstance;
 - (NSArray<FileItem*>*) getFileItems;
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler: (void (^)(void)) completionHandler;
@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) navigateToDirectory: (NSURL*) url;
 - (void) backToParentDirectory;
 - (void) backToSelectedParentDirectory: (NSURL*) selectedDirectory;
+
 @end
 
 NS_ASSUME_NONNULL_END

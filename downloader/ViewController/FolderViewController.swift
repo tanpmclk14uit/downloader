@@ -46,6 +46,7 @@ class FolderViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
     lazy var buttonAddFolder: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -216,6 +217,7 @@ class FolderViewController: UIViewController {
         backButton.setImage(UIImage(named: "back"), for: .normal)
         backButton.widthAnchor.constraint(equalToConstant: Dimen.normalButtonWidth).isActive = true
         backButton.contentHorizontalAlignment = .left
+        backButton.titleLabel?.lineBreakMode = .byTruncatingTail
         return backButton
     }()
     
@@ -291,6 +293,11 @@ class FolderViewController: UIViewController {
         let halfViewFrameWidth = view.frame.width/2
         let width = (halfViewFrameWidth > Dimen.menuMaxWidth) ? Dimen.menuMaxWidth : halfViewFrameWidth
         contextParentsFolderMenu.widthAnchor.constraint(equalToConstant: width).isActive = true
+        let halfViewFrameHeight = view.frame.height/2
+        let contentHeight = contextParentsFolderMenu.contentSize.height
+        if(contentHeight > halfViewFrameHeight){
+            contextParentsFolderMenu.heightAnchor.constraint(equalToConstant: halfViewFrameHeight).isActive = true
+        }
     }
     
     // MARK: - CONTROLLER SETUP
@@ -310,7 +317,7 @@ class FolderViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         // add title view
-        titleName.text = fileManager.folderName
+        titleName.text = fileManager.directoryName
         navigationItem.titleView = titleName
         // add search view
         view.addSubview(searchBar)
@@ -349,7 +356,7 @@ class FolderViewController: UIViewController {
         if(fileManager.isRootDirectory){
             navigationItem.leftBarButtonItem = nil
         }else{
-            backButton.setTitle(fileManager.directParentFolderName, for: .normal)
+            backButton.setTitle(fileManager.directParentName, for: .normal)
             
             backButton.addTarget(self, action: #selector(onBackButtonClick), for: .touchUpInside)
             let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(onBackButtonLongClick))
@@ -430,7 +437,7 @@ class FolderViewController: UIViewController {
     }
     
     @objc private func onBackButtonLongClick(sender: UILongPressGestureRecognizer){
-        if(sender.state == UIGestureRecognizer.State.ended){
+        if(sender.state == UIGestureRecognizer.State.began){
             
             view.addSubview(transparentBackground)
             configTransparentBackgroundConstraint()
@@ -499,11 +506,18 @@ class FolderViewController: UIViewController {
     }
     
     private func onMoveFileClick(fileItem: FileItem){
+        let moveFileVC = MoveFileViewController()
+        moveFileVC.modalPresentationStyle = .fullScreen
         
+        
+        let navigationControllder = UINavigationController(rootViewController: moveFileVC)
+        navigationControllder.modalPresentationStyle = .fullScreen
+        
+        present(navigationControllder, animated: true)
     }
     
     private func onCopyFileClick(fileItem: FileItem){
-        
+        UIPasteboard.general.string = fileItem.url.path
     }
     
     private func onPasteFileClick(fileItem: FileItem){
@@ -584,7 +598,7 @@ class FolderViewController: UIViewController {
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let folderName = fields[0].text, !fields[0].text!.isEmpty {
-                        if(self.fileManager.isExitsFileName(folderName, in: self.fileManager.currentFolderDirectory)){
+                        if(self.fileManager.isExitsFileName(folderName, in: self.fileManager.currentDirectory)){
                             self.showErrorNotification(message: "Folder name is exist!")
                         }else{
                             if(self.fileManager.createNewFolder(folderName)){

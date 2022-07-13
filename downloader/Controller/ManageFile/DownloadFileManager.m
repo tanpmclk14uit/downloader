@@ -30,11 +30,11 @@
     if(self){
         self.allFileItems = [[NSMutableArray alloc] init];
         self.fileManager = [NSFileManager defaultManager];
-        self.currentFolderDirectory = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil];
+        self.currentDirectory = [_fileManager URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil];
         self.isRootDirectory = true;
         self.parentDirectories = [[NSMutableArray alloc]init];
-        self.folderName = [_currentFolderDirectory lastPathComponent];
-        self.directParentFolderName= @"";
+        self.directoryName = [_currentDirectory lastPathComponent];
+        self.directParentName= @"";
     }
     return self;
 }
@@ -42,9 +42,9 @@
 - (void)backToSelectedParentDirectory:(NSURL *)selectedDirectory{
     for(NSInteger i = _parentDirectories.count-1; i>=0; i--){
         if(_parentDirectories[i] == selectedDirectory){
-            self.currentFolderDirectory = _parentDirectories[i];
-            self.folderName = [_currentFolderDirectory lastPathComponent];
-            self.directParentFolderName = [[self.parentDirectories lastObject] lastPathComponent];
+            self.currentDirectory = _parentDirectories[i];
+            self.directoryName = [_currentDirectory lastPathComponent];
+            self.directParentName = [[self.parentDirectories lastObject] lastPathComponent];
             [_parentDirectories removeObject:_parentDirectories[i]];
             return;
         }else{
@@ -60,16 +60,16 @@
         self.isRootDirectory = false;
     }
     [self removeTempFolder];
-    [self.parentDirectories addObject:self.currentFolderDirectory];
-    self.folderName = [url lastPathComponent];
-    self.directParentFolderName = [self.currentFolderDirectory lastPathComponent];
-    self.currentFolderDirectory = url;
+    [self.parentDirectories addObject:self.currentDirectory];
+    self.directoryName = [url lastPathComponent];
+    self.directParentName = [self.currentDirectory lastPathComponent];
+    self.currentDirectory = url;
 }
 
 - (void)backToParentDirectory{
-    self.currentFolderDirectory = [self.parentDirectories lastObject];
-    self.folderName = _currentFolderDirectory.lastPathComponent;
-    self.directParentFolderName = [[self.parentDirectories lastObject] lastPathComponent];
+    self.currentDirectory = [self.parentDirectories lastObject];
+    self.directoryName = _currentDirectory.lastPathComponent;
+    self.directParentName = [[self.parentDirectories lastObject] lastPathComponent];
     [self.parentDirectories removeLastObject];
     [self removeTempFolder];
     _isRootDirectory = self.parentDirectories.count == 0;
@@ -83,7 +83,7 @@
 - (void) fetchAllFileOfDownloadFolderWithCompleteHandler:(void (^)(void))completionHandler{
     
     [self.allFileItems removeAllObjects];
-    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:_currentFolderDirectory includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL:_currentDirectory includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
     if(listFile){
         for(NSURL* file in listFile){
             if(![self isTempFile:file]){
@@ -125,7 +125,7 @@
 
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
-    NSURL* destinationURL = [_currentFolderDirectory URLByAppendingPathComponent: destinationFileName];
+    NSURL* destinationURL = [_currentDirectory URLByAppendingPathComponent: destinationFileName];
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 
@@ -208,7 +208,7 @@
 }
 
 - (BOOL)createNewFolder:(NSString *)folderName{
-    NSURL* directoryPath = [_currentFolderDirectory URLByAppendingPathComponent:folderName];
+    NSURL* directoryPath = [_currentDirectory URLByAppendingPathComponent:folderName];
     return [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil];
 }
 

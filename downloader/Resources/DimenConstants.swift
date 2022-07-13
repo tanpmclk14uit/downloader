@@ -16,10 +16,11 @@ class Dimen {
     public static let itemNormalContentTextSize: CGFloat = 16;
     public static let itemAdditionalContentTextSize: CGFloat = 16;
     public static let screenNormalTextSize: CGFloat = 18;
+    public static let screenAdditionalInformationTextSize: CGFloat = 16;
     // button icon size
     public static let buttonIconWidth: CGFloat = 24;
     public static let buttonIconHeight: CGFloat = 24;
-    public static let normalButtonWidth: CGFloat = 80;
+    public static let normalButtonWidth: CGFloat = 100;
     // image size
     public static let imageIconWidth: CGFloat = 50;
     public static let imageIconHeight: CGFloat = 50;
@@ -38,8 +39,9 @@ class Dimen {
     }
     // menu max width
     public static let menuMaxWidth: CGFloat = 250.0
+    // top bar size
 }
-
+// MARK: - GET HEIGHT OF STRING
 extension String {
     func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
