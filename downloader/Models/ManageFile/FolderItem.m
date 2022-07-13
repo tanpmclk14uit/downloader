@@ -40,6 +40,10 @@
     return self;
 }
 
++ (FolderItem *)rootFolder{
+    return [[FolderItem alloc] initRootFolder];
+}
+
 - (NSArray<FileItem*>*) getFileItems{
     return [NSArray arrayWithArray: self.allFileItems];
 }

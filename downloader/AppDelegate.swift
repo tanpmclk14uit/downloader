@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let folderViewController: UINavigationController = {
         let folderVC = FolderViewController()
-        let currentFolder = FolderItem(rootFolder: ())
+        let currentFolder = FolderItem.rootFolder()
         folderVC.currentFolder = currentFolder
         let folderViewController = UINavigationController(rootViewController: folderVC)
         folderViewController.title = "Folders"
@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         while(DownloadManager.sharedInstance().pauseAllDownloadingProcessComplete() == false){}
         let downloadItems = DownloadManager.sharedInstance().getAllDownloadItems()
         DownloadItemPersistenceManager.sharedInstance().saveAllDownloadItems(downloadItems )
-        DownloadFileManager.sharedInstance().removeTempFolder()
+        DownloadFileManager.sharedInstance().removeTempFolder(fromFolder: FolderItem.rootFolder())
     }
 }
 

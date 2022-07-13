@@ -27,14 +27,13 @@
     self = [super init];
     if(self){
         self.fileManager = [NSFileManager defaultManager];
-        self.currentFolder = [[FolderItem alloc] initRootFolder];
     }
     return self;
 }
 
-- (void) fetchAllFileOfDownloadFolderWithCompleteHandler:(void (^)(void))completionHandler{
-    [_currentFolder.allFileItems removeAllObjects];
-    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: _currentFolder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+- (void)fetchAllFileOfFolder:(FolderItem *)folder withAfterCompleteHandler:(void (^)(void))completionHandler{
+    [folder.allFileItems removeAllObjects];
+    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: folder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
     if(listFile){
         for(NSURL* file in listFile){
             if(![self isTempFile:file]){
@@ -55,14 +54,13 @@
                     }
                     FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
                     if(isDir){
-                        NSMutableArray <NSURL*>* parentFolders = [NSMutableArray arrayWithArray:_currentFolder.parentFolders];
-                        [parentFolders addObject: _currentFolder.url];
+                        NSMutableArray <NSURL*>* parentFolders = [NSMutableArray arrayWithArray:folder.parentFolders];
+                        [parentFolders addObject: folder.url];
                         FileItem* folderItem = [[FolderItem alloc] initWithFileItem:fileItem andParentFolders: parentFolders];
-                        [_currentFolder.allFileItems addObject:folderItem];
+                        [folder.allFileItems addObject:folderItem];
                     }else{
-                        [_currentFolder.allFileItems addObject:fileItem];
+                        [folder.allFileItems addObject:fileItem];
                     }
-                    
                 }
             }
         }
@@ -80,10 +78,9 @@
     }
 }
 
-
 - (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
-    NSURL* destinationURL = [_currentFolder.url URLByAppendingPathComponent: destinationFileName];
+    NSURL* destinationURL = [[url URLByDeletingLastPathComponent] URLByAppendingPathComponent: destinationFileName];
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 
@@ -101,24 +98,22 @@
     }
 }
 
-- (BOOL)removeFile:(FileItem *)fileItem{
+- (BOOL) removeFile:(FileItem *)fileItem fromFolder:(FolderItem *)folder{
     NSError *error = nil;
     [_fileManager removeItemAtURL:fileItem.url error:&error];
     if(error){
         return false;
     }else{
-        [_currentFolder.allFileItems removeObject:fileItem];
+        [folder.allFileItems removeObject:fileItem];
         return true;
     }
 }
 
-- (void)removeTempFolder{
-    if(_currentFolder.allFileItems.count != 0){
-        NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: _currentFolder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
-        for(NSURL* file in listFile){
-            if([self isTempFile:file]){
-                [_fileManager removeItemAtURL:file error:nil];
-            }
+- (void) removeTempFolderFromFolder:(FolderItem *)folder{
+    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: folder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    for(NSURL* file in listFile){
+        if([self isTempFile:file]){
+            [_fileManager removeItemAtURL:file error:nil];
         }
     }
 }
@@ -164,8 +159,8 @@
     return FileTypeConstants.unknown;
 }
 
-- (BOOL)createNewFolder:(NSString *)folderName{
-    NSURL* directoryPath = [_currentFolder.url URLByAppendingPathComponent:folderName];
+- (BOOL)createNewFolder:(NSString *)folderName inFolder:(FolderItem *)folder{
+    NSURL* directoryPath = [folder.url URLByAppendingPathComponent:folderName];
     return [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil];
 }
 

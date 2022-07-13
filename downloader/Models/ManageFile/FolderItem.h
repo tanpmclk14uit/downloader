@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, atomic) NSMutableArray<FileItem*> *allFileItems;
 
 - (instancetype)initWithFileItem: (FileItem*) fileItem andParentFolders: (NSArray<NSURL*>*) parentDirectories;
-- (instancetype) initRootFolder;
 - (NSArray<FileItem*>*) getFileItems;
++ (FolderItem*) rootFolder;
 
 @end
 

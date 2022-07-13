@@ -12,15 +12,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadFileManager : NSObject
-@property(strong, nonatomic) FolderItem* currentFolder;
 + (DownloadFileManager*) sharedInstance;
-- (void) fetchAllFileOfDownloadFolderWithCompleteHandler: (void (^)(void)) completionHandler;
+- (void) fetchAllFileOfFolder: (FolderItem*) folderItem withAfterCompleteHandler: (void (^)(void)) completionHandler;
 - (void) decompressZipFile: (FileItem*) fileItem;
 - (BOOL) isExitsFileName: (NSString*) fileName inURL: (NSURL*) url;
 - (BOOL) renameFileOf: (FileItem*) fileItem toNewName: (NSString*) newName;
-- (BOOL) removeFile: (FileItem*) fileItem;
-- (void) removeTempFolder;
-- (BOOL) createNewFolder: (NSString*) folderName;
+- (BOOL) removeFile: (FileItem*) fileItem fromFolder: (FolderItem*) folder;
+- (void) removeTempFolderFromFolder: (FolderItem*) folder;
+- (BOOL) createNewFolder: (NSString*) folderName inFolder: (FolderItem*) folder;
 
 @end
 

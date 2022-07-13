@@ -147,7 +147,8 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         generateThumbnailRepresentations(url: fileItem.url)
     }
     
-    func generateThumbnailRepresentations(url: URL) {
+    
+    private func generateThumbnailRepresentations(url: URL) {
         // Set up the parameters of the request.
         let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
         let scale = UIScreen.main.scale
