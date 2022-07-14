@@ -36,7 +36,7 @@ class MoveFileViewController: UIViewController {
         return button
     }()
     
-    lazy var buttonAddFolder: UIButton = {
+    lazy var addFolder: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("New folder", for: .normal)
         button.sizeToFit()
@@ -52,7 +52,6 @@ class MoveFileViewController: UIViewController {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
         lable.textAlignment = .center
-        lable.text = "Pick destination folder"
         lable.textColor = .gray
         lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
         return lable
@@ -99,14 +98,14 @@ class MoveFileViewController: UIViewController {
     private func configTextGuideConstraint(){
         if #available(iOS 11.0, *) {
             textGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-            textGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-            textGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            textGuide.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         } else {
             textGuide.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            textGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-            textGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            textGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         }
         textGuide.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: titleName.font)).isActive = true
+        textGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7).isActive = true
+        
     }
     
     private func configFileCollectionViewConstraint(){
@@ -125,21 +124,19 @@ class MoveFileViewController: UIViewController {
     //MARK: - SET VIEW CONTROLLER
     
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
-    var currentFolder: FolderItem?
+    public var currentFolder: FolderItem?
+    public var sourceFile: FileItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
-        fetchAllFileOfFolder()
-        setHeader()
         
         view.backgroundColor = .white
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: cancelButton)
         navigationItem.titleView = titleName
         // set up tool bar
         navigationController?.isToolbarHidden = false
-        toolbarItems = [UIBarButtonItem(customView: buttonAddFolder),UIBarButtonItem(customView: moveButton)]
+        toolbarItems = [UIBarButtonItem(customView: addFolder),UIBarButtonItem(customView: moveButton)]
         
         view.addSubview(textGuide)
         configTextGuideConstraint()
@@ -149,6 +146,26 @@ class MoveFileViewController: UIViewController {
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
+        addFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        fetchAllFileOfFolder()
+        setHeader()
+        setMoveButton()
+    }
+    
+    private func getCurrentFileItemSoryByDateASC()-> [FileItem]{
+        // get all original list
+        var fileItems = currentFolder!.getFileItems()
+        // sort
+        fileItems.sort { hls, fls in
+            hls.createdDate > fls.createdDate
+        }
+        
+        return fileItems
     }
     
     private func fetchAllFileOfFolder(){
@@ -167,6 +184,7 @@ class MoveFileViewController: UIViewController {
         // add title view
         titleName.text = currentFolder!.name
         navigationItem.titleView = titleName
+        textGuide.text = "Pick destination folder for \(sourceFile!.name)"
         
         if(currentFolder!.isRootFolder){
             navigationItem.leftBarButtonItem = nil
@@ -178,6 +196,17 @@ class MoveFileViewController: UIViewController {
             
             backButton.addGestureRecognizer(longPressGesture)
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        }
+    }
+    
+    private func setMoveButton(){
+        if let currentFolder = currentFolder,
+           let sourceFile = sourceFile{
+            if(fileManager.canMove(sourceFile, to: currentFolder)){
+                moveButton.isEnabled = true
+            }else{
+                moveButton.isEnabled = false
+            }
         }
     }
     
@@ -196,6 +225,12 @@ class MoveFileViewController: UIViewController {
     @objc private func onBackButtonLongClick(sender: UILongPressGestureRecognizer){
         if(sender.state == UIGestureRecognizer.State.began){
             
+            let contextMenuVC = CustomContextMenuViewController()
+            contextMenuVC.modalPresentationStyle = .overCurrentContext
+            contextMenuVC.contents = currentFolder!.getNamesOfParentFolder()
+            contextMenuVC.delegate = self
+            
+            present(contextMenuVC, animated: false)
         }
     }
     
@@ -204,29 +239,78 @@ class MoveFileViewController: UIViewController {
     }
     
     @objc private func onMoveClick(){
-        print("move")
+        if(fileManager.moveFile(sourceFile!, toFolder: currentFolder!)){
+            self.dismiss(animated: true)
+        }else{
+            showErrorNotification(message: "Move file failed!")
+        }
+    }
+    
+    @objc private func showCreateFolderAlert(){
+        let alert = UIAlertController(
+            title: "Create folder", message: "Please enter folder name", preferredStyle: .alert
+        )
+        alert.addTextField{ field in
+            field.placeholder = "example"
+            field.returnKeyType = .done
+            field.keyboardType = .default
+        }
+        // add action to alert
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1;
+        let createAction = UIAlertAction(title: "Create", style: .default, handler: { [weak self] _ in
+            if let fields = alert.textFields, fields.count == alertFieldCount {
+                if let self = self {
+                    if let folderName = fields[0].text, !fields[0].text!.isEmpty {
+                        if(self.fileManager.isExitsFileName(folderName, in: self.currentFolder!.url)){
+                            self.showErrorNotification(message: "Folder name is exist!")
+                        }else{
+                            if(self.fileManager.createNewFolder(folderName, inFolder: self.currentFolder!)){
+                                self.fetchAllFileOfFolder()
+                            }else{
+                                self.showErrorNotification(message: "Create folder fail!")
+                            }
+                        }
+                    }else{
+                        self.showErrorNotification(message: "Folder name can not place empty!")
+                    }
+                }
+            }
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(createAction)
+        alert.preferredAction = createAction
+        
+        present(alert, animated: true)
+    }
+    
+    private func showErrorNotification(message: String){
+        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(emptyURLNotification, animated: true)
     }
 }
 
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension MoveFileViewController: UICollectionViewDelegate, UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return currentFolder!.allFileItems.count
+        return getCurrentFileItemSoryByDateASC().count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
-        cell.setCellData(fileItem: currentFolder!.allFileItems[indexPath.row] as! FileItem)
+        cell.setCellData(fileItem: getCurrentFileItemSoryByDateASC()[indexPath.row] )
         cell.hideItemAction()
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let currentSelectedItem = currentFolder!.allFileItems[indexPath.item] as! FileItem
+        let currentSelectedItem = getCurrentFileItemSoryByDateASC()[indexPath.item]
         if(currentSelectedItem.isDir){
             let moveFileVC = MoveFileViewController()
             let folderItem = currentSelectedItem as! FolderItem
             moveFileVC.currentFolder = folderItem
+            moveFileVC.sourceFile = sourceFile
             
             navigationController?.pushViewController(moveFileVC, animated: true)
         }
@@ -236,5 +320,16 @@ extension MoveFileViewController: UICollectionViewDelegate, UICollectionViewData
         self.fileCollectionView.reloadData()
         setEmptyListMessage()
     }
-    
+}
+
+//MARK: - CONFIRM CustomContextMenuDelegate
+extension MoveFileViewController: CustomContextMenuDelegate{
+    func onItemClick(at position: Int) {
+        if(position < navigationController?.viewControllers.count ?? 0){
+            let targetController = (navigationController?.viewControllers[position])
+            if let targetController = targetController{
+                navigationController?.popToViewController(targetController, animated: true)
+            }
+        }
+    }
 }

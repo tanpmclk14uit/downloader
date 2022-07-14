@@ -47,5 +47,12 @@
 - (NSArray<FileItem*>*) getFileItems{
     return [NSArray arrayWithArray: self.allFileItems];
 }
+- (NSArray<NSString *> *)getNamesOfParentFolder{
+    NSMutableArray *namesOfParentFolder = [[NSMutableArray alloc]init];
+    for(NSURL* parentURL in _parentFolders){
+        [namesOfParentFolder addObject:parentURL.lastPathComponent];
+    }
+    return [NSArray arrayWithArray:namesOfParentFolder];
+}
 
 @end

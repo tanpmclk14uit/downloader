@@ -11,6 +11,7 @@
 
 @interface DownloadFileManager ()
 @property(strong, nonatomic) NSFileManager* fileManager;
+@property(strong, nonatomic) NSMutableSet<NSURL*>* needReloadFoldes;
 @end
 
 @implementation DownloadFileManager
@@ -27,6 +28,7 @@
     self = [super init];
     if(self){
         self.fileManager = [NSFileManager defaultManager];
+        self.needReloadFoldes = [[NSMutableSet alloc] init];
     }
     return self;
 }
@@ -105,6 +107,7 @@
         return false;
     }else{
         [folder.allFileItems removeObject:fileItem];
+        [_needReloadFoldes addObjectsFromArray:folder.parentFolders];
         return true;
     }
 }
@@ -161,7 +164,53 @@
 
 - (BOOL)createNewFolder:(NSString *)folderName inFolder:(FolderItem *)folder{
     NSURL* directoryPath = [folder.url URLByAppendingPathComponent:folderName];
-    return [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil];
+    if( [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil]){
+        [_needReloadFoldes addObject:folder.url];
+        [_needReloadFoldes addObjectsFromArray:folder.parentFolders];
+        return true;
+    }else{
+        return false;
+    }
+}
+
+- (BOOL)showRefetchDataOfFolder:(FolderItem *)folderItem{
+    if([_needReloadFoldes containsObject:folderItem.url]){
+        [_needReloadFoldes removeObject:folderItem.url];
+        return true;
+    }else{
+        return false;
+    }
+}
+
+- (BOOL)canMove:(FileItem *)source to:(FolderItem *)destination{
+    if(source.isDir){
+        return ![destination.parentFolders containsObject: source.url] &&
+        ![[[source.url URLByDeletingLastPathComponent] absoluteString] isEqualToString:[destination.url absoluteString]] &&
+        ![[source.url absoluteString] isEqualToString:[destination.url absoluteString]];
+    }else{
+        return ![[[source.url URLByDeletingLastPathComponent] absoluteString] isEqualToString:[destination.url absoluteString]];
+    }
+}
+
+-(BOOL)moveFile:(FileItem *)source toFolder:(FolderItem *)destination{
+    if([self canMove:source to:destination]){
+        if([_fileManager isReadableFileAtPath:source.url.path]){
+            NSError* error = nil;
+            NSString* destinationName = source.url.lastPathComponent;
+            NSURL* destinationURL = [destination.url URLByAppendingPathComponent:destinationName];
+            [_fileManager moveItemAtURL:source.url toURL:destinationURL error:&error];
+            if(error){
+                NSLog(@"%@", error.userInfo);
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
 }
 
 @end

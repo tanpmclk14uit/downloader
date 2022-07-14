@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) removeFile: (FileItem*) fileItem fromFolder: (FolderItem*) folder;
 - (void) removeTempFolderFromFolder: (FolderItem*) folder;
 - (BOOL) createNewFolder: (NSString*) folderName inFolder: (FolderItem*) folder;
-
+- (BOOL) showRefetchDataOfFolder: (FolderItem*) folderItem;
+- (BOOL) canMove: (FileItem*) source to: (FolderItem*) destination;
+- (BOOL) moveFile: (FileItem*) source toFolder: (FolderItem*) destination;
 @end
 
 NS_ASSUME_NONNULL_END

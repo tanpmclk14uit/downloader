@@ -221,25 +221,6 @@ class FolderViewController: UIViewController {
         return backButton
     }()
     
-    lazy var contextParentsFolderMenu: ContentSizedTableView = {
-        let tableView = ContentSizedTableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.layer.cornerRadius = 10
-        tableView.sizeToFit()
-        tableView.register(ContextMenuCell.self, forCellReuseIdentifier: ContextMenuCell.identifier)
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.singleLine
-        return tableView
-    }()
-    
-    lazy var transparentBackground: UIView = {
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.backgroundColor = UIColor(white: 0.6, alpha: 0.1)
-        return container
-    }()
-    
     //MARK: - CONFIG UI CONSTRAINT
     private func configSearchBarConstraint(){
         if #available(iOS 11.0, *) {
@@ -276,29 +257,6 @@ class FolderViewController: UIViewController {
         }
     }
     
-    private func configTransparentBackgroundConstraint(){
-        transparentBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        transparentBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        transparentBackground.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        transparentBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-    }
-    
-    private func configParentsFolderContextMenuConstraint(){
-        contextParentsFolderMenu.topAnchor.constraint(equalTo: (navigationController?.navigationBar.bottomAnchor)! , constant: Dimen.screenDefaultMargin.top).isActive = true
-        if #available(iOS 11.0, *) {
-            contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
-        } else {
-            contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        }
-        let halfViewFrameWidth = view.frame.width/2
-        let width = (halfViewFrameWidth > Dimen.menuMaxWidth) ? Dimen.menuMaxWidth : halfViewFrameWidth
-        contextParentsFolderMenu.widthAnchor.constraint(equalToConstant: width).isActive = true
-        let halfViewFrameHeight = view.frame.height/2
-        let contentHeight = contextParentsFolderMenu.contentSize.height
-        if(contentHeight > halfViewFrameHeight){
-            contextParentsFolderMenu.heightAnchor.constraint(equalToConstant: halfViewFrameHeight).isActive = true
-        }
-    }
     
     // MARK: - CONTROLLER SETUP
     
@@ -317,10 +275,6 @@ class FolderViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        //
-        fetchAllFileOfFolder()
-        setHeader()
-        
         // add search view
         view.addSubview(searchBar)
         view.addSubview(toolBar)
@@ -335,12 +289,15 @@ class FolderViewController: UIViewController {
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
         buttonFilter.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onCancelContextMenu))
-        transparentBackground.addGestureRecognizer(tapGesture)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        fetchAllFileOfFolder()
+        setHeader()
     }
     
     private func fetchAllFileOfFolder(){
@@ -446,18 +403,15 @@ class FolderViewController: UIViewController {
     @objc private func onBackButtonLongClick(sender: UILongPressGestureRecognizer){
         if(sender.state == UIGestureRecognizer.State.began){
             
-            view.addSubview(transparentBackground)
-            configTransparentBackgroundConstraint()
+            let contextMenuVC = CustomContextMenuViewController()
+            contextMenuVC.modalPresentationStyle = .overCurrentContext
+            contextMenuVC.contents = currentFolder!.getNamesOfParentFolder()
+            contextMenuVC.delegate = self
             
-            view.addSubview(contextParentsFolderMenu)
-            configParentsFolderContextMenuConstraint()
+            present(contextMenuVC, animated: false)
         }
     }
     
-    @objc private func onCancelContextMenu(){
-        transparentBackground.removeFromSuperview()
-        contextParentsFolderMenu.removeFromSuperview()
-    }
     
     private func onViewByChange(newLayoutState: LayoutState){
         let transitionManager: TransitionManager
@@ -516,6 +470,7 @@ class FolderViewController: UIViewController {
         let moveFileVC = MoveFileViewController()
         moveFileVC.modalPresentationStyle = .fullScreen
         moveFileVC.currentFolder = FolderItem.rootFolder()
+        moveFileVC.sourceFile = fileItem
         
         let navigationControllder = UINavigationController(rootViewController: moveFileVC)
         navigationControllder.modalPresentationStyle = .fullScreen
@@ -602,7 +557,7 @@ class FolderViewController: UIViewController {
         // add action to alert
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let alertFieldCount = 1;
-        let renameAction = UIAlertAction(title: "Create", style: .default, handler: { [weak self] _ in
+        let createAction = UIAlertAction(title: "Create", style: .default, handler: { [weak self] _ in
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let folderName = fields[0].text, !fields[0].text!.isEmpty {
@@ -622,8 +577,8 @@ class FolderViewController: UIViewController {
             }
         })
         alert.addAction(cancelAction)
-        alert.addAction(renameAction)
-        alert.preferredAction = renameAction
+        alert.addAction(createAction)
+        alert.preferredAction = createAction
         
         present(alert, animated: true)
     }
@@ -788,23 +743,12 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
         .updateContents
     }
 }
-//MARK: - CONFIRM Table View
-extension FolderViewController: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return currentFolder!.parentFolders.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ContextMenuCell.identifier) as! ContextMenuCell
-        let currentDirectory = currentFolder!.parentFolders.object(at: indexPath.row) as! URL
-        cell.setTitle(title: currentDirectory.lastPathComponent)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.row < navigationController?.viewControllers.count ?? 0){
-            let targetController = (navigationController?.viewControllers[indexPath.row])
+
+//MARK: - CONFIRM CustomContextMenuDelegate
+extension FolderViewController: CustomContextMenuDelegate{
+    func onItemClick(at position: Int) {
+        if(position < navigationController?.viewControllers.count ?? 0){
+            let targetController = (navigationController?.viewControllers[position])
             if let targetController = targetController{
                 navigationController?.popToViewController(targetController, animated: true)
             }

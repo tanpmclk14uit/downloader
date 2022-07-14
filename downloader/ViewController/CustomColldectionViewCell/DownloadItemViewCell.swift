@@ -83,7 +83,6 @@ class DownloadItemViewCell: UITableViewCell {
     public var delegate: DownloadItemCellDelegate?
     public static let identifier: String = "DownloadItemCell"
     private var currentDownloadItem: DownloadItem?
-    // DownloadProcessViewModel : contain: (DownloadItem, DownloadCell : displayningCell)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

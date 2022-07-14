@@ -16,6 +16,8 @@
 		4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942928768BDF00045AFE /* FileItemCellDelegate.swift */; };
 		4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942C2876E83A00045AFE /* PopAnimator.swift */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
+		473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */; };
+		473C64DD287FF56400D38467 /* AddNewFolderAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DC287FF56400D38467 /* AddNewFolderAlert.swift */; };
 		474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */; };
 		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
 		474A6100286319980039B3D0 /* DownloadItemViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */; };
@@ -75,6 +77,8 @@
 		4738942C2876E83A00045AFE /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		473B6DFC2869537200747CD8 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
 		473B6DFE2869963200747CD8 /* FileSizeUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeUnits.swift; sourceTree = "<group>"; };
+		473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContextMenuViewController.swift; sourceTree = "<group>"; };
+		473C64DC287FF56400D38467 /* AddNewFolderAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewFolderAlert.swift; sourceTree = "<group>"; };
 		474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewController.swift; sourceTree = "<group>"; };
 		474A60FD2862CF2C0039B3D0 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemViewCell.swift; sourceTree = "<group>"; };
@@ -154,6 +158,26 @@
 			path = Animation;
 			sourceTree = "<group>";
 		};
+		473C64D8287FC19900D38467 /* CustomColldectionViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */,
+				477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */,
+				47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */,
+				475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */,
+			);
+			path = CustomColldectionViewCell;
+			sourceTree = "<group>";
+		};
+		473C64D9287FCA3E00D38467 /* CustomComponents */ = {
+			isa = PBXGroup;
+			children = (
+				473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */,
+				477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */,
+			);
+			path = CustomComponents;
+			sourceTree = "<group>";
+		};
 		474A60FC2862CEF30039B3D0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -165,26 +189,22 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		474A61012863199E0039B3D0 /* Components */ = {
+		474A61012863199E0039B3D0 /* ExtensionView */ = {
 			isa = PBXGroup;
 			children = (
-				474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */,
-				477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */,
-				47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */,
-				475FED912873E5A90007838F /* FileItemViewCellByIcon.swift */,
 				474CCD9F2878338600F940FF /* GifImage.swift */,
-				477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */,
+				473C64DC287FF56400D38467 /* AddNewFolderAlert.swift */,
 			);
-			path = Components;
+			path = ExtensionView;
 			sourceTree = "<group>";
 		};
-		475FED972874491C0007838F /* CollectionViewTransition */ = {
+		475FED972874491C0007838F /* CustomCollectionViewTransition */ = {
 			isa = PBXGroup;
 			children = (
 				475FED95287443020007838F /* TransitionManager.swift */,
 				47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */,
 			);
-			path = CollectionViewTransition;
+			path = CustomCollectionViewTransition;
 			sourceTree = "<group>";
 		};
 		479B2938286ED77A00854350 /* Download */ = {
@@ -300,9 +320,11 @@
 		47FDFB8A284F004D00FDA80F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				473C64D9287FCA3E00D38467 /* CustomComponents */,
+				473C64D8287FC19900D38467 /* CustomColldectionViewCell */,
 				4738942628768B2700045AFE /* CollectionCellDelegate */,
-				475FED972874491C0007838F /* CollectionViewTransition */,
-				474A61012863199E0039B3D0 /* Components */,
+				475FED972874491C0007838F /* CustomCollectionViewTransition */,
+				474A61012863199E0039B3D0 /* ExtensionView */,
 				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
 				477D34B9287E784F00D3FCBD /* MoveFileViewController.swift */,
 				474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */,
@@ -467,6 +489,7 @@
 				47244D5E2875AB69005066FB /* FileTypeConstants.m in Sources */,
 				47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */,
 				47E8E9CF286563A80005EE4D /* DimenConstants.swift in Sources */,
+				473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */,
 				475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */,
 				473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */,
 				477D34BD287EC1B500D3FCBD /* FolderItem.m in Sources */,
@@ -482,6 +505,7 @@
 				479B293E286EDE2900854350 /* FileItem.m in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 				477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */,
+				473C64DD287FF56400D38467 /* AddNewFolderAlert.swift in Sources */,
 				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
 				4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */,
