@@ -262,7 +262,7 @@ class MoveFileViewController: UIViewController {
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let folderName = fields[0].text, !fields[0].text!.isEmpty {
-                        if(self.fileManager.isExitsFileName(folderName, in: self.currentFolder!.url)){
+                        if(self.fileManager.isExitsFolderName(folderName, inFolder: self.currentFolder!.url)){
                             self.showErrorNotification(message: "Folder name is exist!")
                         }else{
                             if(self.fileManager.createNewFolder(folderName, inFolder: self.currentFolder!)){
@@ -285,8 +285,7 @@ class MoveFileViewController: UIViewController {
     }
     
     private func showErrorNotification(message: String){
-        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
+        let emptyURLNotification = UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: message)
         present(emptyURLNotification, animated: true)
     }
 }

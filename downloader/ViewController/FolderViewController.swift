@@ -151,7 +151,6 @@ class FolderViewController: UIViewController {
     }()
     
     
-    
     lazy var sortBySelectionAlert: UIAlertController = {
         let alert = UIAlertController(
             title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
@@ -220,6 +219,15 @@ class FolderViewController: UIViewController {
         backButton.titleLabel?.lineBreakMode = .byTruncatingTail
         return backButton
     }()
+    
+    lazy var pasteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Paste", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        return button
+    }()
+    
+    
     
     //MARK: - CONFIG UI CONSTRAINT
     private func configSearchBarConstraint(){
@@ -320,14 +328,28 @@ class FolderViewController: UIViewController {
         if(currentFolder!.isRootFolder){
             navigationItem.leftBarButtonItem = nil
         }else{
-            backButton.setTitle(currentFolder!.directParentName, for: .normal)
-            
-            backButton.addTarget(self, action: #selector(onBackButtonClick), for: .touchUpInside)
-            let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(onBackButtonLongClick))
-            
-            backButton.addGestureRecognizer(longPressGesture)
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+            setBackButton()
         }
+        setPasteButton()
+    }
+    
+    private func setPasteButton(){
+        if(fileManager.shouldShowPaste()){
+            pasteButton.addTarget(self, action: #selector(onPasteToCurrentFolder), for: .touchUpInside)
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pasteButton)
+        }else{
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+    
+    private func setBackButton(){
+        backButton.setTitle(currentFolder!.directParentName, for: .normal)
+        
+        backButton.addTarget(self, action: #selector(onBackButtonClick), for: .touchUpInside)
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(onBackButtonLongClick))
+        
+        backButton.addGestureRecognizer(longPressGesture)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
     
     private func setEmptyListMessage(){
@@ -479,11 +501,24 @@ class FolderViewController: UIViewController {
     }
     
     private func onCopyFileClick(fileItem: FileItem){
-        UIPasteboard.general.string = fileItem.url.path
+        fileManager.copyFile(fileItem)
+        setPasteButton()
     }
     
     private func onPasteFileClick(fileItem: FileItem){
-        
+        if(fileManager.pasteFile(to: fileItem as! FolderItem)){
+            present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Paste success"), animated: true)
+        }else{
+            present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
+        }
+    }
+    
+    @objc private func onPasteToCurrentFolder(){
+        if(fileManager.pasteFile(to: self.currentFolder!)){
+            fetchAllFileOfFolder()
+        }else{
+            present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
+        }
     }
     
     private func onDecompressFileClick(fileItem: FileItem){
@@ -524,7 +559,7 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Copy", style: .default, handler: { [weak self] _ in
             self?.onCopyFileClick(fileItem: fileItem)
         }))
-        if(fileItem.isDir){
+        if(fileItem.isDir && fileManager.shouldShowPaste()){
             alert.addAction(UIAlertAction(title: "Paste", style: .default, handler: { [weak self] _ in
                 self?.onPasteFileClick(fileItem: fileItem)
             }))
@@ -561,7 +596,7 @@ class FolderViewController: UIViewController {
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let folderName = fields[0].text, !fields[0].text!.isEmpty {
-                        if(self.fileManager.isExitsFileName(folderName, in: self.currentFolder!.url)){
+                        if(self.fileManager.isExitsFolderName(folderName, inFolder: self.currentFolder!.url)){
                             self.showErrorNotification(message: "Folder name is exist!")
                         }else{
                             if(self.fileManager.createNewFolder(folderName, inFolder: self.currentFolder!)){
@@ -583,6 +618,11 @@ class FolderViewController: UIViewController {
         present(alert, animated: true)
     }
     
+    private func showErrorNotification(message: String){
+        let emptyURLNotification = UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: message)
+        present(emptyURLNotification, animated: true)
+    }
+    
     private func showDeleteConfirmAlert(fileItem: FileItem){
         let alert = UIAlertController(
             title: "Delete",
@@ -600,12 +640,6 @@ class FolderViewController: UIViewController {
             }
         }))
         present(alert, animated: true)
-    }
-    
-    private func showErrorNotification(message: String){
-        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-        present(emptyURLNotification, animated: true)
     }
     
     private func showInputNewFileNameOfFile(_ fileItem: FileItem){
@@ -628,7 +662,7 @@ class FolderViewController: UIViewController {
             if let fields = alert.textFields, fields.count == alertFieldCount {
                 if let self = self {
                     if let newName = fields[0].text, !fields[0].text!.isEmpty {
-                        if(self.fileManager.isExitsFileName(newName, in: fileItem.url)){
+                        if(self.fileManager.isExitsFileName(newName, inFolder: fileItem.url)){
                             self.showErrorNotification(message: "File name is exist!")
                         }else{
                             if(self.fileManager.renameFile(of: fileItem, toNewName: newName)){

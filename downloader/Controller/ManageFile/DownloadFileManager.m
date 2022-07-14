@@ -12,6 +12,7 @@
 @interface DownloadFileManager ()
 @property(strong, nonatomic) NSFileManager* fileManager;
 @property(strong, nonatomic) NSMutableSet<NSURL*>* needReloadFoldes;
+@property(strong, nonatomic, nullable) FileItem* fileToCopy;
 @end
 
 @implementation DownloadFileManager
@@ -80,9 +81,14 @@
     }
 }
 
-- (BOOL)isExitsFileName:(NSString *)fileName inURL:(NSURL *)url{
+- (BOOL)isExitsFileName:(NSString *)fileName inFolder:(NSURL *)url{
     NSString* destinationFileName = [fileName stringByAppendingPathExtension: url.pathExtension];
     NSURL* destinationURL = [[url URLByDeletingLastPathComponent] URLByAppendingPathComponent: destinationFileName];
+    return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
+}
+
+- (BOOL) isExitsFolderName:(NSString *)folderName inFolder:(NSURL *)url{
+    NSURL* destinationURL = [url URLByAppendingPathComponent: folderName];
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 
@@ -196,8 +202,7 @@
     if([self canMove:source to:destination]){
         if([_fileManager isReadableFileAtPath:source.url.path]){
             NSError* error = nil;
-            NSString* destinationName = source.url.lastPathComponent;
-            NSURL* destinationURL = [destination.url URLByAppendingPathComponent:destinationName];
+            NSURL* destinationURL = [self getValidDestinationURLForMoveAndCopyForFileItem:source toURL:destination.url];
             [_fileManager moveItemAtURL:source.url toURL:destinationURL error:&error];
             if(error){
                 NSLog(@"%@", error.userInfo);
@@ -212,5 +217,59 @@
         return false;
     }
 }
+
+- (BOOL)shouldShowPaste{
+    return self.fileToCopy != nil;
+}
+
+- (void)copyFile:(FileItem *)fileItem{
+    _fileToCopy = fileItem;
+}
+
+- (BOOL)pasteFileTo:(FolderItem *)destinationFolder{
+    if(_fileToCopy != nil){
+        NSError *error = nil;
+        NSURL* destinationURL = [self getValidDestinationURLForMoveAndCopyForFileItem:_fileToCopy toURL:destinationFolder.url];
+        [_fileManager copyItemAtURL:_fileToCopy.url toURL:destinationURL error:&error];
+        if(error){
+            return false;
+        }else{
+            return true;
+        }
+    }else{
+        return false;
+    }
+}
+
+- (NSURL*) getValidDestinationURLForMoveAndCopyForFileItem: (FileItem*) fileItem toURL: (NSURL*) url {
+    if(fileItem.isDir){
+        NSURL* destinationURL;
+        NSInteger i = 0;
+        do {
+            NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li)", i] : @"";
+            NSString* destinationName = [fileItem.name stringByAppendingString: subFix];
+            destinationURL = [url URLByAppendingPathComponent:destinationName];
+            i += 1;
+        } while ([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
+        return destinationURL;
+    }else{
+        NSURL* destinationURL;
+        NSInteger i = 0;
+        do{
+            NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li).", i] : @".";
+            NSString* absoluteName = [fileItem.name stringByDeletingPathExtension];
+            NSString* destinationName = [[absoluteName stringByAppendingString:subFix] stringByAppendingString:[fileItem.url pathExtension]];
+            destinationURL = [url URLByAppendingPathComponent:destinationName];
+            i += 1;
+        }while([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
+        return destinationURL;
+    }
+}
+
+
+
+
+
+
 
 @end

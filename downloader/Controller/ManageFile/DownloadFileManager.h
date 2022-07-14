@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (DownloadFileManager*) sharedInstance;
 - (void) fetchAllFileOfFolder: (FolderItem*) folderItem withAfterCompleteHandler: (void (^)(void)) completionHandler;
 - (void) decompressZipFile: (FileItem*) fileItem;
-- (BOOL) isExitsFileName: (NSString*) fileName inURL: (NSURL*) url;
+- (BOOL) isExitsFileName: (NSString*) fileName inFolder: (NSURL*) url;
+- (BOOL) isExitsFolderName: (NSString*) folderName inFolder: (NSURL*) url;
 - (BOOL) renameFileOf: (FileItem*) fileItem toNewName: (NSString*) newName;
 - (BOOL) removeFile: (FileItem*) fileItem fromFolder: (FolderItem*) folder;
 - (void) removeTempFolderFromFolder: (FolderItem*) folder;
@@ -23,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) showRefetchDataOfFolder: (FolderItem*) folderItem;
 - (BOOL) canMove: (FileItem*) source to: (FolderItem*) destination;
 - (BOOL) moveFile: (FileItem*) source toFolder: (FolderItem*) destination;
+- (void) copyFile: (FileItem*) fileItem;
+- (BOOL) pasteFileTo: (FolderItem*) destinationFolder;
+- (BOOL) shouldShowPaste;
 @end
 
 NS_ASSUME_NONNULL_END

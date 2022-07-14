@@ -14,4 +14,5 @@
 #import "DownloadItemPersistenceManager.h"
 #import "DownloadFileManager.h"
 #import "FileItem.h"
+#import "FileTypeEnum.h"
 #endif /* BridgingHeader_h */

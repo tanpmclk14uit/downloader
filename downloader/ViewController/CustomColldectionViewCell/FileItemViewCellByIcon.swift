@@ -152,7 +152,6 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         // Set up the parameters of the request.
         let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
         let scale = UIScreen.main.scale
-        
         // Create the thumbnail request.
         if #available(iOS 13.0, *) {
             let request = QLThumbnailGenerator.Request(fileAt: url,
@@ -165,11 +164,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
                 DispatchQueue.main.async {
                     if thumbnail == nil || error != nil {
                         if let fileItem = self?.fileItem {
-                            if(fileItem.isDir){
-                                self?.thumbnail.image = UIImage(named: "folder-image")
-                            }else{
-                                self?.thumbnail.image = UIImage(named: "file")
-                            }
+                            self?.thumbnail.image = UIImage.thumbnailImage(for: fileItem)
                         }
                     } else {
                         self?.thumbnail.image = thumbnail?.uiImage
@@ -178,6 +173,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             }
         }else{
             // handle for ios below ios 13
+            thumbnail.image = UIImage.thumbnailImage(for: fileItem!)
         }
     }
     

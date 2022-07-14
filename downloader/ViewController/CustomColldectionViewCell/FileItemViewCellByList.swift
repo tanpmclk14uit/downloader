@@ -177,11 +177,7 @@ class FileItemViewCellByList: UICollectionViewCell {
                 DispatchQueue.main.async {
                     if thumbnail == nil || error != nil {
                         if let fileItem = self?.fileItem {
-                            if(fileItem.isDir){
-                                self?.fileIcon.image = UIImage(named: "folder-image")
-                            }else{
-                                self?.fileIcon.image = UIImage(named: "file")
-                            }
+                            self?.fileIcon.image = UIImage.thumbnailImage(for: fileItem)
                         }
                     } else {
                         self?.fileIcon.image = thumbnail?.uiImage
@@ -189,7 +185,7 @@ class FileItemViewCellByList: UICollectionViewCell {
                 }
             }
         }else{
-            
+            fileIcon.image = UIImage.thumbnailImage(for: fileItem!)
         }
     }
 }

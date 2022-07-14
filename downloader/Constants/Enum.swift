@@ -59,6 +59,12 @@ enum FilterByFileType{
     case Unknown;
 }
 
+public enum NotificationAlertType{
+    case Error;
+    case Information;
+    case Success;
+}
+
 
 
 
