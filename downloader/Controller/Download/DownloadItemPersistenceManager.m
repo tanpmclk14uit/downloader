@@ -8,9 +8,6 @@
 #import "DownloadItemPersistenceManager.h"
 #import "DownloadItemDTO.h"
 
-@interface DownloadItemPersistenceManager ()
-@property(strong, atomic) NSArray<DownloadItemDTO*>* allDownloadItemDTOs;
-@end
 @implementation DownloadItemPersistenceManager
 
 #define kAllDownloadItemKey               @"AllDownloadItems"
@@ -42,14 +39,11 @@
 
 - (NSArray<DownloadItem *> *)getAllDownloadItems{
     NSMutableArray<DownloadItem*>* allDownloadItems = [[NSMutableArray alloc]init];
-    for(DownloadItemDTO* downloadItemDTO in self.allDownloadItemDTOs) {
+    NSData* saveData = [[NSUserDefaults standardUserDefaults] objectForKey:kAllDownloadItemKey];
+    NSArray* allDownloadItemDTOs = [NSKeyedUnarchiver unarchiveTopLevelObjectWithData:saveData error:nil];
+    for(DownloadItemDTO* downloadItemDTO in allDownloadItemDTOs) {
         [allDownloadItems addObject: [downloadItemDTO convertToDownloadItem]];
     }
     return [NSArray arrayWithArray:allDownloadItems];
-}
-
-- (void) loadAllDownloadItemDTO{
-    NSData* saveData = [[NSUserDefaults standardUserDefaults] objectForKey:kAllDownloadItemKey];
-    self.allDownloadItemDTOs = [NSKeyedUnarchiver unarchiveTopLevelObjectWithData:saveData error:nil];
 }
 @end

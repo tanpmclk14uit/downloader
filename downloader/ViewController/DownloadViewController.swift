@@ -150,7 +150,6 @@ class DownloadViewController: UIViewController {
     
     // MARK: - CONTROLLER SETUP
     private var downloadManager = DownloadManager.sharedInstance()
-    private var downloadItemPersistenceManager = DownloadItemPersistenceManager.sharedInstance()
     private var searchKey: String = ""
     private var sortBy: BasicSort = BasicSort.Date
     private var sortDiv: SortDIV = SortDIV.Asc
@@ -183,7 +182,18 @@ class DownloadViewController: UIViewController {
         emptyListMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyListMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         setUpEmptyListMessage()
-
+        
+        fetchAllDownLoadItems()
+    }
+    
+    private func fetchAllDownLoadItems(){
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            self?.downloadManager.fetchAllDownloadItemsWith {
+                DispatchQueue.main.async {
+                    self?.reloadTableViewData()
+                }
+            }
+        }
     }
     
     @objc func addNewDownloadItemClick(){
@@ -228,6 +238,25 @@ class DownloadViewController: UIViewController {
             reloadTableViewData()
         }
     }
+    
+    private func onDeleteDownloadItem(downloadItem: DownloadItem){
+        downloadManager.remove(downloadItem)
+        reloadTableViewData()
+    }
+    
+    private func onRenameDownloadItem(downloadItem: DownloadItem){
+        
+    }
+    
+    private func onRestartDownloadItem(downloadItem: DownloadItem){
+        downloadManager.restart(downloadItem)
+        reloadRow(downloadItem: downloadItem)
+    }
+    
+    private func onCopyURLOfDownloadItem(downloadItem: DownloadItem){
+        UIPasteboard.general.string = String(describing: downloadItem.url)
+    }
+    
     
     private func onAddNewInputURL(_ inputURL: String){
         if(downloadManager.checkValidDownloadURL(inputURL)){
@@ -275,6 +304,45 @@ class DownloadViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(downloadAction)
         alert.preferredAction = downloadAction
+        present(alert, animated: true)
+    }
+    
+    private func showActionOfDownloadItem(downloadItem: DownloadItem){
+        let alert = UIAlertController(
+            title: "\(downloadItem.name)",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
+            self?.onRenameDownloadItem(downloadItem: downloadItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Copy URL", style: .default, handler: { [weak self] _ in
+            self?.onCopyURLOfDownloadItem(downloadItem: downloadItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Restart", style: .default, handler: { [weak self] _ in
+            self?.onRestartDownloadItem(downloadItem: downloadItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            self?.onDeleteDownloadItem(downloadItem: downloadItem)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(alert, animated: true)
+    }
+    
+    
+    private func showDeleteConfirmAlert(downloadItem: DownloadItem){
+        let alert = UIAlertController(
+            title: "Delete",
+            message: "Ensure to delete this download item?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            if let self = self{
+                self.onDeleteDownloadItem(downloadItem: downloadItem)
+            }
+        }))
         present(alert, animated: true)
     }
     
@@ -350,20 +418,16 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let downloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
-        return downloadItem.state != String(describing: DownloadState.Downloading)
+        return true;
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, indexPath in
-            let downloadItem = self?.getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
-            if let downloadItem = downloadItem{
-                self?.downloadManager.remove(downloadItem)
-                self?.reloadTableViewData()
-            }
+        let downloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, _ in
+            self?.showDeleteConfirmAlert(downloadItem: downloadItem)
         }
-        let otherAction = UITableViewRowAction(style: .normal, title: "Action") { action, index in
-            print("Do some action here")
+        let otherAction = UITableViewRowAction(style: .normal, title: "Action") { [weak self] _,_  in
+            self?.showActionOfDownloadItem(downloadItem: downloadItem)
         }
         return [deleteAction, otherAction]
     }
@@ -421,7 +485,10 @@ extension DownloadViewController: DownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         let currentDownloadItem: DownloadItem? = self.downloadManager.getItemBy(downloadTask);
+        
         if let currentDownloadItem = currentDownloadItem {
+            currentDownloadItem.state = String(describing: DownloadState.Completed)
+            self.downloadManager.saveAllDownloadItemsToPersistence()
             do {
                 let documentsURL = try
                 FileManager.default.url(for: .downloadsDirectory,
@@ -438,8 +505,6 @@ extension DownloadViewController: DownloadDelegate {
                         fileName)
                     do{
                         try FileManager.default.moveItem(at: location, to: savedURL)
-                        currentDownloadItem.state = String(describing: DownloadState.Completed)
-                        print(savedURL)
                         break;
                     }catch{
                         i += 1

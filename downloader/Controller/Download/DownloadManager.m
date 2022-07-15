@@ -7,11 +7,15 @@
 
 #import "DownloadManager.h"
 #import "DownloadDelegate.h"
+#import "DownloadItemPersistenceManager.h"
+#import "DownloadFileManager.h"
 
 @interface DownloadManager ()
 @property(weak, nonatomic) id<DownloadDelegate> downloadDelegate;
 @property(strong, atomic) NSURLSession* session;
 @property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
+@property(strong, nonatomic) DownloadItemPersistenceManager* persistence;
+@property(strong, nonatomic) dispatch_queue_t persistenceQueue;
 @end
 
 @implementation DownloadManager
@@ -37,6 +41,8 @@
     self = [super init];
     if(self){
         self.allDownloadItems = [[NSMutableArray alloc] init];
+        self.persistence = [DownloadItemPersistenceManager sharedInstance];
+        self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -100,7 +106,7 @@
     for(DownloadItem* downloadItem in self.allDownloadItems){
         if([downloadItem.state isEqual: @"Downloading"]){
             [self pauseDownload:downloadItem withCompleteHandler:^{
-                
+               
             }];
         }
     }
@@ -112,11 +118,8 @@
             return false;
         }
     }
+    [self saveAllDownloadItemsToPersistence];
     return true;
-}
-
-- (void) removeDownloadItemAtIndext:(NSInteger)index{
-    [self.allDownloadItems removeObjectAtIndex:index];
 }
 
 - (void) removeDownloadItem:(DownloadItem *)downloadItem{
@@ -124,11 +127,33 @@
 }
 
 - (NSArray<DownloadItem *> *)getAllDownloadItems{
-    return [NSArray arrayWithArray: self.allDownloadItems];
+    return self.allDownloadItems;
 }
 
-- (void) setDownloadItems:(NSArray<DownloadItem *> *)allDownloadItems{
-    self.allDownloadItems = [NSMutableArray arrayWithArray:allDownloadItems];
+- (void) saveAllDownloadItemsToPersistence{
+    __weak DownloadManager *weakSelf = self;
+    dispatch_async(self.persistenceQueue, ^{
+        [weakSelf.persistence saveAllDownloadItems:weakSelf.allDownloadItems];
+    });
+}
+
+- (void) fetchAllDownloadItemsWithAfterCompleteHandler:(void (^)(void))completionHandler{
+    __weak DownloadManager *weakSelf = self;
+    dispatch_sync(self.persistenceQueue, ^{
+        weakSelf.allDownloadItems = [NSMutableArray arrayWithArray:[weakSelf.persistence getAllDownloadItems]];
+        completionHandler();
+    });
+}
+
+- (void)renameDownloadItem:(DownloadItem *)downloadItem{
+    
+}
+
+- (void)restartDownloadItem:(DownloadItem *)downloadItem{
+    downloadItem.state = @"Downloading";
+    NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:downloadItem.url];
+    downloadItem.downloadTask = downloadTask;
+    [downloadTask resume];
 }
 
 @end

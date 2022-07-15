@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) saveAllDownloadItems: (NSArray<DownloadItem*>*) allDownloadItems;
 - (NSArray<DownloadItem*>*) getAllDownloadItems;
 - (instancetype) init NS_UNAVAILABLE;
-- (void) loadAllDownloadItemDTO;
 @end
 
 NS_ASSUME_NONNULL_END

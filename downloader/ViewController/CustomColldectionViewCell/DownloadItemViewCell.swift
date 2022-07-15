@@ -115,32 +115,34 @@ class DownloadItemViewCell: UITableViewCell {
     private func setUpCellByDownloadState(downLoadState: String){
         switch(downLoadState){
         case String(describing: DownloadState.Completed):do {
-            downloadItemButtonAction.setImage(UIImage(named: "download.outline"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemButtonAction.isHidden = true
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Pause):do {
             downloadItemButtonAction.setImage(UIImage(named: "play"), for: .normal)
             cancelDownloadButton.isHidden = false
+            downloadItemButtonAction.isHidden = false
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Canceled): do {
-            downloadItemButtonAction.setImage(UIImage(named: "cancel.square"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemButtonAction.isHidden = true
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Error):do {
-            downloadItemButtonAction.setImage(UIImage(named: "error"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemButtonAction.isHidden = true
             downloadItemStatus.text = currentDownloadItem?.state ?? ""
             break
         }
         case String(describing: DownloadState.Downloading):do {
             downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
             cancelDownloadButton.isHidden = true
+            downloadItemButtonAction.isHidden = false
             downloadItemStatus.text = currentDownloadItem?.durationString ?? String(describing: DownloadState.Downloading)
             break
         }
