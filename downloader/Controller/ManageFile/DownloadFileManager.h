@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) copyFile: (FileItem*) fileItem;
 - (BOOL) pasteFileTo: (FolderItem*) destinationFolder;
 - (BOOL) shouldShowPaste;
+- (BOOL) copyFileAtURL: (NSURL*) source toFolder: (FolderItem*) destinationFolder;
 @end
 
 NS_ASSUME_NONNULL_END

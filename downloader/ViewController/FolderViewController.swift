@@ -10,6 +10,7 @@ import AVKit
 import AVFoundation
 import WebKit
 import QuickLook
+import UniformTypeIdentifiers
 
 class FolderViewController: UIViewController {
     // MARK: - CONFIG UI
@@ -41,7 +42,7 @@ class FolderViewController: UIViewController {
         return titleName
     }()
     
-    lazy var buttonAddFile: UIButton = {
+    lazy var buttonImportFile: UIButton = {
         let button = UIButton(type: .contactAdd)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -93,19 +94,19 @@ class FolderViewController: UIViewController {
         let toolBar = UIView()
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         toolBar.addSubview(buttonFilter)
-        toolBar.addSubview(buttonAddFile)
+        toolBar.addSubview(buttonImportFile)
         toolBar.addSubview(buttonAddFolder)
         toolBar.addSubview(buttonSort)
         toolBar.addSubview(buttonViewType)
         
         // config button add file
-        buttonAddFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
-        buttonAddFile.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
-        buttonAddFile.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        buttonImportFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
+        buttonImportFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
+        buttonImportFile.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        buttonImportFile.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         // config button add forder
         buttonAddFolder.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonAddFile.trailingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
+        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonImportFile.trailingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
         buttonAddFolder.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
         buttonAddFolder.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
         // config button filter
@@ -297,6 +298,7 @@ class FolderViewController: UIViewController {
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
         buttonFilter.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
+        buttonImportFile.addTarget(self, action: #selector(onImportFileClick), for: .touchUpInside)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -484,9 +486,26 @@ class FolderViewController: UIViewController {
         present(viewBySelectionAlert, animated: true)
     }
     
+    @objc func onImportFileClick(){
+        let pickerVC: UIDocumentPickerViewController
+        if #available(iOS 14.0, *) {
+            let fileSupported = [UTType.audio, UTType.video, UTType.text, UTType.pdf, UTType.image, UTType.archive]
+            pickerVC = UIDocumentPickerViewController(forOpeningContentTypes: fileSupported, asCopy: true)
+            pickerVC.allowsMultipleSelection = true
+        } else {
+            let fileSupported = ["public.image", "public.archive", "public.audio", "public.video", "public.text", "public.pdf"]
+            pickerVC = UIDocumentPickerViewController(documentTypes: fileSupported, in: UIDocumentPickerMode.import)
+        }
+        
+        pickerVC.delegate = self
+        present(pickerVC, animated: true)
+        
+    }
+    
     private func onRenameFileClick(fileItem: FileItem){
         showInputNewFileNameOfFile(fileItem)
     }
+
     
     private func onMoveFileClick(fileItem: FileItem){
         let moveFileVC = MoveFileViewController()
@@ -510,6 +529,7 @@ class FolderViewController: UIViewController {
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Paste success"), animated: true)
         }else{
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
+            setPasteButton()
         }
     }
     
@@ -518,6 +538,7 @@ class FolderViewController: UIViewController {
             fetchAllFileOfFolder()
         }else{
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
+            setPasteButton()
         }
     }
     
@@ -634,6 +655,7 @@ class FolderViewController: UIViewController {
             if let self = self{
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     self.reloadCollectionView()
+                    self.setPasteButton();
                 }else{
                     self.showErrorNotification(message: "Can not delete this file!")
                 }
@@ -787,6 +809,19 @@ extension FolderViewController: CustomContextMenuDelegate{
                 navigationController?.popToViewController(targetController, animated: true)
             }
         }
+    }
+}
+// MARK: - CONFIRM UIDocumentPickerDelegate
+extension FolderViewController: UIDocumentPickerDelegate{
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        for url in urls{
+            if(fileManager.copyFile(at: url, toFolder: currentFolder!)){
+                
+            }else{
+                present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Import \(url.lastPathComponent) fail"), animated: true)
+            }
+        }
+        fetchAllFileOfFolder()
     }
 }
 

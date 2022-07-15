@@ -114,6 +114,7 @@
     }else{
         [folder.allFileItems removeObject:fileItem];
         [_needReloadFoldes addObjectsFromArray:folder.parentFolders];
+        _fileToCopy = nil;
         return true;
     }
 }
@@ -202,7 +203,12 @@
     if([self canMove:source to:destination]){
         if([_fileManager isReadableFileAtPath:source.url.path]){
             NSError* error = nil;
-            NSURL* destinationURL = [self getValidDestinationURLForMoveAndCopyForFileItem:source toURL:destination.url];
+            NSURL* destinationURL;
+            if(_fileToCopy.isDir){
+                destinationURL = [self getValidDestinationURLForMoveAndCopyForFolder:source.url toURL:destination.url];
+            }else{
+                destinationURL = [self getValidDestinationURLForMoveAndCopyForFile: source.url toURL:destination.url];
+            }
             [_fileManager moveItemAtURL:source.url toURL:destinationURL error:&error];
             if(error){
                 NSLog(@"%@", error.userInfo);
@@ -229,40 +235,60 @@
 - (BOOL)pasteFileTo:(FolderItem *)destinationFolder{
     if(_fileToCopy != nil){
         NSError *error = nil;
-        NSURL* destinationURL = [self getValidDestinationURLForMoveAndCopyForFileItem:_fileToCopy toURL:destinationFolder.url];
+        NSURL* destinationURL;
+        if(_fileToCopy.isDir){
+            destinationURL = [self getValidDestinationURLForMoveAndCopyForFolder:_fileToCopy.url toURL:destinationFolder.url];
+        }else{
+            destinationURL = [self getValidDestinationURLForMoveAndCopyForFile: _fileToCopy.url toURL:destinationFolder.url];
+        }
         [_fileManager copyItemAtURL:_fileToCopy.url toURL:destinationURL error:&error];
         if(error){
+            _fileToCopy = nil;
             return false;
         }else{
             return true;
         }
     }else{
+        _fileToCopy = nil;
         return false;
     }
 }
 
-- (NSURL*) getValidDestinationURLForMoveAndCopyForFileItem: (FileItem*) fileItem toURL: (NSURL*) url {
-    if(fileItem.isDir){
-        NSURL* destinationURL;
-        NSInteger i = 0;
-        do {
-            NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li)", i] : @"";
-            NSString* destinationName = [fileItem.name stringByAppendingString: subFix];
-            destinationURL = [url URLByAppendingPathComponent:destinationName];
-            i += 1;
-        } while ([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
-        return destinationURL;
+- (NSURL*) getValidDestinationURLForMoveAndCopyForFolder: (NSURL*) source toURL: (NSURL*) url {
+    NSString* fileName = source.lastPathComponent;
+    NSURL* destinationURL;
+    NSInteger i = 0;
+    do {
+        NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li)", i] : @"";
+        NSString* destinationName = [fileName stringByAppendingString: subFix];
+        destinationURL = [url URLByAppendingPathComponent:destinationName];
+        i += 1;
+    } while ([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
+    return destinationURL;
+}
+
+- (NSURL*) getValidDestinationURLForMoveAndCopyForFile: (NSURL*) source toURL: (NSURL*) url {
+    NSString* fileName = source.lastPathComponent;
+    NSURL* destinationURL;
+    NSInteger i = 0;
+    do{
+        NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li).", i] : @".";
+        NSString* absoluteName = [fileName stringByDeletingPathExtension];
+        NSString* destinationName = [[absoluteName stringByAppendingString:subFix] stringByAppendingString:[source pathExtension]];
+        destinationURL = [url URLByAppendingPathComponent:destinationName];
+        i += 1;
+    }while([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
+    return destinationURL;
+}
+
+- (BOOL)copyFileAtURL:(NSURL *)source toFolder:(FolderItem *)destinationFolder{
+    NSError *error = nil;
+    NSURL* destinationURL = [self getValidDestinationURLForMoveAndCopyForFile:source toURL:destinationFolder.url];
+    [_fileManager copyItemAtURL: source toURL:destinationURL error:&error];
+    if(error){
+        return false;
     }else{
-        NSURL* destinationURL;
-        NSInteger i = 0;
-        do{
-            NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li).", i] : @".";
-            NSString* absoluteName = [fileItem.name stringByDeletingPathExtension];
-            NSString* destinationName = [[absoluteName stringByAppendingString:subFix] stringByAppendingString:[fileItem.url pathExtension]];
-            destinationURL = [url URLByAppendingPathComponent:destinationName];
-            i += 1;
-        }while([_fileManager fileExistsAtPath:destinationURL.path isDirectory:false]);
-        return destinationURL;
+        return true;
     }
 }
 
