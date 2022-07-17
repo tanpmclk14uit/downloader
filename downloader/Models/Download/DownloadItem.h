@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, atomic) NSString *totalSizeFitWithUnit;
 @property(strong, atomic, nullable) NSData *dataForResumeDownload;
 @property(strong, atomic, nullable) NSString *durationString;
+@property(assign, atomic) double progress;
 - (instancetype)initWithStringURL: (NSString*)url;
 - (instancetype) initWithName: (NSString*) name andState: (NSString*) state andURL: (NSString*) url andResumeData: (nullable NSData*) resumeData;
 @end

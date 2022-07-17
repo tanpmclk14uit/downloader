@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-pause-button@1x.png",
+      "filename" : "pause@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-pause-button@2x.png",
+      "filename" : "pause@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "icons8-pause-button@3x.png",
+      "filename" : "pause@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

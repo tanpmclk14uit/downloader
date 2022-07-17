@@ -251,7 +251,7 @@ class DownloadViewController: UIViewController {
     
     private func onRestartDownloadItem(downloadItem: DownloadItem){
         downloadManager.restart(downloadItem)
-        reloadRow(downloadItem: downloadItem)
+        reloadRow(currentDownloadItem: downloadItem)
     }
     
     private func onCopyURLOfDownloadItem(downloadItem: DownloadItem){
@@ -329,7 +329,7 @@ class DownloadViewController: UIViewController {
                     if let newName = fields[0].text, !fields[0].text!.isEmpty {
                         if(self.downloadManager.isValidFileName(newName)){
                             self.downloadManager.renameDownloadItem(downloadItem, toNewName: newName)
-                            self.reloadRow(downloadItem: downloadItem)
+                            self.reloadRow(currentDownloadItem: downloadItem)
                         }
                         else{
                             self.showErrorNotification(message: "Name is in wrong format!")
@@ -471,11 +471,10 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
         return [deleteAction, otherAction]
     }
     
-    func reloadRow(downloadItem: DownloadItem){
-        let position = getAllDownloadItemMatchSearchSortAndFilter().firstIndex(of: downloadItem)
-        if let position = position{
-            let indexPath = IndexPath(row: position, section: 0)
-            self.downloadItemsTableView.reloadRows(at: [indexPath], with: .none)
+    func reloadRow(currentDownloadItem: DownloadItem){
+        let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)
+        if(cell?.getCurrentDownloadItem() == currentDownloadItem){
+            cell?.setUpCellByDownloadState(downLoadState: currentDownloadItem.state)
         }
     }
     
@@ -493,7 +492,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
         if(filterBy == FilterByState.Pause){
             self.reloadTableViewData()
         }else{
-            self.reloadRow(downloadItem: downloadItem)
+            self.reloadRow(currentDownloadItem: downloadItem)
         }
     }
     
@@ -502,7 +501,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
         if(filterBy == FilterByState.Pause){
             self.reloadTableViewData()
         }else{
-            self.reloadRow(downloadItem: downloadItem)
+            self.reloadRow(currentDownloadItem: downloadItem)
         }
     }
     
@@ -512,7 +511,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
                 if(filterBy == FilterByState.Downloading){
                     self.reloadTableViewData()
                 }else{
-                    self.reloadRow(downloadItem: downloadItem)
+                    self.reloadRow(currentDownloadItem: downloadItem)
                 }
                
             }
@@ -531,7 +530,7 @@ extension DownloadViewController: DownloadDelegate {
                     if(self?.filterBy == FilterByState.Downloading){
                         self?.reloadTableViewData()
                     }else{
-                        self?.reloadRow(downloadItem: currentDownloadItem)
+                        self?.reloadRow(currentDownloadItem: currentDownloadItem)
                     }
                 }
             } andFailureHandler: {[weak self] message in
@@ -556,6 +555,8 @@ extension DownloadViewController: DownloadDelegate {
             let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)
             if(cell?.getCurrentDownloadItem() == currentDownloadItem){
                 cell?.setDownloadItemDownloadDuration(currentDownloadItem.durationString)
+                let progress: Double = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
+                cell?.updateProgressBar(progress: progress)
             }
         }
     }

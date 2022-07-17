@@ -90,6 +90,7 @@
             downloadItem.state = @"Pause";
         }else{
             downloadItem.state = @"Error";
+            downloadItem.progress = 0.0;
         }
         [self stopTrackingInternetConnection];
         completeHandler();
@@ -104,12 +105,14 @@
         [self startTrackingInternetConnection];
     }else{
         downloadItem.state = @"Error";
+        downloadItem.progress = 0.0;
     }
 }
 
 - (void) cancelDownload:(DownloadItem *)downloadItem{
     [downloadItem.downloadTask suspend];
     downloadItem.downloadTask = nil;
+    downloadItem.progress = 0.0;
     downloadItem.state = @"Canceled";
 }
 
@@ -176,6 +179,7 @@
 
 - (void)restartDownloadItem:(DownloadItem *)downloadItem{
     downloadItem.state = @"Downloading";
+    downloadItem.progress = 0.0;
     NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:downloadItem.url];
     downloadItem.downloadTask = downloadTask;
     [downloadTask resume];

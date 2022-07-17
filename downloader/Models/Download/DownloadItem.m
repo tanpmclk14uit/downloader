@@ -18,6 +18,7 @@
         self.downloadTask = nil;
         self.dataForResumeDownload = nil;
         self.durationString = nil;
+        self.progress = 0.0;
     }
     return self;
 }
@@ -31,6 +32,7 @@
         self.downloadTask = nil;
         self.dataForResumeDownload = resumeData;
         self.durationString = nil;
+        self.progress = 0.0;
     }
     return self;
 }

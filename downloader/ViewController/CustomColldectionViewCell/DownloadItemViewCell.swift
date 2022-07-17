@@ -25,12 +25,29 @@ class DownloadItemViewCell: UITableViewCell {
         return downloadItemStatus
     }()
      
+    private lazy var buttonActionShape: CAShapeLayer = {
+        let shapePlayer = CAShapeLayer();
+        let centerPoint = CGPoint(x: Dimen.cellButtonWidth/2   , y: Dimen.cellButtonHeight/2)
+        let circularPath = UIBezierPath(arcCenter: centerPoint, radius: Dimen.cellButtonWidth/2, startAngle: -CGFloat.pi/2, endAngle: 3*CGFloat.pi/2, clockwise: true)
+        
+        shapePlayer.path = circularPath.cgPath
+        shapePlayer.fillColor = UIColor(white: 1, alpha: 0).cgColor
+        shapePlayer.strokeColor = UIColor.systemBlue.cgColor
+        shapePlayer.lineWidth = 3.5
+        
+        shapePlayer.lineCap = CAShapeLayerLineCap.round
+        return shapePlayer
+    }()
+    
     private lazy var downloadItemButtonAction: UIButton = {
-        let downloadItemButtonAction = UIButton()
-        downloadItemButtonAction.translatesAutoresizingMaskIntoConstraints = false
-        downloadItemButtonAction.tintColor = .gray
-        downloadItemButtonAction.setImage(UIImage(named: "pause"), for: .normal)
-        return downloadItemButtonAction
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .gray
+
+        buttonActionShape.frame = button.bounds
+        button.layer.addSublayer(buttonActionShape)
+        button.setImage(UIImage(named: "pause"), for: .normal)
+        return button
     }()
     
     private lazy var cancelDownloadButton: UIButton = {
@@ -51,8 +68,8 @@ class DownloadItemViewCell: UITableViewCell {
         // config button download action
         downloadItemButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
-        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        downloadItemButtonAction.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: Dimen.cellButtonWidth).isActive = true
+        downloadItemButtonAction.heightAnchor.constraint(equalToConstant: Dimen.cellButtonHeight).isActive = true
         // config cancel download button
         cancelDownloadButton.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         cancelDownloadButton.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
@@ -105,6 +122,7 @@ class DownloadItemViewCell: UITableViewCell {
     func setUpDataCell(downloadItem: DownloadItem){
         currentDownloadItem = downloadItem
         downloadItemTitle.text = downloadItem.name
+        buttonActionShape.strokeEnd = downloadItem.progress
         setUpCellByDownloadState(downLoadState: downloadItem.state)
     }
     
@@ -112,7 +130,16 @@ class DownloadItemViewCell: UITableViewCell {
         return self.currentDownloadItem
     }
     
-    private func setUpCellByDownloadState(downLoadState: String){
+    func updateProgressBar(progress: Double){
+        if let currentDownloadItem = currentDownloadItem {
+            currentDownloadItem.progress = progress
+            currentDownloadItem.progress = min(1, progress)
+            currentDownloadItem.progress = max(0, progress)
+            buttonActionShape.strokeEnd = currentDownloadItem.progress
+        }
+    }
+    
+    func setUpCellByDownloadState(downLoadState: String){
         switch(downLoadState){
         case String(describing: DownloadState.Completed):do {
             cancelDownloadButton.isHidden = true
@@ -149,6 +176,9 @@ class DownloadItemViewCell: UITableViewCell {
         default:
             break;
         }
+        if let currentDownloadItem = currentDownloadItem {
+            buttonActionShape.strokeEnd = currentDownloadItem.progress
+        }
     }
     // MARK: - CONFIG BUTTON EVENT
     @objc func actionButtonClick(){
@@ -168,6 +198,7 @@ class DownloadItemViewCell: UITableViewCell {
             break;
         }
     }
+    
     @objc func cancelDownloadButtonClick(){
         delegate?.cancelClick(downloadItem: currentDownloadItem!)
     }

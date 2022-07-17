@@ -21,6 +21,8 @@ class Dimen {
     public static let buttonIconWidth: CGFloat = 24;
     public static let buttonIconHeight: CGFloat = 24;
     public static let normalButtonWidth: CGFloat = 100;
+    public static let cellButtonWidth: CGFloat = 30;
+    public static let cellButtonHeight: CGFloat = 30;
     // image size
     public static let imageIconWidth: CGFloat = 50;
     public static let imageIconHeight: CGFloat = 50;
