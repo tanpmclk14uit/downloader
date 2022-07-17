@@ -145,8 +145,8 @@
     });
 }
 
-- (void)renameDownloadItem:(DownloadItem *)downloadItem{
-    
+- (void) renameDownloadItem:(DownloadItem *)downloadItem toNewName:(NSString *)newName{
+    downloadItem.name = newName;
 }
 
 - (void)restartDownloadItem:(DownloadItem *)downloadItem{
@@ -154,6 +154,52 @@
     NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:downloadItem.url];
     downloadItem.downloadTask = downloadTask;
     [downloadTask resume];
+}
+
+- (BOOL)isValidFileName:(NSString *)fileName{
+    return ![fileName containsString:@"/"] &&
+    ![[fileName substringFromIndex: fileName.length - 1] isEqualToString:@"."];
+}
+
+- (void)didFinishDownloadingTask:(NSURLSessionDownloadTask *)task toLocation:(NSURL *)location withSuccessHandler:(void (^)(void))onSuccess andFailureHandler:(void (^)(NSString * _Nonnull))onFail{
+    DownloadItem* currentDownloadItem = [self getItemByDownloadTask:task];
+    
+    if(currentDownloadItem){
+        NSURL* destinationURL = [self getSavableURLForDownloadItem:currentDownloadItem From:task];
+        NSError* error;
+        [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
+        if(error){
+            onFail([NSString stringWithFormat: @"Can't save current download item due to:  %@", error.userInfo]);
+            currentDownloadItem.state = @"Error";
+        }else{
+            onSuccess();
+            currentDownloadItem.state = @"Completed";
+        }
+    }else{
+        onFail(@"Can't save current download item");
+        currentDownloadItem.state = @"Error";
+    }
+    [self saveAllDownloadItemsToPersistence];
+}
+
+- (NSURL*) getSavableURLForDownloadItem: (DownloadItem*) downloadItem From:(NSURLSessionDownloadTask*) task{
+    NSInteger i = 0;
+    NSURL* destinationURL;
+    do{
+        NSString* suggestFileName = [task.response suggestedFilename];
+        NSString* pathExtension;
+        if(suggestFileName != nil){
+            pathExtension = [suggestFileName pathExtension];
+        }else{
+            pathExtension = @".octet-stream";
+        }
+        NSString* subFix = (i > 0) ? [NSString stringWithFormat: @"(%li).", i] : @".";
+        NSString* destinationName = [[downloadItem.name stringByAppendingString:subFix] stringByAppendingString:pathExtension];
+        destinationURL = [[FolderItem rootFolder].url URLByAppendingPathComponent:destinationName];
+        i++;
+    }while([[NSFileManager defaultManager] fileExistsAtPath:destinationURL.path isDirectory:false]);
+
+    return destinationURL;
 }
 
 @end

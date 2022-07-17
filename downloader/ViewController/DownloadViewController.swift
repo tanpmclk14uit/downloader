@@ -245,7 +245,7 @@ class DownloadViewController: UIViewController {
     }
     
     private func onRenameDownloadItem(downloadItem: DownloadItem){
-        
+        showInputNewDownloadItemNameOfDownloadItem(downloadItem)
     }
     
     private func onRestartDownloadItem(downloadItem: DownloadItem){
@@ -304,6 +304,44 @@ class DownloadViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(downloadAction)
         alert.preferredAction = downloadAction
+        present(alert, animated: true)
+    }
+    
+    private func showInputNewDownloadItemNameOfDownloadItem(_ downloadItem: DownloadItem){
+        let alert = UIAlertController(
+            title: "Rename download item",
+            message: nil,
+            preferredStyle: .alert
+        )
+        alert.addTextField{ field in
+            field.placeholder = "example"
+            field.text = downloadItem.name
+            field.returnKeyType = .done
+            field.keyboardType = .default
+        }
+        // add action to alert
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let alertFieldCount = 1;
+        let renameAction = UIAlertAction(title: "Rename", style: .default, handler: { [weak self] _ in
+            if let fields = alert.textFields, fields.count == alertFieldCount {
+                if let self = self {
+                    if let newName = fields[0].text, !fields[0].text!.isEmpty {
+                        if(self.downloadManager.isValidFileName(newName)){
+                            self.downloadManager.renameDownloadItem(downloadItem, toNewName: newName)
+                            self.reloadRow(downloadItem: downloadItem)
+                        }
+                        else{
+                            self.showErrorNotification(message: "Name is in wrong format!")
+                        }
+                    }else{
+                        self.showErrorNotification(message: "Name can not place empty!")
+                    }
+                }
+            }
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(renameAction)
+        alert.preferredAction = renameAction
         present(alert, animated: true)
     }
     
@@ -487,38 +525,18 @@ extension DownloadViewController: DownloadDelegate {
         let currentDownloadItem: DownloadItem? = self.downloadManager.getItemBy(downloadTask);
         
         if let currentDownloadItem = currentDownloadItem {
-            currentDownloadItem.state = String(describing: DownloadState.Completed)
-            self.downloadManager.saveAllDownloadItemsToPersistence()
-            do {
-                let documentsURL = try
-                FileManager.default.url(for: .downloadsDirectory,
-                                        in: .userDomainMask,
-                                        appropriateFor: nil,
-                                        create: true)
-                var i: Int = 0;
-                repeat{
-                    let suggestedFileName = downloadTask.response?.suggestedFilename
-                    let pathExtension = URL(fileURLWithPath: suggestedFileName ?? ".octet-stream").pathExtension
-                    let fileExtension: String = (i > 0) ? ("(\(i)).\(pathExtension)") : (".\(pathExtension)")
-                    let fileName = "\(currentDownloadItem.name)\(fileExtension)"
-                    let savedURL = documentsURL.appendingPathComponent(
-                        fileName)
-                    do{
-                        try FileManager.default.moveItem(at: location, to: savedURL)
-                        break;
-                    }catch{
-                        i += 1
-                    }
-                }while(true)
-                DispatchQueue.main.async {[self] in
-                    if(filterBy == FilterByState.Downloading){
-                        reloadTableViewData()
+            self.downloadManager.didFinishDownloadingTask(downloadTask, toLocation: location) {
+                DispatchQueue.main.async {[weak self] in
+                    if(self?.filterBy == FilterByState.Downloading){
+                        self?.reloadTableViewData()
                     }else{
-                        self.reloadRow(downloadItem: currentDownloadItem)
+                        self?.reloadRow(downloadItem: currentDownloadItem)
                     }
                 }
-            } catch {
-                print("error")
+            } andFailureHandler: {[weak self] message in
+                DispatchQueue.main.async {
+                    self?.showErrorNotification(message: message)
+                }
             }
         }
     }
@@ -526,6 +544,9 @@ extension DownloadViewController: DownloadDelegate {
         print("error")
     }
     
+    func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
+        print("error")
+    }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let currentDownloadItem = self.downloadManager.getItemBy(downloadTask);
