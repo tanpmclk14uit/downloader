@@ -9,6 +9,7 @@
 #import "DownloadDelegate.h"
 #import "DownloadItemPersistenceManager.h"
 #import "DownloadFileManager.h"
+#import "InternetTracking.h"
 
 @interface DownloadManager ()
 @property(weak, nonatomic) id<DownloadDelegate> downloadDelegate;
@@ -16,6 +17,7 @@
 @property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
 @property(strong, nonatomic) DownloadItemPersistenceManager* persistence;
 @property(strong, nonatomic) dispatch_queue_t persistenceQueue;
+@property(strong, nonatomic) InternetTracking* tracking;
 @end
 
 @implementation DownloadManager
@@ -43,6 +45,7 @@
         self.allDownloadItems = [[NSMutableArray alloc] init];
         self.persistence = [DownloadItemPersistenceManager sharedInstance];
         self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
+        self.tracking = [[InternetTracking alloc] initWithTrackingInterval:5];
     }
     return self;
 }
@@ -55,6 +58,10 @@
     self.session = [NSURLSession sessionWithConfiguration: config delegate:self.downloadDelegate delegateQueue:downloadTaskQueue];
 }
 
+- (void) setInternetTrackingDelegate: (id<InternetTrackingDelegate>) internetTrackingDelegate{
+    _tracking.delegate = internetTrackingDelegate;
+}
+
 - (void) downloadWithURL:(NSString *)downloadURL{
     NSURL *url = [NSURL URLWithString:downloadURL];
     if(url){
@@ -63,6 +70,7 @@
         newDownloadItem.downloadTask = downloadTask;
         [self.allDownloadItems addObject:newDownloadItem];
         [downloadTask resume];
+        [self startTrackingInternetConnection];
     }
 }
 
@@ -83,6 +91,7 @@
         }else{
             downloadItem.state = @"Error";
         }
+        [self stopTrackingInternetConnection];
         completeHandler();
     }];
 }
@@ -92,6 +101,7 @@
         downloadItem.state = @"Downloading";
         downloadItem.downloadTask = [_session downloadTaskWithResumeData: downloadItem.dataForResumeDownload];
         [downloadItem.downloadTask resume];
+        [self startTrackingInternetConnection];
     }else{
         downloadItem.state = @"Error";
     }
@@ -99,6 +109,7 @@
 
 - (void) cancelDownload:(DownloadItem *)downloadItem{
     [downloadItem.downloadTask suspend];
+    downloadItem.downloadTask = nil;
     downloadItem.state = @"Canceled";
 }
 
@@ -122,7 +133,21 @@
     return true;
 }
 
+- (BOOL) isExistDownloadingProcess{
+    for(DownloadItem* downloadItem in self.allDownloadItems){
+        if([downloadItem.state isEqual: @"Downloading"]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 - (void) removeDownloadItem:(DownloadItem *)downloadItem{
+    if(downloadItem.downloadTask != nil){
+        [downloadItem.downloadTask suspend];
+        downloadItem.downloadTask = nil;
+    }
     [self.allDownloadItems removeObject:downloadItem];
 }
 
@@ -154,6 +179,7 @@
     NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:downloadItem.url];
     downloadItem.downloadTask = downloadTask;
     [downloadTask resume];
+    [self startTrackingInternetConnection];
 }
 
 - (BOOL)isValidFileName:(NSString *)fileName{
@@ -174,11 +200,13 @@
         }else{
             onSuccess();
             currentDownloadItem.state = @"Completed";
+            currentDownloadItem.downloadTask = nil;
         }
     }else{
         onFail(@"Can't save current download item");
         currentDownloadItem.state = @"Error";
     }
+    [self stopTrackingInternetConnection];
     [self saveAllDownloadItemsToPersistence];
 }
 
@@ -201,5 +229,22 @@
 
     return destinationURL;
 }
+
+- (void)callForHaveInternetConnection{
+    [_tracking resetTracking];
+}
+
+- (void) startTrackingInternetConnection{
+    if([self isExistDownloadingProcess]){
+        [_tracking startTracking];
+    }
+}
+
+- (void) stopTrackingInternetConnection{
+    if(![self isExistDownloadingProcess]){
+        [_tracking stopTracking];
+    }
+}
+
 
 @end

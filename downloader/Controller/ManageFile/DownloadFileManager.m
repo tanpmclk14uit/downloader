@@ -9,10 +9,13 @@
 #import "FileItem.h"
 
 
+
 @interface DownloadFileManager ()
 @property(strong, nonatomic) NSFileManager* fileManager;
 @property(strong, nonatomic) NSMutableSet<NSURL*>* needReloadFoldes;
 @property(strong, nonatomic, nullable) FileItem* fileToCopy;
+
+
 @end
 
 @implementation DownloadFileManager
@@ -30,6 +33,7 @@
     if(self){
         self.fileManager = [NSFileManager defaultManager];
         self.needReloadFoldes = [[NSMutableSet alloc] init];
+      
     }
     return self;
 }

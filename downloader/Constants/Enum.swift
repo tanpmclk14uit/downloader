@@ -63,6 +63,7 @@ public enum NotificationAlertType{
     case Error;
     case Information;
     case Success;
+    case Warning;
 }
 
 

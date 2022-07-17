@@ -160,6 +160,7 @@ class DownloadViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.titleView = titleName
+        downloadManager.setInternetTrackingDelegate(self)
         // set up button add new download item
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "add"), style: .plain, target: self, action: #selector(addNewDownloadItemClick))
         // download view delegate
@@ -540,16 +541,14 @@ extension DownloadViewController: DownloadDelegate {
             }
         }
     }
-    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        print("error")
-    }
     
-    func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
-        print("error")
-    }
+    
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        
+        self.downloadManager.callForHaveInternetConnection();
         let currentDownloadItem = self.downloadManager.getItemBy(downloadTask);
+        
         currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
         currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) / \(currentDownloadItem.totalSizeFitWithUnit)"
         
@@ -560,4 +559,12 @@ extension DownloadViewController: DownloadDelegate {
             }
         }
     }
+}
+
+extension DownloadViewController: InternetTrackingDelegate{
+    func noInternetConnectionHandler() {
+        present(UIAlertController.notificationAlert(type: NotificationAlertType.Warning, message: "Check your internet connection!"), animated: true)
+    }
+    
+    
 }

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "DownloadItem.h"
 #import "DownloadDelegate.h"
+#import "InternetTracking.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DownloadManager : NSObject
@@ -30,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) renameDownloadItem: (DownloadItem*) downloadItem toNewName: (NSString*) newName;
 - (void) restartDownloadItem: (DownloadItem*) downloadItem;
 - (BOOL) isValidFileName: (NSString*) fileName;
+- (void) callForHaveInternetConnection;
+- (void) setInternetTrackingDelegate: (id<InternetTrackingDelegate>) internetTrackingDelegate;
 @end
 
 NS_ASSUME_NONNULL_END
