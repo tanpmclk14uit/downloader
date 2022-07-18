@@ -36,6 +36,7 @@
         self.directParentName = @"";
         self.allFileItems = [[NSMutableArray alloc] init];
         self.isRootFolder = true;
+        self.size = [NSNumber numberWithFloat:0.0];
     }
     return self;
 }

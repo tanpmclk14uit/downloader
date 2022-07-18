@@ -57,6 +57,7 @@ enum FilterByFileType{
     case Image;
     case Text;
     case Unknown;
+    case Directory
 }
 
 public enum NotificationAlertType{

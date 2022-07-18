@@ -10,8 +10,8 @@ import UIKit
 
 class Dimen {
     // text size
-    public static let screenTitleTextSize: CGFloat = 30;
-    public static let screenHeadlingTextSize: CGFloat = 25
+    public static let screenTitleTextSize: CGFloat = 26;
+    public static let screenHeadlingTextSize: CGFloat = 22
     public static let itemTitleTextSize: CGFloat = 18;
     public static let itemNormalContentTextSize: CGFloat = 16;
     public static let itemAdditionalContentTextSize: CGFloat = 16;

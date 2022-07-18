@@ -194,6 +194,9 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Unknown", style: .default, handler: { [weak self] _ in
             self?.onFilterChange(newFilter: FilterByFileType.Unknown)
         }))
+        alert.addAction(UIAlertAction(title: "Directory", style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByFileType.Directory)
+        }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
     }()
@@ -227,7 +230,42 @@ class FolderViewController: UIViewController {
         button.titleLabel?.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
         return button
     }()
+    lazy var moveGuideLable: UILabel = {
+        let lable = UILabel()
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        lable.textAlignment = .center
+        lable.textColor = UIColor.systemBlue
+        lable.backgroundColor = .white
+        lable.text = "Move to: ..."
+        lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
+        return lable
+    }()
     
+    lazy var moveGuide: UIView = {
+        let container = UIView();
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = .white
+        
+        container.addSubview(moveGuideLable)
+        moveGuideLable.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.7).isActive = true
+        moveGuideLable.centerYAnchor.constraint(equalTo: container.centerYAnchor).isActive = true
+        moveGuideLable.centerXAnchor.constraint(equalTo: container.centerXAnchor).isActive = true
+        moveGuideLable.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
+        
+        container.isHidden = true
+        return container
+    }()
+    
+    lazy var totalFolderItem: UILabel = {
+        let lable = UILabel()
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        lable.textAlignment = .left
+        lable.text = "Total: 12 item(s)"
+        lable.textColor = .gray
+        lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
+        
+        return lable;
+    }()
     
     
     //MARK: - CONFIG UI CONSTRAINT
@@ -255,7 +293,7 @@ class FolderViewController: UIViewController {
     }
     
     private func configFileCollectionViewConstraint(){
-        fileCollectionView.topAnchor.constraint(equalTo: toolBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        fileCollectionView.topAnchor.constraint(equalTo: totalFolderItem.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
         fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
         if #available(iOS 11.0, *){
             fileCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
@@ -264,6 +302,32 @@ class FolderViewController: UIViewController {
             fileCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
             fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
         }
+    }
+    
+    private func configTextGuideConstraint(){
+        if #available(iOS 11.0, *) {
+            moveGuide.topAnchor.constraint(equalTo: toolBar.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            moveGuide.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        } else {
+            moveGuide.topAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
+            moveGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        }
+        moveGuide.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: moveGuideLable.font)).isActive = true
+        moveGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1).isActive = true
+    }
+    
+    private func configTotalFolderItemLableConstraint(){
+        if #available(iOS 11.0, *) {
+            totalFolderItem.topAnchor.constraint(equalTo: toolBar.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            totalFolderItem.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.screenDefaultMargin.left + 10).isActive = true
+            totalFolderItem.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right - 10).isActive = true
+            
+        } else {
+            totalFolderItem.topAnchor.constraint(equalTo: toolBar.bottomAnchor, constant: Dimen.screenDefaultMargin.left + 10).isActive = true
+            totalFolderItem.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left - 10).isActive = true
+            totalFolderItem.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        }
+        totalFolderItem.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: totalFolderItem.font)).isActive = true
     }
     
     
@@ -279,30 +343,40 @@ class FolderViewController: UIViewController {
     private var transition = PopAnimator()
     var currentFolder: FolderItem?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
         // add search view
         view.addSubview(searchBar)
+        configSearchBarConstraint()
+        
         view.addSubview(toolBar)
+        configToolbarConstraint()
+        
+        view.addSubview(totalFolderItem)
+        configTotalFolderItemLableConstraint()
+        
+        view.addSubview(moveGuide)
+        configTextGuideConstraint()
+        
         view.addSubview(fileCollectionView)
+        configFileCollectionViewConstraint()
         
         setIconOfSortButton()
-        configSearchBarConstraint()
-        configToolbarConstraint()
-        configFileCollectionViewConstraint()
         
         buttonSort.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         buttonViewType.addTarget(self, action: #selector(onViewTypeClick), for: .touchUpInside)
         buttonFilter.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
         buttonImportFile.addTarget(self, action: #selector(onImportFileClick), for: .touchUpInside)
+        let longGestureForDragAndDrop = UILongPressGestureRecognizer(target: self, action: #selector(onColectionViewItemDragAndDrop))
+        fileCollectionView.addGestureRecognizer(longGestureForDragAndDrop)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emptyMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -326,6 +400,7 @@ class FolderViewController: UIViewController {
         // add title view
         titleName.text = currentFolder!.name
         navigationItem.titleView = titleName
+        totalFolderItem.text = "Total: \(fileManager.getTotalItem(of: currentFolder!.url)) item(s)"
         
         if(currentFolder!.isRootFolder){
             navigationItem.leftBarButtonItem = nil
@@ -382,9 +457,15 @@ class FolderViewController: UIViewController {
         var fileItems = currentFolder!.getFileItems()
         // filter
         if(filterBy != FilterByFileType.All){
-            fileItems = fileItems.filter({ fileItem in
-                return fileItem.type.name == String(describing: filterBy).lowercased()
-            })
+            if(filterBy == FilterByFileType.Directory){
+                fileItems = fileItems.filter({ fileItem in
+                    return fileItem.isDir
+                })
+            }else{
+                fileItems = fileItems.filter({ fileItem in
+                    return fileItem.type.name == String(describing: filterBy).lowercased() && !fileItem.isDir
+                })
+            }
         }
         // search
         if(!searchKey.isEmpty){
@@ -416,6 +497,43 @@ class FolderViewController: UIViewController {
             return ObjFirst < ObjSecond
         }else{
             return ObjFirst > ObjSecond
+        }
+    }
+    
+    
+    private var sourceFile: FileItem?
+    private var destinationFolder: FolderItem?
+    @objc private func onColectionViewItemDragAndDrop(sender: UILongPressGestureRecognizer){
+        switch sender.state{
+        case .began:
+            guard let targetIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
+                return
+            }
+            moveGuide.isHidden = false
+            sourceFile = getAllFileMatchSearchSortAndFilter()[targetIndexPath.item]
+            fileCollectionView.beginInteractiveMovementForItem(at: targetIndexPath)
+        case .changed:
+            fileCollectionView.updateInteractiveMovementTargetPosition(sender.location(in: fileCollectionView))
+            guard let currentIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
+                return
+            }
+            let currentFileItem = getAllFileMatchSearchSortAndFilter()[currentIndexPath.item]
+            if(currentFileItem.isDir){
+                moveGuideLable.text = "Move to: \(currentFileItem.name) folder"
+                destinationFolder = currentFileItem as? FolderItem
+            }else{
+                moveGuideLable.text = "Move to: ..."
+                destinationFolder = nil
+            }
+        case .ended:
+            moveGuide.isHidden = true
+            if(sourceFile != nil && destinationFolder != nil)
+            {
+                fileCollectionView.endInteractiveMovement()
+            }
+            fileCollectionView.cancelInteractiveMovement()
+        default:
+            fileCollectionView.cancelInteractiveMovement()
         }
     }
     
@@ -527,6 +645,9 @@ class FolderViewController: UIViewController {
     private func onPasteFileClick(fileItem: FileItem){
         if(fileManager.pasteFile(to: fileItem as! FolderItem)){
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Paste success"), animated: true)
+            fileItem.size = fileManager.getTotalItem(of: fileItem.url) as NSNumber
+            reloadCollectionViewItem(of: fileItem)
+           
         }else{
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
             setPasteButton()
@@ -747,6 +868,23 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
         if let itemPosition = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem){
             let indexPath = IndexPath(item: itemPosition, section: 0)
             self.fileCollectionView.reloadItems(at: [indexPath])
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        if let sourceFile = sourceFile,
+           let destinationFolder = destinationFolder
+        {
+            fileManager.moveFile(sourceFile, toFolder: destinationFolder)
+            fetchAllFileOfFolder()
         }
     }
     

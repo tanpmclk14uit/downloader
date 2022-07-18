@@ -128,8 +128,6 @@ class FileItemViewCellByList: UICollectionViewCell {
         configItemCellConstraint()
         
         fileActionMenu.addTarget(self, action: #selector(onFileActionMenuClick), for: .touchUpInside)
-        
-        
     }
     
     @objc private func onFileActionMenuClick(){
