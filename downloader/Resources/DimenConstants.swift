@@ -42,6 +42,7 @@ class Dimen {
     // menu max width
     public static let menuMaxWidth: CGFloat = 250.0
     // top bar size
+    public static let pinterestContentMaxHeight: CGFloat = 40;
 }
 // MARK: - GET HEIGHT OF STRING
 extension String {
