@@ -23,42 +23,49 @@
     self = [super init];
     if(self){
         self.trackingInterval = interval;
-        _isTraking = false;
+        self.isTraking = false;
         
+        self.timer = [CADisplayLink displayLinkWithTarget:self
+                                             selector:@selector(tracking:)];
+        
+        [self.timer addToRunLoop:[NSRunLoop currentRunLoop]
+                     forMode:NSRunLoopCommonModes];
+        [self.timer setPaused:true];
     }
     return self;
 }
 
 - (void)startTracking {
-    _isTraking = true;
-    _startTime = CACurrentMediaTime();
-    _timer = [CADisplayLink displayLinkWithTarget:self
-                                         selector:@selector(tracking:)];
-    
-    [_timer addToRunLoop:[NSRunLoop currentRunLoop]
-                 forMode:NSRunLoopCommonModes];
-}
-
-- (void)tracking:(CADisplayLink *)sender {
-    if(_timer.timestamp - _startTime > _trackingInterval){
-        if(![self hasInternetConnection]){
-            [_delegate noInternetConnectionHandler];
-        }
-        [_timer setPaused:true];
-        _isTraking = false;
+    if(!self.isTraking){
+        self.isTraking = true;
+        self.startTime = CACurrentMediaTime();
+        [self.timer setPaused:false];
     }
 }
 
+- (void)tracking:(CADisplayLink *)sender {
+    if(self.timer.timestamp - self.startTime > self.trackingInterval){
+        if(![self hasInternetConnection]){
+            [self.delegate noInternetConnectionHandler];
+        }
+        [self.timer setPaused:true];
+        self.isTraking = false;
+    }
+    NSLog(@"%@", @"tracking");
+}
+
 - (void)resetTracking{
-    _startTime = CACurrentMediaTime();
-    if(!_isTraking){
-        [_timer setPaused:false];
+    self.startTime = CACurrentMediaTime();
+    if(!self.isTraking){
+        [self.timer setPaused:false];
     }
 }
 
 - (void) stopTracking{
-    _isTraking = false;
-    [_timer invalidate];
+    if(self.isTraking){
+        self.isTraking = false;
+        [self.timer setPaused:true];
+    }
 }
 
 - (BOOL) hasInternetConnection{

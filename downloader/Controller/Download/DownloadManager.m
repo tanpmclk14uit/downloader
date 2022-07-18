@@ -201,14 +201,17 @@
         if(error){
             onFail([NSString stringWithFormat: @"Can't save current download item due to:  %@", error.userInfo]);
             currentDownloadItem.state = @"Error";
+            currentDownloadItem.progress = 0.0;
         }else{
             onSuccess();
             currentDownloadItem.state = @"Completed";
             currentDownloadItem.downloadTask = nil;
+            currentDownloadItem.progress = 0.0;
         }
     }else{
         onFail(@"Can't save current download item");
         currentDownloadItem.state = @"Error";
+        currentDownloadItem.progress = 0.0;
     }
     [self stopTrackingInternetConnection];
     [self saveAllDownloadItemsToPersistence];

@@ -139,6 +139,15 @@ class DownloadItemViewCell: UITableViewCell {
         }
     }
     
+    func setProgressBarColorByInternetConnectionState(hasInternetConection: Bool){
+        if(hasInternetConection){
+            buttonActionShape.strokeColor = UIColor.systemBlue.cgColor
+        }else{
+            buttonActionShape.strokeColor = UIColor.red.cgColor
+        }
+       
+    }
+    
     func setUpCellByDownloadState(downLoadState: String){
         switch(downLoadState){
         case String(describing: DownloadState.Completed):do {

@@ -557,14 +557,22 @@ extension DownloadViewController: DownloadDelegate {
                 cell?.setDownloadItemDownloadDuration(currentDownloadItem.durationString)
                 let progress: Double = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
                 cell?.updateProgressBar(progress: progress)
+                cell?.setProgressBarColorByInternetConnectionState(hasInternetConection: true)
             }
         }
     }
 }
-
+//MARK: - CONFIRM INTERNET TRACKING DELEGATE
 extension DownloadViewController: InternetTrackingDelegate{
     func noInternetConnectionHandler() {
         present(UIAlertController.notificationAlert(type: NotificationAlertType.Warning, message: "Check your internet connection!"), animated: true)
+        for item in mapDownloadItemToCell.keyEnumerator(){
+            let downloadItem = item as! DownloadItem
+            let cell = mapDownloadItemToCell.object(forKey: downloadItem)
+            if(cell?.getCurrentDownloadItem() == downloadItem){
+                cell?.setProgressBarColorByInternetConnectionState(hasInternetConection: false)
+            }
+        }
     }
     
     
