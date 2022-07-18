@@ -7,9 +7,6 @@
 
 #import "InternetTracking.h"
 #import <QuartzCore/QuartzCore.h>
-#import <sys/socket.h>
-#import <netinet/in.h>
-#import <SystemConfiguration/SystemConfiguration.h>
 
 @interface InternetTracking ()
 @property(assign, atomic) NSTimeInterval trackingInterval;
