@@ -1009,15 +1009,6 @@ extension FolderViewController: PinterestLayoutDelegate{
         }
     }
     
-    func collectionView(collectionView: UICollectionView, sizeForImageAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        let thumnailImage = UIImage(contentsOfFile: getAllFileMatchSearchSortAndFilter()[indexPath.item].url.path)
-        if let thumnailImage = thumnailImage{
-            return thumnailImage.size
-        }else{
-            return CGSize(width: 1, height: 0)
-        }
-    }
-    
     func getNumberOfColumn() -> Int {
         return 2
     }

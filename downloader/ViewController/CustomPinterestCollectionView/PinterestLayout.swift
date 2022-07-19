@@ -29,7 +29,7 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 var tempY : CGFloat = 0.0
                 let indexPath = NSIndexPath(item: i, section: 0)
                 
-                let itemHeight = delegate.collectionView(collectionView: collectionView, heightForImageAtIndexPath: indexPath, itemWidth: itemWidth) + Dimen.pinterestContentMaxHeight
+                let itemHeight = delegate.collectionView(collectionView: collectionView, heightForImageAtIndexPath: indexPath, itemWidth: itemWidth)
                 let shortestHeightColumn = getShortestHeightColumn(heightOfColumns)
                 let shortestHeight = heightOfColumns[shortestHeightColumn];
                 
@@ -83,7 +83,11 @@ class PinterestLayout: MaintainOffsetFlowLayout {
     
     override func layoutAttributesForItem(at indexPath: IndexPath)
         -> UICollectionViewLayoutAttributes? {
-      return cache[indexPath.item]
+            if(indexPath.item < cache.count){
+                return cache[indexPath.item]
+            }else{
+                return super.layoutAttributesForItem(at: indexPath)
+            }
     }
     
     override var collectionViewContentSize: CGSize{

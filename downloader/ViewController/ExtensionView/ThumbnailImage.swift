@@ -9,7 +9,9 @@ import UIKit
 
 extension UIImage{
     public class func thumbnailImage(for fileItem: FileItem, to pointSize: CGSize)-> UIImage? {
-        if let image = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
+        let image = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url)
+        if(image != nil && image!.size.height >= pointSize.height * UIScreen.main.scale )
+        {
             return image
         }else{
             var image: UIImage?
@@ -21,7 +23,6 @@ extension UIImage{
                     image = UIImage(named: "pdf.thumb")
                 case FileTypeConstants.image().name:
                     image = UIImage.downsampleImage(imageAt: fileItem.url, to: pointSize)
-                    CacheThumbnailImage.saveToCache(url: fileItem.url, uiImage: image)
                 case FileTypeConstants.audio().name:
                     if(fileItem.url.pathExtension == "mp3"){
                         image = UIImage(named: "mp3.thumb")
@@ -43,6 +44,7 @@ extension UIImage{
                     image = UIImage(named: "unknown.thumb")
                 }
             }
+            CacheThumbnailImage.saveToCache(url: fileItem.url, uiImage: image)
             return image
         }
     }

@@ -49,9 +49,6 @@ class MoreSettingViewController: UIViewController {
         return lable
     }()
     
-
-    
-    
     lazy var passCodeCell: MoreSettingActionItem = {
         let item = MoreSettingActionItem()
         item.setContent(content: "Passcode Lock")
