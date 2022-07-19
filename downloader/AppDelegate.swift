@@ -26,16 +26,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let downloadViewController: UINavigationController = {
         let downloadViewController = UINavigationController(rootViewController: DownloadViewController())
         downloadViewController.title = "Downloads"
+        DownloadManager.sharedInstance().fetchAllDownloadItemsWith {
+            
+        }
         return downloadViewController
+    }()
+    
+    let moreSettingViewController: UINavigationController = {
+        let moreSettingViewController = UINavigationController(rootViewController: MoreSettingViewController())
+        moreSettingViewController.title = "More"
+        
+        return moreSettingViewController
     }()
     
     lazy var tabBarController: UITabBarController = {
         let tabBarController = UITabBarController()
-        tabBarController.setViewControllers([folderViewController, downloadViewController], animated: false)
+        tabBarController.setViewControllers([folderViewController, downloadViewController, moreSettingViewController], animated: false)
         
         if let items = tabBarController.tabBar.items{
             items[0].image = UIImage(named: "folder.fill")
             items[1].image = UIImage(named: "download.fill")
+            items[2].image = UIImage(named: "menu")
         }
         tabBarController.tabBar.backgroundColor = .white
         return tabBarController

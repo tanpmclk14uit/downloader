@@ -55,6 +55,7 @@
     self.startTime = CACurrentMediaTime();
     if(!self.isTraking){
         [self.timer setPaused:false];
+        self.isTraking = true;
     }
 }
 

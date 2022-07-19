@@ -71,6 +71,7 @@
         [self.allDownloadItems addObject:newDownloadItem];
         [downloadTask resume];
         [self startTrackingInternetConnection];
+        [self saveAllDownloadItemsToPersistence];
     }
 }
 
@@ -88,10 +89,12 @@
         if(resumeData != nil){
             downloadItem.dataForResumeDownload = resumeData;
             downloadItem.state = @"Pause";
+            
         }else{
             downloadItem.state = @"Error";
             downloadItem.progress = 0.0;
         }
+        [self saveAllDownloadItemsToPersistence];
         [self stopTrackingInternetConnection];
         completeHandler();
     }];
@@ -107,6 +110,7 @@
         downloadItem.state = @"Error";
         downloadItem.progress = 0.0;
     }
+    [self saveAllDownloadItemsToPersistence];
 }
 
 - (void) cancelDownload:(DownloadItem *)downloadItem{
@@ -114,13 +118,14 @@
     downloadItem.downloadTask = nil;
     downloadItem.progress = 0.0;
     downloadItem.state = @"Canceled";
+    [self saveAllDownloadItemsToPersistence];
 }
 
 - (void) pauseAllCurrentlyDownloadingItem{
     for(DownloadItem* downloadItem in self.allDownloadItems){
         if([downloadItem.state isEqual: @"Downloading"]){
             [self pauseDownload:downloadItem withCompleteHandler:^{
-               
+                NSLog(@"%@", @"Pause complete");
             }];
         }
     }
@@ -152,6 +157,7 @@
         downloadItem.downloadTask = nil;
     }
     [self.allDownloadItems removeObject:downloadItem];
+    [self saveAllDownloadItemsToPersistence];
 }
 
 - (NSArray<DownloadItem *> *)getAllDownloadItems{
