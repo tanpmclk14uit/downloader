@@ -1003,9 +1003,6 @@ extension FolderViewController: PinterestLayoutDelegate{
         let actualImage = UIImage(contentsOfFile: currentItem.url.path)
         if let actualImage = actualImage{
             let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
-            let thumbnailSize: CGSize = CGSize(width: itemWidth, height: itemHeight)
-            let thumbnailImage = UIImage.thumbnailImage(for: currentItem, to: thumbnailSize)
-            CacheThumbnailImage.saveToCache(url: currentItem.url, uiImage: thumbnailImage)
             return itemHeight
         }else{
             return 0
