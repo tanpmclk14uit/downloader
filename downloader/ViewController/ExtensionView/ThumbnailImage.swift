@@ -21,6 +21,7 @@ extension UIImage{
                     image = UIImage(named: "pdf.thumb")
                 case FileTypeConstants.image().name:
                     image = UIImage.downsampleImage(imageAt: fileItem.url, to: pointSize)
+                    CacheThumbnailImage.saveToCache(url: fileItem.url, uiImage: image)
                 case FileTypeConstants.audio().name:
                     if(fileItem.url.pathExtension == "mp3"){
                         image = UIImage(named: "mp3.thumb")
@@ -42,7 +43,6 @@ extension UIImage{
                     image = UIImage(named: "unknown.thumb")
                 }
             }
-            CacheThumbnailImage.saveToCache(url: fileItem.url, uiImage: image)
             return image
         }
     }

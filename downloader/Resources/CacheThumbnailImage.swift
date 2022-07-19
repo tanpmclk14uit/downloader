@@ -18,5 +18,9 @@ class CacheThumbnailImage{
         cacheThumb.setObject(uiImage, forKey: url as NSURL)
     }
     
+    public static func isEmpty() -> Bool{
+        return cacheThumb.count == 0
+    }
+    
     
 }

@@ -28,7 +28,9 @@ class Dimen {
     public static let imageIconHeight: CGFloat = 50;
     public static let imageTinyIconWidth: CGFloat = 24;
     public static let imageTinyIconHeight: CGFloat = 24;
+    public static let appIconSize: CGSize = CGSize(width: 80, height: 80)
     // Margin
+    
     public static let screenDefaultMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
     public static let cellItemMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
     public static let toolBarMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: -10, right: -15)
@@ -41,6 +43,8 @@ class Dimen {
     }
     // menu max width
     public static let menuMaxWidth: CGFloat = 250.0
+    // container height
+    public static let moreSettingContainerHeight: CGFloat = 70
     // top bar size
     public static let pinterestContentMaxHeight: CGFloat = 40;
 }

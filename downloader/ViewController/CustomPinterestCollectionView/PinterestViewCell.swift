@@ -13,7 +13,7 @@ class PinterestViewCell: UICollectionViewCell {
     lazy var thumbnail: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "image")
+       
         return image
     }()
     
@@ -89,6 +89,7 @@ class PinterestViewCell: UICollectionViewCell {
     func setCellData(fileItem: FileItem){
         self.fileItem = fileItem
         self.fileName.text = fileItem.name
+        
         DispatchQueue.main.async { [weak self] in
             if let self = self{
                 self.thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)

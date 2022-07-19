@@ -573,7 +573,7 @@ class FolderViewController: UIViewController {
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
             if(filterBy == FilterByFileType.Image){
                 fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
-                
+            
                 transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: pinterestLayout)
             }else{
                 fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
