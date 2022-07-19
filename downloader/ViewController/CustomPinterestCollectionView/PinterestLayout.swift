@@ -28,8 +28,8 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 var tempX : CGFloat = 0.0
                 var tempY : CGFloat = 0.0
                 let indexPath = NSIndexPath(item: i, section: 0)
-                let itemSize: CGSize = delegate.collectionView(collectionView: collectionView, sizeForImageAtIndexPath: indexPath)
-                let itemHeight = itemWidth * (itemSize.height)/itemSize.width + Dimen.pinterestContentMaxHeight
+                
+                let itemHeight = delegate.collectionView(collectionView: collectionView, heightForImageAtIndexPath: indexPath, itemWidth: itemWidth) + Dimen.pinterestContentMaxHeight
                 let shortestHeightColumn = getShortestHeightColumn(heightOfColumns)
                 let shortestHeight = heightOfColumns[shortestHeightColumn];
                 
@@ -44,6 +44,7 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                    if (newContentHeight > contentHeight){
                        contentHeight = newContentHeight;
                    }
+                
                 self.contentSize = CGSize(width: collectionViewWidth, height: contentHeight)
             }
             

@@ -19,6 +19,8 @@
 		473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */; };
 		473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DC287FF56400D38467 /* NotificationAlert.swift */; };
 		473C64DF28803CC800D38467 /* ThumbnailImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DE28803CC800D38467 /* ThumbnailImage.swift */; };
+		47439F9928865A7600FE43C9 /* DownsamplingUIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47439F9828865A7600FE43C9 /* DownsamplingUIImage.swift */; };
+		47439F9B28865E9500FE43C9 /* CacheThumbnailImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47439F9A28865E9500FE43C9 /* CacheThumbnailImage.swift */; };
 		474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */; };
 		474A60FE2862CF2C0039B3D0 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FD2862CF2C0039B3D0 /* Colors.swift */; };
 		474A6100286319980039B3D0 /* DownloadItemViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */; };
@@ -85,6 +87,8 @@
 		473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContextMenuViewController.swift; sourceTree = "<group>"; };
 		473C64DC287FF56400D38467 /* NotificationAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAlert.swift; sourceTree = "<group>"; };
 		473C64DE28803CC800D38467 /* ThumbnailImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailImage.swift; sourceTree = "<group>"; };
+		47439F9828865A7600FE43C9 /* DownsamplingUIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownsamplingUIImage.swift; sourceTree = "<group>"; };
+		47439F9A28865E9500FE43C9 /* CacheThumbnailImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheThumbnailImage.swift; sourceTree = "<group>"; };
 		474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewController.swift; sourceTree = "<group>"; };
 		474A60FD2862CF2C0039B3D0 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		474A60FF286319980039B3D0 /* DownloadItemViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemViewCell.swift; sourceTree = "<group>"; };
@@ -196,6 +200,7 @@
 				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
 				474A60FD2862CF2C0039B3D0 /* Colors.swift */,
 				47E8E9CE286563A80005EE4D /* DimenConstants.swift */,
+				47439F9A28865E9500FE43C9 /* CacheThumbnailImage.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -206,6 +211,7 @@
 				474CCD9F2878338600F940FF /* GifImage.swift */,
 				473C64DC287FF56400D38467 /* NotificationAlert.swift */,
 				473C64DE28803CC800D38467 /* ThumbnailImage.swift */,
+				47439F9828865A7600FE43C9 /* DownsamplingUIImage.swift */,
 			);
 			path = ExtensionView;
 			sourceTree = "<group>";
@@ -516,6 +522,7 @@
 				47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */,
 				47E8E9CF286563A80005EE4D /* DimenConstants.swift in Sources */,
 				473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */,
+				47439F9928865A7600FE43C9 /* DownsamplingUIImage.swift in Sources */,
 				475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */,
 				47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */,
 				473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */,
@@ -536,6 +543,7 @@
 				477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */,
 				473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */,
 				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
+				47439F9B28865E9500FE43C9 /* CacheThumbnailImage.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
 				4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */,
 				477D34B6287D765100D3FCBD /* ContentSizedTableView.swift in Sources */,

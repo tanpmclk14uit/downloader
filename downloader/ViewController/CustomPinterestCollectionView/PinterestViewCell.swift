@@ -13,8 +13,7 @@ class PinterestViewCell: UICollectionViewCell {
     lazy var thumbnail: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        
-        image.image = UIImage(named: "folder-image")
+        image.image = UIImage(named: "image")
         return image
     }()
     
@@ -90,35 +89,10 @@ class PinterestViewCell: UICollectionViewCell {
     func setCellData(fileItem: FileItem){
         self.fileItem = fileItem
         self.fileName.text = fileItem.name
-        generateThumbnailRepresentations(url: fileItem.url)
-    }
-    
-    private func generateThumbnailRepresentations(url: URL) {
-        // Set up the parameters of the request.
-        let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
-        let scale = UIScreen.main.scale
-        // Create the thumbnail request.
-        if #available(iOS 13.0, *) {
-            let request = QLThumbnailGenerator.Request(fileAt: url,
-                                                       size: size,
-                                                       scale: scale,
-                                                       representationTypes: .all)
-            // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
-            let generator = QLThumbnailGenerator.shared
-            generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
-                DispatchQueue.main.async {
-                    if thumbnail == nil || error != nil {
-                        if let fileItem = self?.fileItem {
-                            self?.thumbnail.image = UIImage.thumbnailImage(for: fileItem)
-                        }
-                    } else {
-                        self?.thumbnail.image = thumbnail?.uiImage
-                    }
-                }
+        DispatchQueue.main.async { [weak self] in
+            if let self = self{
+                self.thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)
             }
-        }else{
-            // handle for ios below ios 13
-            thumbnail.image = UIImage.thumbnailImage(for: fileItem!)
         }
     }
     

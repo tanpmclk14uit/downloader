@@ -150,8 +150,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         }
         
         self.fileDate.text = TimeSizeUnits(seconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
-        generateThumbnailRepresentations(url: fileItem.url)
-        
+            generateThumbnailRepresentations(url: fileItem.url)
     }
     
     func hideItemAction(){
@@ -159,10 +158,13 @@ class FileItemViewCellByList: UICollectionViewCell {
     }
     
     private func generateThumbnailRepresentations(url: URL) {
+        guard let fileItem = fileItem else {
+            return
+        }
+
         // Set up the parameters of the request.
         let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
         let scale = UIScreen.main.scale
-        
         // Create the thumbnail request.
         if #available(iOS 13.0, *) {
             let request = QLThumbnailGenerator.Request(fileAt: url,
@@ -172,18 +174,21 @@ class FileItemViewCellByList: UICollectionViewCell {
             // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
             let generator = QLThumbnailGenerator.shared
             generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
-                DispatchQueue.main.async {
-                    if thumbnail == nil || error != nil {
-                        if let fileItem = self?.fileItem {
-                            self?.fileIcon.image = UIImage.thumbnailImage(for: fileItem)
+                if let self = self{
+                    DispatchQueue.main.async {
+                        if thumbnail == nil || error != nil {
+                            if let fileItem = self.fileItem {
+                                self.fileIcon.image = UIImage.thumbnailImage(for: fileItem, to: self.fileIcon.bounds.size)
+                            }
+                        } else {
+                            self.fileIcon.image = thumbnail?.uiImage
                         }
-                    } else {
-                        self?.fileIcon.image = thumbnail?.uiImage
                     }
                 }
             }
         }else{
-            fileIcon.image = UIImage.thumbnailImage(for: fileItem!)
+            // handle for ios below ios 13
+            fileIcon.image = UIImage.thumbnailImage(for: fileItem, to: self.fileIcon.bounds.size)
         }
     }
 }

@@ -149,6 +149,10 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     
     
     private func generateThumbnailRepresentations(url: URL) {
+        guard let fileItem = fileItem else {
+            return
+        }
+
         // Set up the parameters of the request.
         let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
         let scale = UIScreen.main.scale
@@ -161,19 +165,21 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
             let generator = QLThumbnailGenerator.shared
             generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
-                DispatchQueue.main.async {
-                    if thumbnail == nil || error != nil {
-                        if let fileItem = self?.fileItem {
-                            self?.thumbnail.image = UIImage.thumbnailImage(for: fileItem)
+                if let self = self{
+                    DispatchQueue.main.async {
+                        if thumbnail == nil || error != nil {
+                            if let fileItem = self.fileItem {
+                                self.thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)
+                            }
+                        } else {
+                            self.thumbnail.image = thumbnail?.uiImage
                         }
-                    } else {
-                        self?.thumbnail.image = thumbnail?.uiImage
                     }
                 }
             }
         }else{
             // handle for ios below ios 13
-            thumbnail.image = UIImage.thumbnailImage(for: fileItem!)
+            thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)
         }
     }
     

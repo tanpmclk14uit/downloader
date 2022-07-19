@@ -384,7 +384,6 @@ class FolderViewController: UIViewController {
                     self.fileManager.fetchAllFile(ofFolder: currentFolder, withAfterCompleteHandler: {
                         DispatchQueue.main.async {
                             self.reloadCollectionView()
-                            self.totalFolderItem.text = "Total: \(self.fileManager.getTotalItem(of: currentFolder.url)) item(s)"
                         }
                     })
                 }
@@ -412,6 +411,18 @@ class FolderViewController: UIViewController {
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pasteButton)
         }else{
             navigationItem.rightBarButtonItem = nil
+        }
+    }
+    
+    private func setTotalItemsLable(){
+        if(searchKey.isEmpty){
+            if(filterBy == FilterByFileType.All){
+                self.totalFolderItem.text = "Total: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
+            }else{
+                self.totalFolderItem.text = "Filter result: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
+            }
+        }else{
+            self.totalFolderItem.text = "Search result: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
         }
     }
     
@@ -562,6 +573,7 @@ class FolderViewController: UIViewController {
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
             if(filterBy == FilterByFileType.Image){
                 fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
+                
                 transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: pinterestLayout)
             }else{
                 fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
@@ -589,6 +601,7 @@ class FolderViewController: UIViewController {
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
             reloadCollectionView()
+            onViewByChange(newLayoutState: currentLayoutState)
         }
     }
     
@@ -902,9 +915,10 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     
     func reloadCollectionView(){
-        self.fileCollectionView.reloadData()
+        fileCollectionView.reloadData()
         setEmptyListMessage()
-        self.pinterestLayout.clearCache()
+        pinterestLayout.clearCache()
+        setTotalItemsLable()
     }
 }
 
@@ -984,6 +998,20 @@ extension FolderViewController: UIDocumentPickerDelegate{
 }
 //MARK: - CONFIRM PINTEREST DELEGATE
 extension FolderViewController: PinterestLayoutDelegate{
+    func collectionView(collectionView: UICollectionView, heightForImageAtIndexPath indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
+        let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
+        let actualImage = UIImage(contentsOfFile: currentItem.url.path)
+        if let actualImage = actualImage{
+            let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
+            let thumbnailSize: CGSize = CGSize(width: itemWidth, height: itemHeight)
+            let thumbnailImage = UIImage.thumbnailImage(for: currentItem, to: thumbnailSize)
+            CacheThumbnailImage.saveToCache(url: currentItem.url, uiImage: thumbnailImage)
+            return itemHeight
+        }else{
+            return 0
+        }
+    }
+    
     func collectionView(collectionView: UICollectionView, sizeForImageAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let thumnailImage = UIImage(contentsOfFile: getAllFileMatchSearchSortAndFilter()[indexPath.item].url.path)
         if let thumnailImage = thumnailImage{

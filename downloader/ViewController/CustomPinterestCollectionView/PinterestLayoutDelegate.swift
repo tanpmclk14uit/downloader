@@ -11,5 +11,7 @@ protocol PinterestLayoutDelegate: AnyObject{
     func getNumberOfColumn() -> Int;
 
     func collectionView(collectionView: UICollectionView, sizeForImageAtIndexPath indexPath: NSIndexPath) -> CGSize;
+    
+    func collectionView(collectionView: UICollectionView, heightForImageAtIndexPath indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat;
 }
 
