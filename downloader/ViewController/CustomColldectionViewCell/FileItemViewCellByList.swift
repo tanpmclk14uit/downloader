@@ -150,45 +150,26 @@ class FileItemViewCellByList: UICollectionViewCell {
         }
         
         self.fileDate.text = TimeSizeUnits(seconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
-            generateThumbnailRepresentations(url: fileItem.url)
+        if let thumbnail = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
+            self.fileIcon.image = thumbnail
+        }else{
+            self.fileIcon.image = UIImage.tempThumbnailImage(for: fileItem)
+            setThumbnai()
+        }
+    }
+    
+    func setThumbnai(){
+        DispatchQueue.main.async { [weak self] in
+            if let self = self{
+                let newTumbnailImage = UIImage.thumbnailImage(for: self.fileItem!, to: self.fileIcon.bounds.size)
+                if(self.fileIcon.image != newTumbnailImage){
+                    self.fileIcon.image = newTumbnailImage
+                }
+            }
+        }
     }
     
     func hideItemAction(){
         fileActionMenu.isHidden = true
-    }
-    
-    private func generateThumbnailRepresentations(url: URL) {
-        guard let fileItem = fileItem else {
-            return
-        }
-
-        // Set up the parameters of the request.
-        let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
-        let scale = UIScreen.main.scale
-        // Create the thumbnail request.
-        if #available(iOS 13.0, *) {
-            let request = QLThumbnailGenerator.Request(fileAt: url,
-                                                       size: size,
-                                                       scale: scale,
-                                                       representationTypes: .all)
-            // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
-            let generator = QLThumbnailGenerator.shared
-            generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
-                if let self = self{
-                    DispatchQueue.main.async {
-                        if thumbnail == nil || error != nil {
-                            if let fileItem = self.fileItem {
-                                self.fileIcon.image = UIImage.thumbnailImage(for: fileItem, to: self.fileIcon.bounds.size)
-                            }
-                        } else {
-                            self.fileIcon.image = thumbnail?.uiImage
-                        }
-                    }
-                }
-            }
-        }else{
-            // handle for ios below ios 13
-            fileIcon.image = UIImage.thumbnailImage(for: fileItem, to: self.fileIcon.bounds.size)
-        }
     }
 }

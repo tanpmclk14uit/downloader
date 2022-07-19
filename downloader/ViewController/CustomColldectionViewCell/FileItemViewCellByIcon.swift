@@ -144,45 +144,27 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
             drawIconFromFileType(fileType: fileItem.type)
         }
-        generateThumbnailRepresentations(url: fileItem.url)
+        
+        if let thumbnail = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
+            self.thumbnail.image = thumbnail
+        }else{
+            self.thumbnail.image = UIImage.tempThumbnailImage(for: fileItem)
+            setThumbnai()
+        }
     }
     
-    
-    private func generateThumbnailRepresentations(url: URL) {
-        guard let fileItem = fileItem else {
-            return
-        }
-
-        // Set up the parameters of the request.
-        let size: CGSize = CGSize(width: Dimen.imageIconWidth , height: Dimen.imageIconHeight)
-        let scale = UIScreen.main.scale
-        // Create the thumbnail request.
-        if #available(iOS 13.0, *) {
-            let request = QLThumbnailGenerator.Request(fileAt: url,
-                                                       size: size,
-                                                       scale: scale,
-                                                       representationTypes: .all)
-            // Retrieve the singleton instance of the thumbnail generator and generate the thumbnails.
-            let generator = QLThumbnailGenerator.shared
-            generator.generateRepresentations(for: request) {[weak self] (thumbnail, type, error) in
-                if let self = self{
-                    DispatchQueue.main.async {
-                        if thumbnail == nil || error != nil {
-                            if let fileItem = self.fileItem {
-                                self.thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)
-                            }
-                        } else {
-                            self.thumbnail.image = thumbnail?.uiImage
-                        }
-                    }
+    func setThumbnai(){
+        DispatchQueue.main.async {
+            [weak self] in
+            if let self = self{
+                let newTumbnailImage = UIImage.thumbnailImage(for: self.fileItem!, to: self.thumbnail.bounds.size)
+                if(self.thumbnail.image != newTumbnailImage){
+                    self.thumbnail.image = newTumbnailImage
                 }
             }
-        }else{
-            // handle for ios below ios 13
-            thumbnail.image = UIImage.thumbnailImage(for: fileItem, to: self.thumbnail.bounds.size)
         }
     }
-    
+
     func drawIconFromFileType(fileType: FileTypeEnum){
         switch(fileType.name){
         case FileTypeConstants.pdf().name:
