@@ -335,6 +335,9 @@ class FolderViewController: UIViewController {
     private var currentSelectedFilePath: IndexPath?
     private var transition = PopAnimator()
     var currentFolder: FolderItem?
+    // variable for move file (source file) to folder (destinationFolder)
+    private var sourceFile: FileItem?
+    private var destinationFolder: FolderItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -363,8 +366,8 @@ class FolderViewController: UIViewController {
         buttonFilter.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         buttonAddFolder.addTarget(self, action: #selector(showCreateFolderAlert), for: .touchUpInside)
         buttonImportFile.addTarget(self, action: #selector(onImportFileClick), for: .touchUpInside)
-        let longGestureForDragAndDrop = UILongPressGestureRecognizer(target: self, action: #selector(onColectionViewItemDragAndDrop))
-        fileCollectionView.addGestureRecognizer(longGestureForDragAndDrop)
+        let longGestureForCollectionViewItem = UILongPressGestureRecognizer(target: self, action: #selector(onCollectionViewItemLongClick))
+        fileCollectionView.addGestureRecognizer(longGestureForCollectionViewItem)
         
         view.addSubview(emptyMessage)
         emptyMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -508,9 +511,23 @@ class FolderViewController: UIViewController {
     }
     
     
-    private var sourceFile: FileItem?
-    private var destinationFolder: FolderItem?
-    @objc private func onColectionViewItemDragAndDrop(sender: UILongPressGestureRecognizer){
+    
+    @objc private func onCollectionViewItemLongClick(sender: UILongPressGestureRecognizer){
+        if(currentLayoutState == LayoutState.WaterFallImage){
+            if (sender.state == .began){
+                guard let targetIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
+                    return
+                }
+                let fileItem = getAllFileMatchSearchSortAndFilter()[targetIndexPath.item]
+                showMenuActionOfFileItem(fileItem)
+            }
+        }else{
+            onFileIemDragAndDrop(sender: sender)
+        }
+    }
+    
+    
+    private func onFileIemDragAndDrop(sender: UILongPressGestureRecognizer){
         switch sender.state{
         case .began:
             guard let targetIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
@@ -564,21 +581,21 @@ class FolderViewController: UIViewController {
     
     private func onViewByChange(newLayoutState: LayoutState){
         let transitionManager: TransitionManager
-        
-        if(newLayoutState == LayoutState.List){
+        switch(newLayoutState){
+        case LayoutState.List:
             buttonViewType.setImage(UIImage(named: "row"), for: .normal)
             fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
             transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: listLayout)
-        }else{
+        case LayoutState.WaterFallImage:
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
-            if(filterBy == FilterByFileType.Image){
-                fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
+            fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
+        
+            transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: pinterestLayout)
+        case LayoutState.Grid:
+            buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
+            fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
+            transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
             
-                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: pinterestLayout)
-            }else{
-                fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
-                transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
-            }
         }
         currentLayoutState = newLayoutState
         transitionManager.startInteractiveTransition()
@@ -601,6 +618,11 @@ class FolderViewController: UIViewController {
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
             reloadCollectionView()
+            if(newFilter == FilterByFileType.Image){
+                if(currentLayoutState == LayoutState.Grid){
+                    currentLayoutState = LayoutState.WaterFallImage
+                }
+            }
             onViewByChange(newLayoutState: currentLayoutState)
         }
     }
@@ -615,7 +637,11 @@ class FolderViewController: UIViewController {
     
     @objc func onViewTypeClick(){
         if(currentLayoutState == LayoutState.List){
-            currentLayoutState = LayoutState.Grid
+            if(filterBy == FilterByFileType.Image){
+                currentLayoutState = LayoutState.WaterFallImage
+            }else{
+                currentLayoutState = LayoutState.Grid
+            }
         }else{
             currentLayoutState = LayoutState.List
         }
@@ -858,23 +884,22 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if(currentLayoutState == LayoutState.List){
+        switch(currentLayoutState){
+        case LayoutState.List:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
             cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
             cell.delegate = self
             return cell
-        }else{
-            if(filterBy == FilterByFileType.Image){
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PinterestViewCell.identifier, for: indexPath) as! PinterestViewCell
-                cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
-                cell.delegate = self
-                return cell
-            }else{
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
-                cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
-                cell.delegate = self
-                return cell
-            }
+        case LayoutState.Grid:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
+            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.delegate = self
+            return cell
+        case LayoutState.WaterFallImage:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PinterestViewCell.identifier, for: indexPath) as! PinterestViewCell
+            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.delegate = self
+            return cell
         }
     }
     
@@ -949,18 +974,16 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     
     func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
         if let indexPath = currentSelectedFilePath{
-            if(currentLayoutState == LayoutState.Grid){
-                if(filterBy == FilterByFileType.Image){
-                    let cell = self.fileCollectionView.cellForItem(at: indexPath) as! PinterestViewCell
-                    return cell.thumbnail
-                }else{
-                    let cell = self.fileCollectionView.cellForItem(at: indexPath) as! FileItemViewCellByIcon
-                    return cell.thumbnail
-                }
-                
-            }else{
+            switch(currentLayoutState){
+            case LayoutState.List:
                 let cell = self.fileCollectionView.cellForItem(at: indexPath) as! FileItemViewCellByList
                 return cell.fileIcon
+            case LayoutState.Grid:
+                let cell = self.fileCollectionView.cellForItem(at: indexPath) as! FileItemViewCellByIcon
+                return cell.thumbnail
+            case LayoutState.WaterFallImage:
+                let cell = self.fileCollectionView.cellForItem(at: indexPath) as! PinterestViewCell
+                return cell.thumbnail
             }
         }
         return nil
