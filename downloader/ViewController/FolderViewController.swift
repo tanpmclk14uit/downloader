@@ -618,12 +618,6 @@ class FolderViewController: UIViewController {
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
             reloadCollectionView()
-            if(newFilter == FilterByFileType.Image){
-                if(currentLayoutState == LayoutState.Grid){
-                    currentLayoutState = LayoutState.WaterFallImage
-                }
-            }
-            onViewByChange(newLayoutState: currentLayoutState)
         }
     }
     
@@ -821,6 +815,7 @@ class FolderViewController: UIViewController {
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     self.reloadCollectionView()
                     self.setPasteButton();
+                    self.present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Delete file success!"), animated: true)
                 }else{
                     self.showErrorNotification(message: "Can not delete this file!")
                 }

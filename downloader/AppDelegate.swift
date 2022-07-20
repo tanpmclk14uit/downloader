@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let downloadViewController = UINavigationController(rootViewController: DownloadViewController())
         downloadViewController.title = "Downloads"
         DownloadManager.sharedInstance().fetchAllDownloadItemsWith {
-            
+
         }
         return downloadViewController
     }()

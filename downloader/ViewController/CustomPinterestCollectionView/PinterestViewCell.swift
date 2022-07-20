@@ -35,7 +35,7 @@ class PinterestViewCell: UICollectionViewCell {
         
         contentView.addSubview(thumbnail)
         configThumbnailConstraint()
-
+        contentView.layoutIfNeeded()
     }
     
     @objc private func onFileActionMenuClick(){
@@ -50,20 +50,18 @@ class PinterestViewCell: UICollectionViewCell {
     
     func setCellData(fileItem: FileItem){
         self.fileItem = fileItem
-        self.thumbnail.image = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url)
-        setThumbnai()
-    }
-    
-    func setThumbnai(){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
-            [weak self] in
-                if let self = self{
-                    let newTumbnailImage = UIImage.thumbnailImage(for: self.fileItem!, to: self.thumbnail.bounds.size)
-                    if(self.thumbnail.image != newTumbnailImage){
-                        self.thumbnail.image = newTumbnailImage
-                    }
+        
+        ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: thumbnail.bounds.size) { image in
+            DispatchQueue.main.async { [weak self] in
+                if(fileItem.url == self?.fileItem?.url){
+                    self?.thumbnail.image = image
                 }
-        })
+            }
+        } onPlaceViewHolder: { image in
+            if(fileItem.url == self.fileItem?.url){
+                thumbnail.image = image
+            }
+        }
     }
     
 }

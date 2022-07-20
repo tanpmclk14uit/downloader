@@ -71,7 +71,7 @@
         [self.allDownloadItems addObject:newDownloadItem];
         [downloadTask resume];
         [self startTrackingInternetConnection];
-        [self saveAllDownloadItemsToPersistence];
+        //[self saveAllDownloadItemsToPersistence];
     }
 }
 

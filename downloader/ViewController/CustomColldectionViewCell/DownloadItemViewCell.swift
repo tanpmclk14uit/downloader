@@ -121,7 +121,6 @@ class DownloadItemViewCell: UITableViewCell {
     
     func setUpDataCell(downloadItem: DownloadItem){
         currentDownloadItem = downloadItem
-        downloadItemTitle.text = downloadItem.name
         buttonActionShape.strokeEnd = downloadItem.progress
         setUpCellByDownloadState(downLoadState: downloadItem.state)
     }
@@ -149,6 +148,7 @@ class DownloadItemViewCell: UITableViewCell {
     }
     
     func setUpCellByDownloadState(downLoadState: String){
+        downloadItemTitle.text = currentDownloadItem?.name
         switch(downLoadState){
         case String(describing: DownloadState.Completed):do {
             cancelDownloadButton.isHidden = true

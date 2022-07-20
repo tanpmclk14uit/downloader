@@ -14,7 +14,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit
-        image.image = UIImage(named: "folder-image")
+        image.image = UIImage(named: "image")
         return image
     }()
     
@@ -121,6 +121,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         contentView.addSubview(fileTypeIcon)
         configFileTypeIconConstraint()
         
+        contentView.layoutIfNeeded()
         self.fileActionMenu.addTarget(self, action: #selector(onFileActionMenuClick), for: .touchUpInside)
     }
     
@@ -145,22 +146,15 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             drawIconFromFileType(fileType: fileItem.type)
         }
         
-        if let thumbnail = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
-            self.thumbnail.image = thumbnail
-        }else{
-            self.thumbnail.image = UIImage.tempThumbnailImage(for: fileItem)
-            setThumbnai()
-        }
-    }
-    
-    func setThumbnai(){
-        DispatchQueue.main.async {
-            [weak self] in
-            if let self = self{
-                let newTumbnailImage = UIImage.thumbnailImage(for: self.fileItem!, to: self.thumbnail.bounds.size)
-                if(self.thumbnail.image != newTumbnailImage){
-                    self.thumbnail.image = newTumbnailImage
+        ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: thumbnail.bounds.size) { image in
+            DispatchQueue.main.async { [weak self] in
+                if(fileItem.url == self?.fileItem?.url){
+                    self?.thumbnail.image = image
                 }
+            }
+        } onPlaceViewHolder: { image in
+            if(fileItem.url == self.fileItem?.url){
+                self.thumbnail.image = image
             }
         }
     }

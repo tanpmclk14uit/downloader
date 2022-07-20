@@ -162,7 +162,9 @@ class DownloadViewController: UIViewController {
         navigationItem.titleView = titleName
         downloadManager.setInternetTrackingDelegate(self)
         // set up button add new download item
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "add"), style: .plain, target: self, action: #selector(addNewDownloadItemClick))
+        let addNewDownload = UIBarButtonItem(image: UIImage(named: "add"), style: .plain, target: self, action: #selector(onTestPeromance))
+        navigationItem.leftBarButtonItem = addNewDownload
+        
         // download view delegate
         downloadManager.setDownloadViewDelegate(self)
         // set up screen
@@ -185,6 +187,10 @@ class DownloadViewController: UIViewController {
         setUpEmptyListMessage()
         
         fetchAllDownLoadItems()
+        
+        // test
+        
+        
     }
     
     private func fetchAllDownLoadItems(){
@@ -235,6 +241,7 @@ class DownloadViewController: UIViewController {
     private func onFilterChange(newFilter: FilterByState){
         if(newFilter != filterBy){
             buttonFilter.setTitle("\(newFilter) process", for: .normal)
+            buttonFilter.layoutIfNeeded()
             filterBy = newFilter
             reloadTableViewData()
         }
@@ -258,6 +265,11 @@ class DownloadViewController: UIViewController {
         UIPasteboard.general.string = String(describing: downloadItem.url)
     }
     
+    @objc private func onTestPeromance(){
+        for _ in 0...10{
+            onAddNewInputURL("https://speed.hetzner.de/1GB.bin")
+        }
+    }
     
     private func onAddNewInputURL(_ inputURL: String){
         if(downloadManager.checkValidDownloadURL(inputURL)){

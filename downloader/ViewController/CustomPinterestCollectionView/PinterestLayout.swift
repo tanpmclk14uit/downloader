@@ -12,6 +12,11 @@ class PinterestLayout: MaintainOffsetFlowLayout {
     private var contentSize: CGSize = CGSize(width: 0, height: 0)
     private var cache: [UICollectionViewLayoutAttributes] = []
     private var cellPading: CGFloat = 10
+    private var lastSawIndex: Int = 0
+    private var currentPage: Int = 1
+    private let pageSize: Int = 1000
+    
+    
     
     override func prepare() {
         super.prepare()
@@ -24,7 +29,9 @@ class PinterestLayout: MaintainOffsetFlowLayout {
             let itemWidth: CGFloat = (collectionViewWidth - cellPading*CGFloat(numberOfColumn+1))/CGFloat(numberOfColumn)
             var contentHeight: CGFloat = 0.0;
             var heightOfColumns = [CGFloat](repeating: 0.0, count: numberOfColumn)
-            for i in 0 ... (collectionView.numberOfItems(inSection: 0)-1){
+            let itemCount = min(currentPage*pageSize, collectionView.numberOfItems(inSection: 0))
+            print(itemCount)
+            for i in 0 ... itemCount-1{
                 var tempX : CGFloat = 0.0
                 var tempY : CGFloat = 0.0
                 let indexPath = NSIndexPath(item: i, section: 0)
@@ -47,12 +54,52 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 
                 self.contentSize = CGSize(width: collectionViewWidth, height: contentHeight)
             }
-            
+            currentPage += 1
+        }
+    }
+    
+    
+    private func caculateAtrributes(){
+        guard let collectionView = self.collectionView  else{
+            return
+        }
+        print("recaculate")
+        if let delegate = self.delegate {
+            let numberOfColumn: Int = delegate.getNumberOfColumn();
+            let collectionViewWidth = collectionView.frame.size.width
+            let itemWidth: CGFloat = (collectionViewWidth - self.cellPading*CGFloat(numberOfColumn+1))/CGFloat(numberOfColumn)
+            var contentHeight: CGFloat = 0.0;
+            var heightOfColumns = [CGFloat](repeating: 0.0, count: numberOfColumn)
+            let itemCount = min(self.currentPage*self.pageSize, collectionView.numberOfItems(inSection: 0))
+            for i in (self.currentPage-1)*self.pageSize ... itemCount-1{
+                var tempX : CGFloat = 0.0
+                var tempY : CGFloat = 0.0
+                let indexPath = NSIndexPath(item: i, section: 0)
+                
+                let itemHeight = delegate.collectionView(collectionView: collectionView, heightForImageAtIndexPath: indexPath, itemWidth: itemWidth)
+                let shortestHeightColumn = self.getShortestHeightColumn(heightOfColumns)
+                let shortestHeight = heightOfColumns[shortestHeightColumn];
+                
+                tempX = self.cellPading + (itemWidth + self.cellPading) *  CGFloat(shortestHeightColumn);
+                tempY = shortestHeight + self.cellPading
+                heightOfColumns[shortestHeightColumn] = tempY + itemHeight;
+                let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
+                attributes.frame = CGRect(x: tempX, y: tempY, width: itemWidth, height: itemHeight)
+                self.cache.append(attributes)
+                
+                let newContentHeight:CGFloat = tempY + self.cellPading + itemHeight + self.cellPading;
+                if (newContentHeight > contentHeight){
+                    contentHeight = newContentHeight;
+                }
+                
+                self.contentSize = CGSize(width: collectionViewWidth, height: contentHeight)
+            }
+            self.currentPage += 1
         }
     }
     
     func clearCache(){
-        cache.removeAll()
+        //cache.removeAll()
     }
     
     func getShortestHeightColumn(_ heightOfColumns: [CGFloat])-> Int{
@@ -73,17 +120,19 @@ class PinterestLayout: MaintainOffsetFlowLayout {
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
-          for attributes in cache {
+        for attributes in cache {
             if attributes.frame.intersects(rect) {
-              visibleLayoutAttributes.append(attributes)
+                visibleLayoutAttributes.append(attributes)
+                lastSawIndex = cache.firstIndex(of: attributes)!
             }
-          }
-          return visibleLayoutAttributes
+        }
+        return visibleLayoutAttributes
     }
     
     override func layoutAttributesForItem(at indexPath: IndexPath)
         -> UICollectionViewLayoutAttributes? {
-            if(indexPath.item < cache.count){
+            if indexPath.isEmpty { return nil }
+            if(indexPath.row < cache.count){
                 return cache[indexPath.item]
             }else{
                 return super.layoutAttributesForItem(at: indexPath)

@@ -126,7 +126,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         super.init(frame: frame)
         contentView.addSubview(itemCellLayout)
         configItemCellConstraint()
-        
+        contentView.layoutIfNeeded()
         fileActionMenu.addTarget(self, action: #selector(onFileActionMenuClick), for: .touchUpInside)
     }
     
@@ -150,21 +150,16 @@ class FileItemViewCellByList: UICollectionViewCell {
         }
         
         self.fileDate.text = TimeSizeUnits(seconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
-        if let thumbnail = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
-            self.fileIcon.image = thumbnail
-        }else{
-            self.fileIcon.image = UIImage.tempThumbnailImage(for: fileItem)
-            setThumbnai()
-        }
-    }
-    
-    func setThumbnai(){
-        DispatchQueue.main.async { [weak self] in
-            if let self = self{
-                let newTumbnailImage = UIImage.thumbnailImage(for: self.fileItem!, to: self.fileIcon.bounds.size)
-                if(self.fileIcon.image != newTumbnailImage){
-                    self.fileIcon.image = newTumbnailImage
+        
+        ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: fileIcon.bounds.size) { image in
+            DispatchQueue.main.async { [weak self] in
+                if(fileItem.url == self?.fileItem?.url){
+                    self?.fileIcon.image = image
                 }
+            }
+        } onPlaceViewHolder: { image in
+            if(fileItem.url == self.fileItem?.url){
+                self.fileIcon.image = image
             }
         }
     }

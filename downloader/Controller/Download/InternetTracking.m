@@ -13,6 +13,7 @@
 @property(strong, atomic) CADisplayLink* timer;
 @property(assign, atomic) NSTimeInterval startTime;
 @property(assign, atomic) BOOL isTraking;
+@property(strong, atomic) dispatch_source_t ntimer;
 @end
 
 @implementation InternetTracking
