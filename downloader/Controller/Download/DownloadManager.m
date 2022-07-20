@@ -115,9 +115,7 @@
 
 - (void) cancelDownload:(DownloadItem *)downloadItem{
     [downloadItem.downloadTask suspend];
-    downloadItem.downloadTask = nil;
-    downloadItem.progress = 0.0;
-    downloadItem.state = @"Canceled";
+    [downloadItem didFinishDownloadWithState:@"Canceled"];
     [self saveAllDownloadItemsToPersistence];
 }
 
@@ -206,18 +204,14 @@
         [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
         if(error){
             onFail([NSString stringWithFormat: @"Can't save current download item due to:  %@", error.userInfo]);
-            currentDownloadItem.state = @"Error";
-            currentDownloadItem.progress = 0.0;
+            [currentDownloadItem didFinishDownloadWithState:@"Error"];
         }else{
             onSuccess();
-            currentDownloadItem.state = @"Completed";
-            currentDownloadItem.downloadTask = nil;
-            currentDownloadItem.progress = 0.0;
+            [currentDownloadItem didFinishDownloadWithState:@"Completed"];
         }
     }else{
         onFail(@"Can't save current download item");
-        currentDownloadItem.state = @"Error";
-        currentDownloadItem.progress = 0.0;
+        [currentDownloadItem didFinishDownloadWithState:@"Error"];
     }
     [self stopTrackingInternetConnection];
     [self saveAllDownloadItemsToPersistence];

@@ -22,7 +22,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         let downloadItemTitle = UILabel()
         downloadItemTitle.translatesAutoresizingMaskIntoConstraints = false
         downloadItemTitle.text = "File item title"
-        downloadItemTitle.font = UIFont.systemFont(ofSize: Dimen.itemTitleTextSize)
+        downloadItemTitle.font = UIFont.systemFont(ofSize: DimenResource.itemTitleTextSize)
         downloadItemTitle.textAlignment = .center
         downloadItemTitle.numberOfLines = 1
         return downloadItemTitle
@@ -34,7 +34,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         lable.text = "0 bytes"
         lable.textColor = .gray
         lable.textAlignment = .center
-        lable.font = UIFont.systemFont(ofSize: Dimen.itemAdditionalContentTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.itemAdditionalContentTextSize)
         return lable
     }()
     
@@ -61,12 +61,12 @@ class FileItemViewCellByIcon: UICollectionViewCell {
         thumbnail.heightAnchor.constraint(equalTo: thumbnail.widthAnchor).isActive = true
     }
     private func configFileNameConstraint(){
-        fileName.topAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: Dimen.cellItemByIconMargin.top).isActive = true
+        fileName.topAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: DimenResource.cellItemByIconMargin.top).isActive = true
         fileName.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         fileName.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
         let fileNameWidth = contentView.frame.width
         let fileNameHeight = fileName.text?.height(withConstrainedWidth: fileNameWidth, font: fileName.font)
-        let singleLineHeight = Dimen.getFontHeight(font: fileName.font)
+        let singleLineHeight = DimenResource.getFontHeight(font: fileName.font)
         if var fileNameHeight = fileNameHeight {
             switch(fileNameHeight){
             case singleLineHeight...2*singleLineHeight:
@@ -84,7 +84,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     }
     
     private func configFileSizeConstraint(){
-        fileSize.topAnchor.constraint(equalTo: fileName.bottomAnchor, constant: Dimen.cellItemByIconMargin.top).isActive = true
+        fileSize.topAnchor.constraint(equalTo: fileName.bottomAnchor, constant: DimenResource.cellItemByIconMargin.top).isActive = true
         fileSize.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         fileSize.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
         fileSize.heightAnchor.constraint(equalToConstant: (fileSize.text?.height(withConstrainedWidth: contentView.frame.width, font: fileSize.font))!).isActive = true
@@ -92,16 +92,16 @@ class FileItemViewCellByIcon: UICollectionViewCell {
     }
     
     private func configFileButtonActionConstraint(){
-        fileActionMenu.topAnchor.constraint(equalTo: fileSize.bottomAnchor, constant: Dimen.cellItemByIconMargin.top).isActive = true
+        fileActionMenu.topAnchor.constraint(equalTo: fileSize.bottomAnchor, constant: DimenResource.cellItemByIconMargin.top).isActive = true
         fileActionMenu.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-        fileActionMenu.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        fileActionMenu.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        fileActionMenu.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        fileActionMenu.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
     }
     private func configFileTypeIconConstraint(){
-        fileTypeIcon.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: Dimen.cellItemByIconMargin.bottom).isActive = true
-        fileTypeIcon.trailingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: Dimen.cellItemByIconMargin.right).isActive = true
-        fileTypeIcon.heightAnchor.constraint(equalToConstant: Dimen.imageTinyIconHeight).isActive = true
-        fileTypeIcon.widthAnchor.constraint(equalToConstant: Dimen.imageTinyIconWidth).isActive = true
+        fileTypeIcon.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: DimenResource.cellItemByIconMargin.bottom).isActive = true
+        fileTypeIcon.trailingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: DimenResource.cellItemByIconMargin.right).isActive = true
+        fileTypeIcon.heightAnchor.constraint(equalToConstant: DimenResource.imageTinyIconHeight).isActive = true
+        fileTypeIcon.widthAnchor.constraint(equalToConstant: DimenResource.imageTinyIconWidth).isActive = true
     }
     //MARK: - INIT CELL
     public static let identifier: String = "FileItemCellByIcon"

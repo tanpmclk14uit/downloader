@@ -14,7 +14,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         let downloadItemTitle = UILabel()
         downloadItemTitle.translatesAutoresizingMaskIntoConstraints = false
         downloadItemTitle.text = "File item title"
-        downloadItemTitle.font = UIFont.systemFont(ofSize: Dimen.itemTitleTextSize)
+        downloadItemTitle.font = UIFont.systemFont(ofSize: DimenResource.itemTitleTextSize)
         return downloadItemTitle
     }()
     
@@ -23,7 +23,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         downloadItemStatus.translatesAutoresizingMaskIntoConstraints = false
         downloadItemStatus.text = "0 bytes"
         downloadItemStatus.textColor = .gray
-        downloadItemStatus.font = UIFont.systemFont(ofSize: Dimen.itemAdditionalContentTextSize)
+        downloadItemStatus.font = UIFont.systemFont(ofSize: DimenResource.itemAdditionalContentTextSize)
         return downloadItemStatus
     }()
     
@@ -32,7 +32,7 @@ class FileItemViewCellByList: UICollectionViewCell {
         lable.translatesAutoresizingMaskIntoConstraints = false
         lable.textColor = .gray
         lable.text = "0"
-        lable.font = UIFont.systemFont(ofSize: Dimen.itemAdditionalContentTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.itemAdditionalContentTextSize)
         return lable
     }()
     
@@ -66,15 +66,15 @@ class FileItemViewCellByList: UICollectionViewCell {
         layout.addSubview(fileActionMenu)
         layout.addSubview(fileIcon)
         // config file icon constraint
-        fileIcon.widthAnchor.constraint(equalToConstant: Dimen.imageIconWidth).isActive = true
-        fileIcon.heightAnchor.constraint(equalToConstant: Dimen.imageIconHeight).isActive = true
-        fileIcon.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
+        fileIcon.widthAnchor.constraint(equalToConstant: DimenResource.imageIconWidth).isActive = true
+        fileIcon.heightAnchor.constraint(equalToConstant: DimenResource.imageIconHeight).isActive = true
+        fileIcon.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
         fileIcon.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         // config button download action
         fileActionMenu.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        fileActionMenu.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
-        fileActionMenu.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        fileActionMenu.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        fileActionMenu.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
+        fileActionMenu.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        fileActionMenu.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
         // config content layout (title & information)
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
@@ -102,8 +102,8 @@ class FileItemViewCellByList: UICollectionViewCell {
         contentLayout.addArrangedSubview(informationLayout)
         
         // config content layout constraint
-        contentLayout.leadingAnchor.constraint(equalTo: fileIcon.trailingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        contentLayout.trailingAnchor.constraint(equalTo: fileActionMenu.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        contentLayout.leadingAnchor.constraint(equalTo: fileIcon.trailingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+        contentLayout.trailingAnchor.constraint(equalTo: fileActionMenu.leadingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
         contentLayout.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         contentLayout.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return layout
@@ -111,8 +111,8 @@ class FileItemViewCellByList: UICollectionViewCell {
     
     //MARK: - CONFIG CELL CONSTRAINT
     private func configItemCellConstraint(){
-        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
         itemCellLayout.heightAnchor.constraint(equalToConstant: 60).isActive = true
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
     }

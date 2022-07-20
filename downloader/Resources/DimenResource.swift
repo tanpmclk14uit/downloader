@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class Dimen {
+class DimenResource {
     // text size
     public static let screenTitleTextSize: CGFloat = 26;
     public static let screenHeadlingTextSize: CGFloat = 22
@@ -21,8 +21,10 @@ class Dimen {
     public static let buttonIconWidth: CGFloat = 24;
     public static let buttonIconHeight: CGFloat = 24;
     public static let normalButtonWidth: CGFloat = 100;
+    public static let normalButtonHeight: CGFloat = 50;
     public static let cellButtonWidth: CGFloat = 30;
     public static let cellButtonHeight: CGFloat = 30;
+    public static let defaultBackButtonWidth: CGFloat = 60;
     // image size
     public static let imageIconWidth: CGFloat = 50;
     public static let imageIconHeight: CGFloat = 50;

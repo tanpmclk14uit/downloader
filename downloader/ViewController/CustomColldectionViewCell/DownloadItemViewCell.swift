@@ -13,7 +13,7 @@ class DownloadItemViewCell: UITableViewCell {
         let downloadItemTitle = UILabel()
         downloadItemTitle.translatesAutoresizingMaskIntoConstraints = false
         downloadItemTitle.text = "Download item title"
-        downloadItemTitle.font = UIFont.boldSystemFont(ofSize: Dimen.itemTitleTextSize)
+        downloadItemTitle.font = UIFont.boldSystemFont(ofSize: DimenResource.itemTitleTextSize)
         return downloadItemTitle
     }()
     
@@ -21,14 +21,14 @@ class DownloadItemViewCell: UITableViewCell {
         let downloadItemStatus = UILabel()
         downloadItemStatus.translatesAutoresizingMaskIntoConstraints = false
         downloadItemStatus.text = "Download item status"
-        downloadItemStatus.font = UIFont.systemFont(ofSize: Dimen.itemNormalContentTextSize)
+        downloadItemStatus.font = UIFont.systemFont(ofSize: DimenResource.itemNormalContentTextSize)
         return downloadItemStatus
     }()
      
     private lazy var buttonActionShape: CAShapeLayer = {
         let shapePlayer = CAShapeLayer();
-        let centerPoint = CGPoint(x: Dimen.cellButtonWidth/2   , y: Dimen.cellButtonHeight/2)
-        let circularPath = UIBezierPath(arcCenter: centerPoint, radius: Dimen.cellButtonWidth/2, startAngle: -CGFloat.pi/2, endAngle: 3*CGFloat.pi/2, clockwise: true)
+        let centerPoint = CGPoint(x: DimenResource.cellButtonWidth/2   , y: DimenResource.cellButtonHeight/2)
+        let circularPath = UIBezierPath(arcCenter: centerPoint, radius: DimenResource.cellButtonWidth/2, startAngle: -CGFloat.pi/2, endAngle: 3*CGFloat.pi/2, clockwise: true)
         
         shapePlayer.path = circularPath.cgPath
         shapePlayer.fillColor = UIColor(white: 1, alpha: 0).cgColor
@@ -67,14 +67,14 @@ class DownloadItemViewCell: UITableViewCell {
         
         // config button download action
         downloadItemButtonAction.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
-        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: Dimen.cellButtonWidth).isActive = true
-        downloadItemButtonAction.heightAnchor.constraint(equalToConstant: Dimen.cellButtonHeight).isActive = true
+        downloadItemButtonAction.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
+        downloadItemButtonAction.widthAnchor.constraint(equalToConstant: DimenResource.cellButtonWidth).isActive = true
+        downloadItemButtonAction.heightAnchor.constraint(equalToConstant: DimenResource.cellButtonHeight).isActive = true
         // config cancel download button
         cancelDownloadButton.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        cancelDownloadButton.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
-        cancelDownloadButton.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        cancelDownloadButton.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        cancelDownloadButton.trailingAnchor.constraint(equalTo: downloadItemButtonAction.leadingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
+        cancelDownloadButton.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        cancelDownloadButton.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
         // config content tile & status
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false
@@ -83,16 +83,16 @@ class DownloadItemViewCell: UITableViewCell {
         layout.addSubview(contentLayout)
         contentLayout.addArrangedSubview(downloadItemTitle)
         contentLayout.addArrangedSubview(downloadItemStatus)
-        contentLayout.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        contentLayout.trailingAnchor.constraint(equalTo: cancelDownloadButton.leadingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        contentLayout.leadingAnchor.constraint(equalTo: layout.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+        contentLayout.trailingAnchor.constraint(equalTo: cancelDownloadButton.leadingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
         contentLayout.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         contentLayout.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return layout
     }()
     //MARK: - CONFIG CELL CONSTRAINT
     private func configItemCellConstraint(){
-        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        itemCellLayout.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+        itemCellLayout.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
         itemCellLayout.heightAnchor.constraint(equalToConstant: 60).isActive = true
         itemCellLayout.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
      }

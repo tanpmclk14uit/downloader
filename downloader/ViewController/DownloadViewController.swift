@@ -13,7 +13,7 @@ class DownloadViewController: UIViewController {
         let titleName = UILabel()
         titleName.text = "Downloads"
         titleName.textColor = .black
-        titleName.font = UIFont.boldSystemFont(ofSize: Dimen.screenTitleTextSize)
+        titleName.font = UIFont.boldSystemFont(ofSize: DimenResource.screenTitleTextSize)
         return titleName
     }()
     
@@ -63,7 +63,7 @@ class DownloadViewController: UIViewController {
         lable.textColor = .gray
         lable.numberOfLines = 2
         lable.textAlignment = .center
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         return lable
     }()
     
@@ -116,36 +116,36 @@ class DownloadViewController: UIViewController {
         } else {
             searchBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         }
-        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     private func configTableViewConstraint(){
-        downloadItemsTableView.topAnchor.constraint(equalTo: buttonSort.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
-        downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
-        downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
+        downloadItemsTableView.topAnchor.constraint(equalTo: buttonSort.bottomAnchor, constant: DimenResource.screenDefaultMargin.top).isActive = true
+        downloadItemsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DimenResource.screenDefaultMargin.bottom).isActive = true
+        downloadItemsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
         if #available(iOS 11.0, *) {
-            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         } else {
-            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            downloadItemsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }
     }
     
     private func configButtonSortConstraint(){
-        buttonSort.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
-        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
-        buttonSort.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        buttonSort.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: DimenResource.screenDefaultMargin.top).isActive = true
+        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
+        buttonSort.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
     }
     
     private func configButtonFilterConstraint(){
-        buttonFilter.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        buttonFilter.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: DimenResource.screenDefaultMargin.top).isActive = true
         if #available(iOS 11.0, *) {
-            buttonFilter.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+            buttonFilter.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right-10).isActive = true
         } else {
-            buttonFilter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right-10).isActive = true
+            buttonFilter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right-10).isActive = true
         }
-        buttonFilter.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        buttonFilter.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
     }
     
     // MARK: - CONTROLLER SETUP

@@ -43,15 +43,15 @@ class CustomContextMenuViewController: UIViewController {
     
     private func configParentsFolderContextMenuConstraint(){
         if #available(iOS 11.0, *) {
-            contextParentsFolderMenu.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor , constant: Dimen.screenDefaultMargin.top).isActive = true
+            contextParentsFolderMenu.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor , constant: DimenResource.screenDefaultMargin.top).isActive = true
             contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
         } else {
-            contextParentsFolderMenu.topAnchor.constraint(equalTo: view.topAnchor , constant: Dimen.screenDefaultMargin.top).isActive = true
+            contextParentsFolderMenu.topAnchor.constraint(equalTo: view.topAnchor , constant: DimenResource.screenDefaultMargin.top).isActive = true
             contextParentsFolderMenu.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         }
         
         let halfViewFrameWidth = view.frame.width/2
-        let width = (halfViewFrameWidth > Dimen.menuMaxWidth) ? Dimen.menuMaxWidth : halfViewFrameWidth
+        let width = (halfViewFrameWidth > DimenResource.menuMaxWidth) ? DimenResource.menuMaxWidth : halfViewFrameWidth
         contextParentsFolderMenu.widthAnchor.constraint(equalToConstant: width).isActive = true
         
         let halfViewFrameHeight = view.frame.height/2

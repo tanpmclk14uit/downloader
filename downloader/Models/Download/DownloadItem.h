@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, atomic) double progress;
 - (instancetype)initWithStringURL: (NSString*)url;
 - (instancetype) initWithName: (NSString*) name andState: (NSString*) state andURL: (NSString*) url andResumeData: (nullable NSData*) resumeData;
+- (void) didFinishDownloadWithState: (NSString*) state;
 @end
 
 NS_ASSUME_NONNULL_END

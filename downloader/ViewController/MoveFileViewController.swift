@@ -16,14 +16,14 @@ class MoveFileViewController: UIViewController {
         titleName.text = "Downloads"
         titleName.textColor = .black
         titleName.textAlignment = .center
-        titleName.font = UIFont.boldSystemFont(ofSize: Dimen.screenTitleTextSize)
+        titleName.font = UIFont.boldSystemFont(ofSize: DimenResource.screenTitleTextSize)
         return titleName
     }()
     
     lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Cancel", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         button.addTarget(self, action: #selector(onCancelClick), for: .touchUpInside)
         return button
     }()
@@ -31,7 +31,7 @@ class MoveFileViewController: UIViewController {
     lazy var moveButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Move", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Dimen.screenNormalTextSize)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: DimenResource.screenNormalTextSize)
         button.addTarget(self, action: #selector(onMoveClick), for: .touchUpInside)
         return button
     }()
@@ -43,7 +43,7 @@ class MoveFileViewController: UIViewController {
         button.titleEdgeInsets.left = 10
         button.contentHorizontalAlignment = .left
         button.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        button.titleLabel?.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         button.setImage(UIImage(named: "add-folder"), for: .normal)
         return button
     }()
@@ -53,7 +53,7 @@ class MoveFileViewController: UIViewController {
         lable.translatesAutoresizingMaskIntoConstraints = false
         lable.textAlignment = .center
         lable.textColor = .gray
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenAdditionalInformationTextSize)
         return lable
     }()
     
@@ -77,7 +77,7 @@ class MoveFileViewController: UIViewController {
     lazy var backButton: UIButton = {
         let backButton = UIButton(type: .system)
         backButton.setImage(UIImage(named: "back"), for: .normal)
-        backButton.widthAnchor.constraint(equalToConstant: Dimen.normalButtonWidth).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: DimenResource.normalButtonWidth).isActive = true
         backButton.contentHorizontalAlignment = .left
         backButton.titleLabel?.lineBreakMode = .byTruncatingTail
         return backButton
@@ -89,7 +89,7 @@ class MoveFileViewController: UIViewController {
         lable.textColor = .gray
         lable.numberOfLines = 2
         lable.textAlignment = .center
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         return lable
     }()
     
@@ -103,21 +103,21 @@ class MoveFileViewController: UIViewController {
             textGuide.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
             textGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         }
-        textGuide.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: titleName.font)).isActive = true
+        textGuide.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: titleName.font)).isActive = true
         textGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7).isActive = true
         
     }
     
     private func configFileCollectionViewConstraint(){
-        fileCollectionView.topAnchor.constraint(equalTo: textGuide.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
+        fileCollectionView.topAnchor.constraint(equalTo: textGuide.bottomAnchor, constant: DimenResource.screenDefaultMargin.top).isActive = true
         if #available(iOS 11.0, *){
-            fileCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
-            fileCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-            fileCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            fileCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: DimenResource.screenDefaultMargin.bottom).isActive = true
+            fileCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+            fileCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }else{
-            fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
-            fileCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-            fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DimenResource.screenDefaultMargin.bottom).isActive = true
+            fileCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+            fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }
     }
     

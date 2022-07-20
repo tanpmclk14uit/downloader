@@ -36,4 +36,12 @@
     }
     return self;
 }
+
+- (void)didFinishDownloadWithState:(NSString *)state{
+    self.state = state;
+    self.totalSizeFitWithUnit = @"";
+    self.downloadTask = nil;
+    self.durationString = nil;
+    self.progress = 0.0;
+}
 @end

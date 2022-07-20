@@ -30,7 +30,7 @@ class FolderViewController: UIViewController {
         lable.textColor = .gray
         lable.numberOfLines = 2
         lable.textAlignment = .center
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         return lable
     }()
     
@@ -38,7 +38,7 @@ class FolderViewController: UIViewController {
         let titleName = UILabel()
         titleName.text = "Folders"
         titleName.textColor = .black
-        titleName.font = UIFont.boldSystemFont(ofSize: Dimen.screenTitleTextSize)
+        titleName.font = UIFont.boldSystemFont(ofSize: DimenResource.screenTitleTextSize)
         return titleName
     }()
     
@@ -101,26 +101,26 @@ class FolderViewController: UIViewController {
         
         // config button add file
         buttonImportFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonImportFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
-        buttonImportFile.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
-        buttonImportFile.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
+        buttonImportFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: DimenResource.toolBarMargin.left).isActive = true
+        buttonImportFile.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
+        buttonImportFile.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
         // config button add forder
         buttonAddFolder.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonImportFile.trailingAnchor, constant: Dimen.toolBarMargin.left).isActive = true
-        buttonAddFolder.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        buttonAddFolder.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
+        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonImportFile.trailingAnchor, constant: DimenResource.toolBarMargin.left).isActive = true
+        buttonAddFolder.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        buttonAddFolder.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
         // config button filter
         buttonFilter.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         buttonFilter.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
-        buttonFilter.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
+        buttonFilter.trailingAnchor.constraint(equalTo: toolBar.trailingAnchor, constant: DimenResource.toolBarMargin.right).isActive = true
         // config button sort
         buttonSort.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         buttonSort.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
-        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
+        buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: DimenResource.toolBarMargin.right).isActive = true
         // config button type view
-        buttonViewType.heightAnchor.constraint(equalToConstant: Dimen.buttonIconHeight).isActive = true
-        buttonViewType.widthAnchor.constraint(equalToConstant: Dimen.buttonIconWidth).isActive = true
-        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor, constant: Dimen.toolBarMargin.right).isActive = true
+        buttonViewType.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
+        buttonViewType.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor, constant: DimenResource.toolBarMargin.right).isActive = true
         buttonViewType.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
         
         return toolBar
@@ -211,7 +211,7 @@ class FolderViewController: UIViewController {
     lazy var backButton: UIButton = {
         let backButton = UIButton(type: .system)
         backButton.setImage(UIImage(named: "back"), for: .normal)
-        backButton.widthAnchor.constraint(equalToConstant: Dimen.normalButtonWidth).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: DimenResource.normalButtonWidth).isActive = true
         backButton.contentHorizontalAlignment = .left
         backButton.titleLabel?.lineBreakMode = .byTruncatingTail
         return backButton
@@ -220,7 +220,7 @@ class FolderViewController: UIViewController {
     lazy var pasteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Paste", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: Dimen.screenNormalTextSize)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: DimenResource.screenNormalTextSize)
         return button
     }()
     lazy var moveGuideLable: UILabel = {
@@ -230,7 +230,7 @@ class FolderViewController: UIViewController {
         lable.textColor = UIColor.systemBlue
         lable.backgroundColor = .white
         lable.text = "Move to: ..."
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenAdditionalInformationTextSize)
         return lable
     }()
     
@@ -255,7 +255,7 @@ class FolderViewController: UIViewController {
         lable.textAlignment = .left
         lable.text = "Total: 12 item(s)"
         lable.textColor = .gray
-        lable.font = UIFont.systemFont(ofSize: Dimen.screenAdditionalInformationTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.screenAdditionalInformationTextSize)
         
         return lable;
     }()
@@ -268,32 +268,32 @@ class FolderViewController: UIViewController {
         } else {
             searchBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         }
-        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     private func configToolbarConstraint(){
         toolBar.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
         if #available(iOS 11.0, *){
-            toolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-            toolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            toolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
+            toolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }else{
-            toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left).isActive = true
-            toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
+            toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }
         toolBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     private func configFileCollectionViewConstraint(){
-        fileCollectionView.topAnchor.constraint(equalTo: totalFolderItem.bottomAnchor, constant: Dimen.screenDefaultMargin.top).isActive = true
-        fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Dimen.screenDefaultMargin.bottom).isActive = true
+        fileCollectionView.topAnchor.constraint(equalTo: totalFolderItem.bottomAnchor, constant: DimenResource.screenDefaultMargin.top).isActive = true
+        fileCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DimenResource.screenDefaultMargin.bottom).isActive = true
         if #available(iOS 11.0, *){
-            fileCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-            fileCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            fileCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+            fileCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }else{
-            fileCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-            fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Dimen.screenDefaultMargin.right).isActive = true
+            fileCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+            fileCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: DimenResource.screenDefaultMargin.right).isActive = true
         }
     }
     
@@ -305,22 +305,22 @@ class FolderViewController: UIViewController {
             moveGuide.topAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
             moveGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         }
-        moveGuide.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: moveGuideLable.font)).isActive = true
+        moveGuide.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: moveGuideLable.font)).isActive = true
         moveGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1).isActive = true
     }
     
     private func configTotalFolderItemLableConstraint(){
         if #available(iOS 11.0, *) {
             totalFolderItem.topAnchor.constraint(equalTo: toolBar.safeAreaLayoutGuide.bottomAnchor).isActive = true
-            totalFolderItem.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Dimen.screenDefaultMargin.left + 10).isActive = true
-            totalFolderItem.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Dimen.screenDefaultMargin.right - 10).isActive = true
+            totalFolderItem.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DimenResource.screenDefaultMargin.left + 10).isActive = true
+            totalFolderItem.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: DimenResource.screenDefaultMargin.right - 10).isActive = true
             
         } else {
-            totalFolderItem.topAnchor.constraint(equalTo: toolBar.bottomAnchor, constant: Dimen.screenDefaultMargin.left + 10).isActive = true
-            totalFolderItem.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Dimen.screenDefaultMargin.left - 10).isActive = true
+            totalFolderItem.topAnchor.constraint(equalTo: toolBar.bottomAnchor, constant: DimenResource.screenDefaultMargin.left + 10).isActive = true
+            totalFolderItem.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: DimenResource.screenDefaultMargin.left - 10).isActive = true
             totalFolderItem.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         }
-        totalFolderItem.heightAnchor.constraint(equalToConstant: Dimen.getFontHeight(font: totalFolderItem.font)).isActive = true
+        totalFolderItem.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: totalFolderItem.font)).isActive = true
     }
     
     

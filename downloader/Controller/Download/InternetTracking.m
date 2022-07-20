@@ -48,7 +48,6 @@
         [self.timer setPaused:true];
         self.isTraking = false;
     }
-    NSLog(@"%@", @"tracking");
 }
 
 - (void)resetTracking{

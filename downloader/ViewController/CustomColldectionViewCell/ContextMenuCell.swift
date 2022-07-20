@@ -13,15 +13,15 @@ class ContextMenuCell: UITableViewCell {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
         lable.textColor = .black
-        lable.font = UIFont.systemFont(ofSize: Dimen.itemNormalContentTextSize)
+        lable.font = UIFont.systemFont(ofSize: DimenResource.itemNormalContentTextSize)
         return lable
     }()
     
     private func configTitleConstraint(){
-        title.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Dimen.cellItemMargin.top).isActive = true
-        title.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Dimen.cellItemMargin.bottom).isActive = true
-        title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Dimen.cellItemMargin.left).isActive = true
-        title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Dimen.cellItemMargin.right).isActive = true
+        title.topAnchor.constraint(equalTo: contentView.topAnchor, constant: DimenResource.cellItemMargin.top).isActive = true
+        title.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: DimenResource.cellItemMargin.bottom).isActive = true
+        title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: DimenResource.cellItemMargin.left).isActive = true
+        title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
     }
     
     public static let identifier: String = "ContextMenuCell"
