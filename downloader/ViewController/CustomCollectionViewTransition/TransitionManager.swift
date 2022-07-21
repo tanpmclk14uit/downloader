@@ -50,6 +50,7 @@ private let finishTransitionValue = 1.0
         
         transitionLayout.invalidateLayout()
         if progress == finishTransitionValue {
+            
             collectionView.finishInteractiveTransition()
             updater.invalidate()
         }

@@ -579,26 +579,35 @@ class FolderViewController: UIViewController {
     }
     
     
-    private func onViewByChange(newLayoutState: LayoutState){
-        let transitionManager: TransitionManager
+    private func onViewByChange(newLayoutState: LayoutState, withAnimation animation: Bool = true){
+        let newLayout: MaintainOffsetFlowLayout
         switch(newLayoutState){
         case LayoutState.List:
             buttonViewType.setImage(UIImage(named: "row"), for: .normal)
             fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
-            transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: listLayout)
+            
+            newLayout = listLayout
+            
         case LayoutState.WaterFallImage:
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
             fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
-        
-            transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: pinterestLayout)
+            
+            newLayout = pinterestLayout
         case LayoutState.Grid:
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
             fileCollectionView.register(FileItemViewCellByIcon.self, forCellWithReuseIdentifier: FileItemViewCellByIcon.identifier)
-            transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: gridLayout)
             
+            newLayout = gridLayout
+        }
+        newLayout.invalidateLayout()
+        if (animation){
+            let transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: newLayout)
+            transitionManager.startInteractiveTransition()
+        }else{
+            newLayout.previousContentOffset = NSValue(cgPoint: CGPoint(x: 0, y: 0))
+            self.fileCollectionView.collectionViewLayout = newLayout
         }
         currentLayoutState = newLayoutState
-        transitionManager.startInteractiveTransition()
         reloadCollectionView()
     }
     
@@ -617,9 +626,18 @@ class FolderViewController: UIViewController {
         if(newFilter != filterBy){
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
-            reloadCollectionView()
+            if(newFilter == FilterByFileType.Image){
+                    currentLayoutState = LayoutState.WaterFallImage
+            }else{
+                if(currentLayoutState == LayoutState.WaterFallImage){
+                    currentLayoutState = LayoutState.Grid
+                }
+            }
+            onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
         }
     }
+    
+    
     
     @objc func onSortClick(){
         present(sortBySelectionAlert, animated: true)
@@ -937,7 +955,6 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func reloadCollectionView(){
         fileCollectionView.reloadData()
         setEmptyListMessage()
-        pinterestLayout.clearCache()
         setTotalItemsLable()
     }
 }
@@ -1017,6 +1034,17 @@ extension FolderViewController: UIDocumentPickerDelegate{
 //MARK: - CONFIRM PINTEREST DELEGATE
 extension FolderViewController: PinterestLayoutDelegate{
     func collectionView(collectionView: UICollectionView, heightForImageAtIndexPath indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
+        let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
+        let actualImage = UIImage(contentsOfFile: currentItem.url.path)
+        if let actualImage = actualImage{
+            let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
+            return itemHeight
+        }else{
+            return 0
+        }
+    }
+    
+    func getHeightForImageAtIndexPath(indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
         let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
         let actualImage = UIImage(contentsOfFile: currentItem.url.path)
         if let actualImage = actualImage{

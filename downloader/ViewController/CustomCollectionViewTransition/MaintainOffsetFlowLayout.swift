@@ -8,7 +8,7 @@
 import UIKit
 
 class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
-    private var previousContentOffset: NSValue?
+    open var previousContentOffset: NSValue?
     
     override open func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         let previousContentOffsetPoint = previousContentOffset?.cgPointValue
@@ -21,12 +21,10 @@ class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
         return superContentOffset
     }
     
-    func resetContentOffset(){
-        previousContentOffset = nil
-    }
-    
     override open func prepareForTransition(from oldLayout: UICollectionViewLayout) {
-        previousContentOffset = NSValue(cgPoint: collectionView!.contentOffset)
+        if(previousContentOffset?.cgPointValue.y != 0){
+            previousContentOffset = NSValue(cgPoint: collectionView!.contentOffset)
+        }
         return super.prepareForTransition(from: oldLayout)
     }
     

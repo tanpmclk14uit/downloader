@@ -8,23 +8,27 @@
 import UIKit
 
 class CacheThumbnailImage{
-    private static var cacheThumb: NSMapTable = NSMapTable<NSURL, UIImage>()
     
-    private static var firstURL: URL?
+    private static var instance: CacheThumbnailImage?
+    private let cacheThumb: NSCache = NSCache<NSURL, UIImage>()
     
-    public static func getImageFromCacheOfURL(_ url: URL) -> UIImage?{
+    private init(){
+        cacheThumb.countLimit = 100
+    }
+    
+    public static func shareInstance() -> CacheThumbnailImage{
+        if(instance == nil){
+            instance = CacheThumbnailImage()
+        }
+        return instance!
+    }
+    
+    public func getImageFromCacheOfURL(_ url: URL) -> UIImage?{
         return cacheThumb.object(forKey: url as NSURL)
     }
     
-    public static func saveToCache(url: URL, uiImage: UIImage?){
-        if(cacheThumb.count > 50){
-            cacheThumb.removeAllObjects()
-        }
-        cacheThumb.setObject(uiImage, forKey: url as NSURL)
-    }
-    
-    public static func isEmpty() -> Bool{
-        return cacheThumb.count == 0
+    public func saveToCache(url: URL, uiImage: UIImage?){
+        cacheThumb.setObject(uiImage! as UIImage, forKey: url as NSURL)
     }
     
     

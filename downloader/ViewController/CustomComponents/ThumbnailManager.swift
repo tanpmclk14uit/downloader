@@ -36,7 +36,7 @@ class ThumbnailManager {
             // use default thumbnail
             onComplete(defauleImage)
         }else{
-            if let cacheImage = CacheThumbnailImage.getImageFromCacheOfURL(fileItem.url){
+            if let cacheImage = CacheThumbnailImage.shareInstance().getImageFromCacheOfURL(fileItem.url){
                 // check cache image fit size
                 if cacheImage.size.height >= (size.height*UIScreen.main.scale) {
                     // choose cache as thumbnail
@@ -142,7 +142,7 @@ class ThumbnailManager {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         onComplete(image)
-        CacheThumbnailImage.saveToCache(url: url, uiImage: image)
+        CacheThumbnailImage.shareInstance().saveToCache(url: url, uiImage: image)
     }
     
     private func generateThumbnailFromVideo(withURL: URL) -> UIImage? {
@@ -193,7 +193,7 @@ class ThumbnailManager {
         }
         let image = UIImage(data: imageData)
         onComplete(image)
-        CacheThumbnailImage.saveToCache(url: withURL, uiImage: image)
+        CacheThumbnailImage.shareInstance().saveToCache(url: withURL, uiImage: image)
     }
     
 }
