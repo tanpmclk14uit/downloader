@@ -28,8 +28,13 @@
 - (instancetype) initRootFolder{
     self = [super init];
     if(self){
-        self.name = @"Downloads";
-        self.url = [[NSFileManager defaultManager] URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: nil];
+        
+        NSError* error;
+        self.url = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
+        if(error){
+            NSLog(@"%@", error);
+        }
+        self.name = [self.url lastPathComponent];
         self.type = [FileTypeConstants unknown];
         self.isDir = true;
         self.parentFolders = [[NSMutableArray alloc] init];

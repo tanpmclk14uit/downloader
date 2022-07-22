@@ -28,6 +28,10 @@ class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
         return super.prepareForTransition(from: oldLayout)
     }
     
+    func resetContentOffset(){
+        previousContentOffset = NSValue(cgPoint: CGPoint(x: 0, y: 0))
+    }
+    
     override open func finalizeLayoutTransition() {
         previousContentOffset = nil
         super.finalizeLayoutTransition()

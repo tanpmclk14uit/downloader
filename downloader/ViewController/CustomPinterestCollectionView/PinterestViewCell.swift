@@ -13,7 +13,6 @@ class PinterestViewCell: UICollectionViewCell {
     lazy var thumbnail: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "image")
         return image
     }()
     
@@ -54,12 +53,14 @@ class PinterestViewCell: UICollectionViewCell {
         ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: thumbnail.bounds.size) { image in
             DispatchQueue.main.async { [weak self] in
                 if(fileItem.url == self?.fileItem?.url){
-                    self?.thumbnail.image = image
+                    self?.thumbnail.backgroundColor = ColorResource.white
+                    self?.thumbnail.image = image?.withRoundedCorners(radius: 15)
                 }
             }
-        } onPlaceViewHolder: { image in
+        } onPlaceViewHolder: { _ in
             if(fileItem.url == self.fileItem?.url){
-                thumbnail.image = image
+                thumbnail.image = nil
+                thumbnail.backgroundColor = ColorResource.thumbnailBackgroundColor
             }
         }
     }

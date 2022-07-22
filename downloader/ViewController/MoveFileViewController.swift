@@ -70,6 +70,7 @@ class MoveFileViewController: UIViewController {
         fileCollectionView.translatesAutoresizingMaskIntoConstraints = false
         fileCollectionView.dataSource = self
         fileCollectionView.delegate = self
+        fileCollectionView.layer.backgroundColor = ColorResource.white?.cgColor
         fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
         return fileCollectionView
     }()

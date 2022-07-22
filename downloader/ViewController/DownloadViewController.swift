@@ -67,6 +67,13 @@ class DownloadViewController: UIViewController {
         return lable
     }()
     
+    lazy var addNewDownloadButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .systemBlue
+        button.setImage(UIImage(named: "add"), for: .normal)
+        return button
+    }()
+    
     lazy var sortBySelectionAlert: UIAlertController = {
         let alert = UIAlertController(
             title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
@@ -162,8 +169,8 @@ class DownloadViewController: UIViewController {
         navigationItem.titleView = titleName
         downloadManager.setInternetTrackingDelegate(self)
         // set up button add new download item
-        let addNewDownload = UIBarButtonItem(image: UIImage(named: "add"), style: .plain, target: self, action: #selector(onTestPeromance))
-        navigationItem.leftBarButtonItem = addNewDownload
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: addNewDownloadButton)
+        addNewDownloadButton.addTarget(self, action: #selector(addNewDownloadItemClick), for: .touchUpInside)
         
         // download view delegate
         downloadManager.setDownloadViewDelegate(self)
@@ -188,7 +195,8 @@ class DownloadViewController: UIViewController {
         
         fetchAllDownLoadItems()
         
-        // test
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(onTestPeromance))
+        addNewDownloadButton.addGestureRecognizer(longGesture)
         
         
     }
@@ -219,11 +227,14 @@ class DownloadViewController: UIViewController {
         if(getAllDownloadItemMatchSearchSortAndFilter().isEmpty){
             if(filterBy == FilterByState.All){
                 emptyListMessage.text = "Your download process is empty!"
+                downloadItemsTableView.isHidden = true
             }else{
                 emptyListMessage.text = "Filter result is empty\nplease choose other state!"
+                downloadItemsTableView.isHidden = true
             }
         }else{
             emptyListMessage.text = nil
+            downloadItemsTableView.isHidden = false
         }
     }
     
@@ -233,7 +244,7 @@ class DownloadViewController: UIViewController {
             setIconOfSortButton()
         }else{
             sortBy = newSortBy
-            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
+            buttonSort.setTitle("\(newSortBy)", for: .normal)
         }
         reloadTableViewData()
     }
@@ -258,16 +269,18 @@ class DownloadViewController: UIViewController {
     
     private func onRestartDownloadItem(downloadItem: DownloadItem){
         downloadManager.restart(downloadItem)
-        reloadRow(currentDownloadItem: downloadItem)
+        reloadCell(currentDownloadItem: downloadItem)
     }
     
     private func onCopyURLOfDownloadItem(downloadItem: DownloadItem){
         UIPasteboard.general.string = String(describing: downloadItem.url)
     }
     
-    @objc private func onTestPeromance(){
-        for _ in 0...10{
-            onAddNewInputURL("https://speed.hetzner.de/1GB.bin")
+    @objc private func onTestPeromance(sender: UILongPressGestureRecognizer){
+        if(sender.state == .began){
+            for _ in 0...100{
+                onAddNewInputURL("https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-Download.mp4")
+            }
         }
     }
     
@@ -341,7 +354,7 @@ class DownloadViewController: UIViewController {
                     if let newName = fields[0].text, !fields[0].text!.isEmpty {
                         if(self.downloadManager.isValidFileName(newName)){
                             self.downloadManager.renameDownloadItem(downloadItem, toNewName: newName)
-                            self.reloadRow(currentDownloadItem: downloadItem)
+                            self.reloadCell(currentDownloadItem: downloadItem)
                         }
                         else{
                             self.showErrorNotification(message: "Name is in wrong format!")
@@ -483,12 +496,21 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
         return [deleteAction, otherAction]
     }
     
-    func reloadRow(currentDownloadItem: DownloadItem){
+    func reloadCell(currentDownloadItem: DownloadItem){
         let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)
         if(cell?.getCurrentDownloadItem() == currentDownloadItem){
             cell?.setUpCellByDownloadState(downLoadState: currentDownloadItem.state)
         }
     }
+    
+    func reloadRow(currentDownloadItem: DownloadItem){
+        if let position = getAllDownloadItemMatchSearchSortAndFilter().firstIndex(of: currentDownloadItem){
+            let indexPath = IndexPath(item: position, section: 0)
+            downloadItemsTableView.reloadRows(at: [indexPath], with: .none)
+        }
+    }
+    
+    
     
     func reloadTableViewData(){
         self.downloadItemsTableView.reloadData()
@@ -504,7 +526,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
         if(filterBy == FilterByState.Pause){
             self.reloadTableViewData()
         }else{
-            self.reloadRow(currentDownloadItem: downloadItem)
+            self.reloadCell(currentDownloadItem: downloadItem)
         }
     }
     
@@ -513,7 +535,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
         if(filterBy == FilterByState.Pause){
             self.reloadTableViewData()
         }else{
-            self.reloadRow(currentDownloadItem: downloadItem)
+            self.reloadCell(currentDownloadItem: downloadItem)
         }
     }
     
@@ -523,7 +545,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
                 if(filterBy == FilterByState.Downloading){
                     self.reloadTableViewData()
                 }else{
-                    self.reloadRow(currentDownloadItem: downloadItem)
+                    self.reloadCell(currentDownloadItem: downloadItem)
                 }
                
             }

@@ -45,7 +45,7 @@
         for(NSURL* file in listFile){
             if(![self isTempFile:file]){
                 NSError* attributeError = nil;
-                NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:file.path error: &attributeError];
+                NSDictionary* fileAttributes = [_fileManager attributesOfItemAtPath:file.path error: &attributeError];
                 if(attributeError){
                     NSLog(@"%@", @"Get attribute error");
                 }else{

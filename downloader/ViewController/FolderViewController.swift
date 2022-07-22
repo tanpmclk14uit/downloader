@@ -59,7 +59,7 @@ class FolderViewController: UIViewController {
     lazy var buttonSort: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sort by Date", for: .normal)
+        button.setTitle("Date", for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
         return button
@@ -153,6 +153,7 @@ class FolderViewController: UIViewController {
         let fileCollectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
         fileCollectionView.translatesAutoresizingMaskIntoConstraints = false
         fileCollectionView.dataSource = self
+        fileCollectionView.layer.backgroundColor = ColorResource.white?.cgColor
         fileCollectionView.delegate = self
         fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
         return fileCollectionView
@@ -513,17 +514,7 @@ class FolderViewController: UIViewController {
     
     
     @objc private func onCollectionViewItemLongClick(sender: UILongPressGestureRecognizer){
-        if(currentLayoutState == LayoutState.WaterFallImage){
-            if (sender.state == .began){
-                guard let targetIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
-                    return
-                }
-                let fileItem = getAllFileMatchSearchSortAndFilter()[targetIndexPath.item]
-                showMenuActionOfFileItem(fileItem)
-            }
-        }else{
-            onFileIemDragAndDrop(sender: sender)
-        }
+        onFileIemDragAndDrop(sender: sender)
     }
     
     
@@ -587,6 +578,13 @@ class FolderViewController: UIViewController {
             fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
             
             newLayout = listLayout
+            if(filterBy == FilterByFileType.Image){
+                DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+                    if let self = self {
+                        self.pinterestLayout.caculateAtributeForItem(from: self.pinterestLayout.hightestIndex + 1, to: self.getAllFileMatchSearchSortAndFilter().count)
+                    }
+                }
+            }
             
         case LayoutState.WaterFallImage:
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
@@ -599,13 +597,14 @@ class FolderViewController: UIViewController {
             
             newLayout = gridLayout
         }
-        newLayout.invalidateLayout()
+       
         if (animation){
             let transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: newLayout)
             transitionManager.startInteractiveTransition()
         }else{
-            newLayout.previousContentOffset = NSValue(cgPoint: CGPoint(x: 0, y: 0))
+            newLayout.resetContentOffset()
             self.fileCollectionView.collectionViewLayout = newLayout
+
         }
         currentLayoutState = newLayoutState
         reloadCollectionView()
@@ -617,8 +616,10 @@ class FolderViewController: UIViewController {
             setIconOfSortButton()
         }else{
             sortBy = newSortBy
-            buttonSort.setTitle("Sort by \(newSortBy)", for: .normal)
+            buttonSort.setTitle("\(newSortBy)", for: .normal)
         }
+        pinterestLayout.clearCache()
+        fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         reloadCollectionView()
     }
     
@@ -627,13 +628,17 @@ class FolderViewController: UIViewController {
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
             if(newFilter == FilterByFileType.Image){
-                    currentLayoutState = LayoutState.WaterFallImage
+                currentLayoutState = LayoutState.WaterFallImage
+                onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
             }else{
                 if(currentLayoutState == LayoutState.WaterFallImage){
                     currentLayoutState = LayoutState.Grid
+                    onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
+                }else{
+                    reloadCollectionView()
                 }
             }
-            onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
+            
         }
     }
     
@@ -832,6 +837,7 @@ class FolderViewController: UIViewController {
             if let self = self{
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     self.reloadCollectionView()
+                    self.pinterestLayout.clearCache()
                     self.setPasteButton();
                     self.present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Delete file success!"), animated: true)
                 }else{
@@ -887,6 +893,8 @@ class FolderViewController: UIViewController {
 extension FolderViewController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchKey = searchText
+        fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+        pinterestLayout.clearCache()
         reloadCollectionView()
     }
 }
@@ -1045,6 +1053,9 @@ extension FolderViewController: PinterestLayoutDelegate{
     }
     
     func getHeightForImageAtIndexPath(indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
+        guard indexPath.item < getAllFileMatchSearchSortAndFilter().count else {
+            return 0
+        }
         let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
         let actualImage = UIImage(contentsOfFile: currentItem.url.path)
         if let actualImage = actualImage{

@@ -10,17 +10,21 @@ import UIKit
 class PinterestLayout: MaintainOffsetFlowLayout {
     weak var delegate: PinterestLayoutDelegate?
     private var contentSize: CGSize = CGSize(width: 0, height: 0)
-    private var cache: [UICollectionViewLayoutAttributes] = []
+    private var cache: [PinterestLayoutAttributes] = []
     private var cellPading: CGFloat = 10
     private var collectionViewWidth: CGFloat = 0
     private var itemCount = 0
-    private var hightestIndex = 0
-    private let range = 80;
+    var hightestIndex = 0
+    private let range = 40;
     private var contentHeight: CGFloat = 0
     private var numberOfColumn: Int = 0
     private var heightOfColumns: [CGFloat] = []
     private let heightOfColumnsQueue = DispatchQueue(label: "heightOfColumnsThreadSafe")
     private let cacheSafeQueue = DispatchQueue(label: "cacheSafeQueue")
+    private var curentCaculteProgress: DispatchWorkItem? = nil
+    private var cacheClear: Bool = false
+    
+    
     
     override func prepare() {
         super.prepare()
@@ -28,15 +32,16 @@ class PinterestLayout: MaintainOffsetFlowLayout {
             return
         }
         contentHeight = 0.0
-        
+        hightestIndex = 0
+        contentSize = CGSize(width: 0, height: 0)
         collectionViewWidth = collectionView.frame.size.width
         itemCount = collectionView.numberOfItems(inSection: 0)
-        
+        cacheClear = false
         if let delegate = delegate {
             let numberOfColumn: Int = delegate.getNumberOfColumn()
             heightOfColumns = [CGFloat](repeating: 0.0, count: numberOfColumn)
         }
-        caculateAtributeForItem(from: 0, to: range)
+        caculateAtributeForItem(from: 0, to: range/2)
     }
     
     func caculateAtributeForItem(from: Int, to: Int){
@@ -51,6 +56,10 @@ class PinterestLayout: MaintainOffsetFlowLayout {
             let itemWidth: CGFloat = (collectionViewWidth - cellPading*CGFloat(numberOfColumn+1))/CGFloat(numberOfColumn)
             
             for i in from ... high{
+                if(cacheClear){
+                    clearCache()
+                    return
+                }
                 var tempX : CGFloat = 0.0
                 var tempY : CGFloat = 0.0
             
@@ -62,7 +71,8 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 tempX = self.cellPading + (itemWidth + self.cellPading) *  CGFloat(shortestHeightColumn);
                 tempY = shortestHeight + self.cellPading
                 setHeightOfColum(of: shortestHeightColumn, to: tempY + itemHeight)
-                let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
+                let attributes = PinterestLayoutAttributes(forCellWith: indexPath as IndexPath)
+                attributes.column = shortestHeightColumn
                 attributes.frame = CGRect(x: tempX, y: tempY, width: itemWidth, height: itemHeight)
                 cacheSafeQueue.async {[weak self] in
                     self?.cache.append(attributes)
@@ -72,17 +82,18 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 if (newContentHeight > contentHeight){
                     contentHeight = newContentHeight;
                 }
-                
                 self.contentSize = CGSize(width: collectionViewWidth, height: contentHeight)
             }
         }
     }
     
     func clearCache(){
-        cacheSafeQueue.async {[weak self] in
+        cacheSafeQueue.sync {[weak self] in
             self?.cache.removeAll()
         }
-    }
+        cacheClear = true
+        curentCaculteProgress?.cancel()
+    }    
     
     func getShortestHeightColumn(_ heightOfColumns: [CGFloat])-> Int{
         heightOfColumnsQueue.sync {
@@ -99,6 +110,14 @@ class PinterestLayout: MaintainOffsetFlowLayout {
                 }
             }
             return minIndex
+        }
+    }
+    
+    func removeHeightOfColumn(from index: Int, withVaue value: CGFloat){
+        heightOfColumnsQueue.async {[weak self] in
+            if let self = self{
+                self.heightOfColumns[index] = self.getHeighOfColumn(from: 0) - value
+            }
         }
     }
     
@@ -119,21 +138,25 @@ class PinterestLayout: MaintainOffsetFlowLayout {
         }
     }
     
-    
-    
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
+        var lastSawIndex = 0;
+        guard getCacheCount() > 0 else{
+            return visibleLayoutAttributes
+        }
         for i in 0...getCacheCount()-1{
             let attributes = getCacheByIndex(index: i)
             if(attributes.frame.intersects(rect)){
                 visibleLayoutAttributes.append(attributes)
+                lastSawIndex = i
             }
         }
-        DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+        curentCaculteProgress = DispatchWorkItem{[weak self] in
             if let self = self{
-                self.caculateAtributeForItem(from: self.hightestIndex+1, to: self.itemCount)
+                self.caculateAtributeForItem(from: self.hightestIndex+1, to: lastSawIndex + self.range)
             }
         }
+        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now(), execute: curentCaculteProgress!)
         return visibleLayoutAttributes
     }
     
@@ -144,7 +167,7 @@ class PinterestLayout: MaintainOffsetFlowLayout {
         }
     }
     
-    private func getCacheByIndex(index: Int) -> UICollectionViewLayoutAttributes{
+    private func getCacheByIndex(index: Int) -> PinterestLayoutAttributes{
         cacheSafeQueue.sync {
             return cache[index]
         }
