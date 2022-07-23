@@ -9,6 +9,8 @@ import UIKit
 
 class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
     open var previousContentOffset: NSValue?
+    open var caculator: PinterestViewLayoutCaculator?
+    
     
     override open func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         let previousContentOffsetPoint = previousContentOffset?.cgPointValue
@@ -36,4 +38,6 @@ class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
         previousContentOffset = nil
         super.finalizeLayoutTransition()
     }
+    
+    
 }

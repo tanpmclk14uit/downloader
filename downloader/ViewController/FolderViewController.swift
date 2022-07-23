@@ -145,8 +145,14 @@ class FolderViewController: UIViewController {
     lazy var pinterestLayout: PinterestLayout = {
         let layout = PinterestLayout()
         layout.scrollDirection = .vertical
-        layout.delegate = self
+        layout.caculator = caculatorForLayout
         return layout
+    }()
+    
+    lazy var caculatorForLayout: PinterestViewLayoutCaculator = {
+        let caculator = PinterestViewLayoutCaculator(collectionViewWidth: fileCollectionView.frame.width, itemCount: getAllFileMatchSearchSortAndFilter().count)
+        caculator.delegate = self
+        return caculator
     }()
     
     lazy var fileCollectionView: UICollectionView = {
@@ -339,6 +345,8 @@ class FolderViewController: UIViewController {
     // variable for move file (source file) to folder (destinationFolder)
     private var sourceFile: FileItem?
     private var destinationFolder: FolderItem?
+    private var lastVisibleItem: Int = 0
+    private var lastContentOffset: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -578,14 +586,6 @@ class FolderViewController: UIViewController {
             fileCollectionView.register(FileItemViewCellByList.self, forCellWithReuseIdentifier: FileItemViewCellByList.identifier)
             
             newLayout = listLayout
-            if(filterBy == FilterByFileType.Image){
-                DispatchQueue.global(qos: .userInitiated).async {[weak self] in
-                    if let self = self {
-                        self.pinterestLayout.caculateAtributeForItem(from: self.pinterestLayout.hightestIndex + 1, to: self.getAllFileMatchSearchSortAndFilter().count)
-                    }
-                }
-            }
-            
         case LayoutState.WaterFallImage:
             buttonViewType.setImage(UIImage(named: "grid"), for: .normal)
             fileCollectionView.register(PinterestViewCell.self, forCellWithReuseIdentifier: PinterestViewCell.identifier)
@@ -598,11 +598,12 @@ class FolderViewController: UIViewController {
             newLayout = gridLayout
         }
        
+        newLayout.invalidateLayout()
         if (animation){
             let transitionManager = TransitionManager(duration: 0.3, collectionView: self.fileCollectionView, destinationLayout: newLayout)
+            
             transitionManager.startInteractiveTransition()
         }else{
-            newLayout.resetContentOffset()
             self.fileCollectionView.collectionViewLayout = newLayout
 
         }
@@ -618,8 +619,9 @@ class FolderViewController: UIViewController {
             sortBy = newSortBy
             buttonSort.setTitle("\(newSortBy)", for: .normal)
         }
-        pinterestLayout.clearCache()
+        
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+        clearCache()
         reloadCollectionView()
     }
     
@@ -627,18 +629,24 @@ class FolderViewController: UIViewController {
         if(newFilter != filterBy){
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
+            fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
             if(newFilter == FilterByFileType.Image){
-                currentLayoutState = LayoutState.WaterFallImage
-                onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
+                if(caculatorForLayout.getCacheCount()==0){
+                    caculatorForLayout.caculateAtributeForItem(from: 0, to: caculatorForLayout.range/4)
+                    caculatorForLayout.hightestIndex = caculatorForLayout.range/4+1;
+                }
+               
+                if(currentLayoutState == LayoutState.Grid){
+                    gridLayout.invalidateLayout()
+                    currentLayoutState = LayoutState.WaterFallImage
+                }
             }else{
                 if(currentLayoutState == LayoutState.WaterFallImage){
+                    pinterestLayout.invalidateLayout()
                     currentLayoutState = LayoutState.Grid
-                    onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
-                }else{
-                    reloadCollectionView()
                 }
             }
-            
+            onViewByChange(newLayoutState: currentLayoutState)
         }
     }
     
@@ -836,10 +844,14 @@ class FolderViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
             if let self = self{
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
-                    self.reloadCollectionView()
-                    self.pinterestLayout.clearCache()
-                    self.setPasteButton();
-                    self.present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Delete file success!"), animated: true)
+                    if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
+                        if(self.filterBy == FilterByFileType.Image){
+                            self.caculatorForLayout.onDeleteImage(atIndex: currentSelectedFilePath.item)
+                        }
+                        self.reloadCollectionView()
+                        self.setPasteButton();
+                        self.present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Delete file success!"), animated: true)
+                    }
                 }else{
                     self.showErrorNotification(message: "Can not delete this file!")
                 }
@@ -894,7 +906,7 @@ extension FolderViewController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchKey = searchText
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
-        pinterestLayout.clearCache()
+        clearCache()
         reloadCollectionView()
     }
 }
@@ -957,6 +969,37 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
             fileManager.moveFile(sourceFile, toFolder: destinationFolder)
             fetchAllFileOfFolder()
         }
+    }
+    
+    func clearCache(){
+        caculatorForLayout.clearCache(itemCount: getAllFileMatchSearchSortAndFilter().count)
+        lastVisibleItem = 0
+        lastContentOffset = 0
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // check if user scroll down
+        if (self.lastContentOffset < scrollView.contentOffset.y) {
+            if(filterBy == FilterByFileType.Image){
+                let lastCell = fileCollectionView.visibleCells.last
+                if let lastCell = lastCell{
+                    let indexPath = fileCollectionView.indexPath(for: lastCell)
+                    guard let indexPath = indexPath, !indexPath.isEmpty, lastVisibleItem != indexPath.item else {
+                        return
+                    }
+                    lastVisibleItem = indexPath.item
+                    let highestCaculatedIndex = caculatorForLayout.hightestIndex
+                    let range = caculatorForLayout.range
+                    if(highestCaculatedIndex < indexPath.item + range){
+                        DispatchQueue.global(qos: .userInitiated).async{[weak self] in
+                            self?.caculatorForLayout.caculateAtributeForItem(from: highestCaculatedIndex, to: indexPath.item + range)
+                        }
+                        caculatorForLayout.hightestIndex = min(indexPath.item + range + 1, getAllFileMatchSearchSortAndFilter().count)
+                    }
+                }
+            }
+        }
+        lastContentOffset = scrollView.contentOffset.y
     }
     
     
@@ -1040,20 +1083,10 @@ extension FolderViewController: UIDocumentPickerDelegate{
     }
 }
 //MARK: - CONFIRM PINTEREST DELEGATE
-extension FolderViewController: PinterestLayoutDelegate{
-    func collectionView(collectionView: UICollectionView, heightForImageAtIndexPath indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
-        let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
-        let actualImage = UIImage(contentsOfFile: currentItem.url.path)
-        if let actualImage = actualImage{
-            let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
-            return itemHeight
-        }else{
-            return 0
-        }
-    }
-    
+extension FolderViewController: PinterestLayoutCaculatorDelegate{
     func getHeightForImageAtIndexPath(indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
         guard indexPath.item < getAllFileMatchSearchSortAndFilter().count else {
+            print("error")
             return 0
         }
         let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
