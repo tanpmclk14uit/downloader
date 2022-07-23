@@ -399,8 +399,8 @@ class FolderViewController: UIViewController {
             if let self = self{
                 if let currentFolder = self.currentFolder {
                     self.fileManager.fetchAllFile(ofFolder: currentFolder, withAfterCompleteHandler: {
+                        self.getAllFileMatchSearchSortAndFilter()
                         if let currentSelectedFilePath = self.currentSelectedFilePath, self.isMoveSuccess{
-                            self.getAllFileMatchSearchSortAndFilter()
                             self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                             self.isMoveSuccess = false
                         }
@@ -1105,7 +1105,6 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     
     func reloadCollectionView(){
-        getAllFileMatchSearchSortAndFilter()
         fileCollectionView.reloadData()
         setEmptyListMessage()
         setTotalItemsLable()
@@ -1202,6 +1201,7 @@ extension FolderViewController: UIDocumentPickerDelegate{
                     DispatchQueue.main.async {
                         self.fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
                         self.reloadCollectionView()
+                        self.present(UIAlertController.notificationAlert(type: .Success, message: "Import file success"), animated: true)
                     }
                 }
             }
