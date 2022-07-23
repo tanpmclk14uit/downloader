@@ -150,7 +150,7 @@ class FolderViewController: UIViewController {
     }()
     
     lazy var caculatorForLayout: PinterestViewLayoutCaculator = {
-        let caculator = PinterestViewLayoutCaculator(collectionViewWidth: fileCollectionView.frame.width, itemCount: getAllFileMatchSearchSortAndFilter().count)
+        let caculator = PinterestViewLayoutCaculator(collectionViewWidth: fileCollectionView.frame.width, itemCount: currentFileMatchSearchSortAndFiler.count)
         caculator.delegate = self
         return caculator
     }()
@@ -350,6 +350,8 @@ class FolderViewController: UIViewController {
     private var lastVisibleItem: Int = 0
     private var lastContentOffset: CGFloat = 0
     private var isMoveSuccess = false
+    private var currentFileMatchSearchSortAndFiler: [FileItem] = []
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -398,7 +400,7 @@ class FolderViewController: UIViewController {
                 if let currentFolder = self.currentFolder {
                     self.fileManager.fetchAllFile(ofFolder: currentFolder, withAfterCompleteHandler: {
                         if let currentSelectedFilePath = self.currentSelectedFilePath, self.isMoveSuccess{
-                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
+                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                             self.isMoveSuccess = false
                         }
                         DispatchQueue.main.async {
@@ -436,12 +438,12 @@ class FolderViewController: UIViewController {
     private func setTotalItemsLable(){
         if(searchKey.isEmpty){
             if(filterBy == FilterByFileType.All){
-                self.totalFolderItem.text = "Total: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
+                self.totalFolderItem.text = "Total: \(currentFileMatchSearchSortAndFiler.count) item(s)"
             }else{
-                self.totalFolderItem.text = "Filter result: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
+                self.totalFolderItem.text = "Filter result: \(currentFileMatchSearchSortAndFiler.count) item(s)"
             }
         }else{
-            self.totalFolderItem.text = "Search result: \(getAllFileMatchSearchSortAndFilter().count) item(s)"
+            self.totalFolderItem.text = "Search result: \(currentFileMatchSearchSortAndFiler.count) item(s)"
         }
     }
     
@@ -456,7 +458,7 @@ class FolderViewController: UIViewController {
     }
     
     private func setEmptyListMessage(){
-        if(getAllFileMatchSearchSortAndFilter().isEmpty){
+        if(currentFileMatchSearchSortAndFiler.isEmpty){
             if(filterBy == FilterByFileType.All){
                 emptyMessage.text = "Your folder is empty!"
             }else{
@@ -544,14 +546,14 @@ class FolderViewController: UIViewController {
                 return
             }
             moveGuide.isHidden = false
-            sourceFile = getAllFileMatchSearchSortAndFilter()[targetIndexPath.item]
+            sourceFile = currentFileMatchSearchSortAndFiler[targetIndexPath.item]
             fileCollectionView.beginInteractiveMovementForItem(at: targetIndexPath)
         case .changed:
             fileCollectionView.updateInteractiveMovementTargetPosition(sender.location(in: fileCollectionView))
             guard let currentIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
                 return
             }
-            let currentFileItem = getAllFileMatchSearchSortAndFilter()[currentIndexPath.item]
+            let currentFileItem = currentFileMatchSearchSortAndFiler[currentIndexPath.item]
             if(currentFileItem.isDir){
                 moveGuideLable.text = "Move to: \(currentFileItem.name) folder"
                 destinationFolder = currentFileItem as? FolderItem
@@ -661,23 +663,42 @@ class FolderViewController: UIViewController {
             filterBy = newFilter
             fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
             if(newFilter == FilterByFileType.Image){
-                
                 if(caculatorForLayout.getCacheCount()==0){
-                    caculatorForLayout.caculateAtributeForItem(from: 0, to: caculatorForLayout.range/4)
-                    caculatorForLayout.hightestIndex = caculatorForLayout.range/4+1;
-                }
-               
-                if(currentLayoutState == LayoutState.Grid){
-                    gridLayout.invalidateLayout()
-                    currentLayoutState = LayoutState.WaterFallImage
+                    moveGuide.isHidden = false
+                    moveGuideLable.text = "Filtering..."
+                    fileCollectionView.isHidden = true
+                    DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+                        if let self = self{
+                            self.caculatorForLayout.caculateAtributeForItem(from: 0, to: self.caculatorForLayout.range/4)
+                            self.caculatorForLayout.hightestIndex = self.caculatorForLayout.range/4+1;
+                            DispatchQueue.main.async {
+                                if(self.currentLayoutState == LayoutState.Grid){
+                                    self.gridLayout.invalidateLayout()
+                                    self.currentLayoutState = LayoutState.WaterFallImage
+                                }
+                                self.moveGuide.isHidden = true
+                                self.moveGuideLable.text = "Move to: ..."
+                                self.fileCollectionView.isHidden = false
+                                self.onViewByChange(newLayoutState: self.currentLayoutState)
+                            }
+                        }
+                       
+                    }
+                }else{
+                    if(currentLayoutState == LayoutState.Grid){
+                        gridLayout.invalidateLayout()
+                        currentLayoutState = LayoutState.WaterFallImage
+                    }
+                    onViewByChange(newLayoutState: currentLayoutState)
                 }
             }else{
                 if(currentLayoutState == LayoutState.WaterFallImage){
                     pinterestLayout.invalidateLayout()
                     currentLayoutState = LayoutState.Grid
                 }
+                onViewByChange(newLayoutState: currentLayoutState)
             }
-            onViewByChange(newLayoutState: currentLayoutState)
+            
         }
     }
     
@@ -766,7 +787,7 @@ class FolderViewController: UIViewController {
                                 }else{
                                     index += 1
                                 }
-                                self.caculatorForLayout.reloadLayoutFromIndex(index, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
+                                self.caculatorForLayout.reloadLayoutFromIndex(index, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                             }
                         }
                         DispatchQueue.main.async {
@@ -897,7 +918,7 @@ class FolderViewController: UIViewController {
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
                         if(self.filterBy == FilterByFileType.Image){
-                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
+                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                         }
                         self.reloadCollectionView()
                         self.setPasteButton();
@@ -964,24 +985,24 @@ extension FolderViewController: UISearchBarDelegate{
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return getAllFileMatchSearchSortAndFilter().count
+        return currentFileMatchSearchSortAndFiler.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch(currentLayoutState){
         case LayoutState.List:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByList.identifier, for: indexPath) as! FileItemViewCellByList
-            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.setCellData(fileItem: currentFileMatchSearchSortAndFiler[indexPath.row])
             cell.delegate = self
             return cell
         case LayoutState.Grid:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileItemViewCellByIcon.identifier, for: indexPath) as! FileItemViewCellByIcon
-            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.setCellData(fileItem: currentFileMatchSearchSortAndFiler[indexPath.row])
             cell.delegate = self
             return cell
         case LayoutState.WaterFallImage:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PinterestViewCell.identifier, for: indexPath) as! PinterestViewCell
-            cell.setCellData(fileItem: getAllFileMatchSearchSortAndFilter()[indexPath.row])
+            cell.setCellData(fileItem: currentFileMatchSearchSortAndFiler[indexPath.row])
             cell.delegate = self
             return cell
         }
@@ -994,12 +1015,12 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentSelectedFilePath = indexPath
-        let currentSelectedItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
+        let currentSelectedItem = currentFileMatchSearchSortAndFiler[indexPath.item]
         onDetailFileClick(fileItem: currentSelectedItem)
     }
     
     func reloadCollectionViewItem(of fileItem: FileItem){
-        if let itemPosition = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem){
+        if let itemPosition = currentFileMatchSearchSortAndFiler.firstIndex(of: fileItem){
             let indexPath = IndexPath(item: itemPosition, section: 0)
             self.fileCollectionView.reloadItems(at: [indexPath])
         }
@@ -1023,7 +1044,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func clearCache(){
-        caculatorForLayout.clearCache(itemCount: getAllFileMatchSearchSortAndFilter().count)
+        caculatorForLayout.clearCache(itemCount: currentFileMatchSearchSortAndFiler.count)
         lastVisibleItem = 0
         lastContentOffset = 0
     }
@@ -1045,7 +1066,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
                         DispatchQueue.global(qos: .userInitiated).async{[weak self] in
                             self?.caculatorForLayout.caculateAtributeForItem(from: highestCaculatedIndex, to: indexPath.item + range)
                         }
-                        caculatorForLayout.hightestIndex = min(indexPath.item + range + 1, getAllFileMatchSearchSortAndFilter().count)
+                        caculatorForLayout.hightestIndex = min(indexPath.item + range + 1, currentFileMatchSearchSortAndFiler.count)
                     }
                 }
             }
@@ -1064,7 +1085,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
 // MARK: - CONFIRM FileCellDelegate
 extension FolderViewController: FileCellDelegate{
     func menuActionClick(fileItem: FileItem) {
-        let position = getAllFileMatchSearchSortAndFilter().firstIndex(of: fileItem)
+        let position = currentFileMatchSearchSortAndFiler.firstIndex(of: fileItem)
         if let index = position{
             let indexPath = IndexPath(item: index, section: 0)
             currentSelectedFilePath = indexPath
@@ -1081,9 +1102,9 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         if let path = currentSelectedFilePath{
-            return getAllFileMatchSearchSortAndFilter()[path.item].url as QLPreviewItem
+            return currentFileMatchSearchSortAndFiler[path.item].url as QLPreviewItem
         }
-        return getAllFileMatchSearchSortAndFilter()[index].url as QLPreviewItem
+        return currentFileMatchSearchSortAndFiler[index].url as QLPreviewItem
     }
     
     func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
@@ -1136,10 +1157,10 @@ extension FolderViewController: UIDocumentPickerDelegate{
 //MARK: - CONFIRM PINTEREST DELEGATE
 extension FolderViewController: PinterestLayoutCaculatorDelegate{
     func getHeightForImageAtIndexPath(indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
-        guard indexPath.item < getAllFileMatchSearchSortAndFilter().count else {
+        guard indexPath.item < currentFileMatchSearchSortAndFiler.count else {
             return itemWidth
         }
-        let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
+        let currentItem = currentFileMatchSearchSortAndFiler[indexPath.item]
         let actualImage = UIImage(contentsOfFile: currentItem.url.path)
         if let actualImage = actualImage{
             let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
