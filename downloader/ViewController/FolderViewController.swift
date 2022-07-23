@@ -256,6 +256,8 @@ class FolderViewController: UIViewController {
         return container
     }()
     
+    
+    
     lazy var totalFolderItem: UILabel = {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
@@ -632,11 +634,25 @@ class FolderViewController: UIViewController {
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         clearCache()
         if(filterBy == FilterByFileType.Image){
-            let range = self.caculatorForLayout.range
-            self.caculatorForLayout.caculateAtributeForItem(from: 0, to: range/4)
-            self.caculatorForLayout.hightestIndex = range/4 + 1
+            moveGuide.isHidden = false
+            moveGuideLable.text = "Sorting..."
+            fileCollectionView.isHidden = true
+            DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+                if let self = self{
+                    let range = self.caculatorForLayout.range
+                    self.caculatorForLayout.caculateAtributeForItem(from: 0, to: range/4)
+                    self.caculatorForLayout.hightestIndex = range/4 + 1
+                    DispatchQueue.main.async {
+                        self.reloadCollectionView()
+                        self.moveGuide.isHidden = true
+                        self.moveGuideLable.text = "Move to: ..."
+                        self.fileCollectionView.isHidden = false
+                    }
+                }
+            }
+        }else{
+            reloadCollectionView()
         }
-        self.reloadCollectionView()
     }
     
     private func onFilterChange(newFilter: FilterByFileType){
@@ -645,6 +661,7 @@ class FolderViewController: UIViewController {
             filterBy = newFilter
             fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
             if(newFilter == FilterByFileType.Image){
+                
                 if(caculatorForLayout.getCacheCount()==0){
                     caculatorForLayout.caculateAtributeForItem(from: 0, to: caculatorForLayout.range/4)
                     caculatorForLayout.hightestIndex = caculatorForLayout.range/4+1;
@@ -1006,9 +1023,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func clearCache(){
-        DispatchQueue.global(qos: .userInitiated).async {[weak self] in
-            self?.caculatorForLayout.clearCache(itemCount: (self?.getAllFileMatchSearchSortAndFilter().count)!)
-        }
+        caculatorForLayout.clearCache(itemCount: getAllFileMatchSearchSortAndFilter().count)
         lastVisibleItem = 0
         lastContentOffset = 0
     }

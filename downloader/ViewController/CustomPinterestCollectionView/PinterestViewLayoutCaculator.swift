@@ -88,7 +88,7 @@ class PinterestViewLayoutCaculator{
         cacheClear = true
         
         contentHeight = 0
-        guard !caches.isEmpty, index<=hightestIndex else{
+        guard !caches.isEmpty, index<=hightestIndex, index>=0 else{
             return
         }
         self.hightestIndex = min(self.hightestIndex, caches.count)
