@@ -994,8 +994,21 @@ extension FolderViewController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchKey = searchText
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+        getAllFileMatchSearchSortAndFilter()
         clearCache()
-        reloadCollectionView()
+        if(filterBy == FilterByFileType.Image){
+            DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+                if let self = self{
+                    self.caculatorForLayout.caculateAtributeForItem(from: 0, to: self.caculatorForLayout.range/4)
+                    self.caculatorForLayout.hightestIndex = self.caculatorForLayout.range/4 + 1
+                    DispatchQueue.main.async {
+                        self.reloadCollectionView()
+                    }
+                }
+            }
+        }else{
+            reloadCollectionView()
+        }
     }
 }
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
@@ -1177,6 +1190,10 @@ extension FolderViewController: UIDocumentPickerDelegate{
             }
         }
         fetchAllFileOfFolder()
+    }
+    
+    func getInsertIndexForItem(){
+        
     }
 }
 //MARK: - CONFIRM PINTEREST DELEGATE
