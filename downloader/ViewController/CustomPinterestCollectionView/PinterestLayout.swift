@@ -19,10 +19,12 @@ class PinterestLayout: MaintainOffsetFlowLayout {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
         
         if let caculator = caculator{
-            for i in 0...caculator.getCacheCount()-1{
-                let attributes = caculator.getCacheByIndex(index: i)
-                if(attributes.frame.intersects(rect)){
-                    visibleLayoutAttributes.append(attributes)
+            if(caculator.getCacheCount()>0){
+                for i in 0...caculator.getCacheCount()-1{
+                    let attributes = caculator.getCacheByIndex(index: i)
+                    if(attributes.frame.intersects(rect)){
+                        visibleLayoutAttributes.append(attributes)
+                    }
                 }
             }
         }

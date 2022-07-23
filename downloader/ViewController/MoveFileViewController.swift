@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol MoveFileDelegate {
+    func onMoveFileSuccess();
+}
+
 class MoveFileViewController: UIViewController {
 
     //MARK: - CONFIG UI
@@ -127,6 +131,8 @@ class MoveFileViewController: UIViewController {
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
     public var currentFolder: FolderItem?
     public var sourceFile: FileItem?
+    var delegate: MoveFileDelegate?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -241,7 +247,9 @@ class MoveFileViewController: UIViewController {
     
     @objc private func onMoveClick(){
         if(fileManager.moveFile(sourceFile!, toFolder: currentFolder!)){
+           
             self.dismiss(animated: true)
+            delegate?.onMoveFileSuccess()
         }else{
             showErrorNotification(message: "Move file failed!")
         }

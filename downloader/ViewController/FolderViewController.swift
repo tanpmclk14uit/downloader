@@ -347,6 +347,7 @@ class FolderViewController: UIViewController {
     private var destinationFolder: FolderItem?
     private var lastVisibleItem: Int = 0
     private var lastContentOffset: CGFloat = 0
+    private var isMoveSuccess = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -394,6 +395,10 @@ class FolderViewController: UIViewController {
             if let self = self{
                 if let currentFolder = self.currentFolder {
                     self.fileManager.fetchAllFile(ofFolder: currentFolder, withAfterCompleteHandler: {
+                        if let currentSelectedFilePath = self.currentSelectedFilePath, self.isMoveSuccess{
+                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
+                            self.isMoveSuccess = false
+                        }
                         DispatchQueue.main.async {
                             self.reloadCollectionView()
                         }
@@ -520,9 +525,10 @@ class FolderViewController: UIViewController {
     }
     
     
-    
     @objc private func onCollectionViewItemLongClick(sender: UILongPressGestureRecognizer){
-        onFileIemDragAndDrop(sender: sender)
+        if(filterBy == FilterByFileType.All || filterBy == FilterByFileType.Directory){
+            onFileIemDragAndDrop(sender: sender)
+        }
     }
     
     
@@ -622,7 +628,12 @@ class FolderViewController: UIViewController {
         
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         clearCache()
-        reloadCollectionView()
+        if(filterBy == FilterByFileType.Image){
+            let range = self.caculatorForLayout.range
+            self.caculatorForLayout.caculateAtributeForItem(from: 0, to: range/4)
+            self.caculatorForLayout.hightestIndex = range/4 + 1
+        }
+        self.reloadCollectionView()
     }
     
     private func onFilterChange(newFilter: FilterByFileType){
@@ -699,6 +710,7 @@ class FolderViewController: UIViewController {
         moveFileVC.modalPresentationStyle = .fullScreen
         moveFileVC.currentFolder = FolderItem.rootFolder()
         moveFileVC.sourceFile = fileItem
+        moveFileVC.delegate = self
         
         let navigationControllder = UINavigationController(rootViewController: moveFileVC)
         navigationControllder.modalPresentationStyle = .fullScreen
@@ -846,7 +858,7 @@ class FolderViewController: UIViewController {
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
                         if(self.filterBy == FilterByFileType.Image){
-                            self.caculatorForLayout.onDeleteImage(atIndex: currentSelectedFilePath.item)
+                            self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
                         }
                         self.reloadCollectionView()
                         self.setPasteButton();
@@ -972,7 +984,9 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func clearCache(){
-        caculatorForLayout.clearCache(itemCount: getAllFileMatchSearchSortAndFilter().count)
+        DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+            self?.caculatorForLayout.clearCache(itemCount: (self?.getAllFileMatchSearchSortAndFilter().count)!)
+        }
         lastVisibleItem = 0
         lastContentOffset = 0
     }
@@ -1103,4 +1117,9 @@ extension FolderViewController: PinterestLayoutCaculatorDelegate{
         return 2
     }
 }
-
+//MARK: - CONFIRM MOVEFILE DELEGATE
+extension FolderViewController: MoveFileDelegate{
+    func onMoveFileSuccess() {
+        isMoveSuccess = true
+    }
+}
