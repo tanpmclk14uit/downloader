@@ -37,6 +37,28 @@
     }
     return self;
 }
+- (FileItem*) getFileByURL: (NSURL*) file{
+    NSError* attributeError = nil;
+    NSDictionary* fileAttributes = [_fileManager attributesOfItemAtPath:file.path error: &attributeError];
+    if(attributeError){
+        NSLog(@"%@", @"Get attribute error");
+        return nil;
+    }else{
+        BOOL isDir = [[fileAttributes objectForKey:NSFileType] isEqualToString:NSFileTypeDirectory];
+        NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
+        FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
+        NSString* fileName = [file lastPathComponent];
+        NSNumber *fileSizeNumber;
+        if(isDir){
+            fileSizeNumber =  [NSNumber numberWithInteger:[self getTotalItemOfURL:file]];
+        }else{
+            fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        }
+        FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
+        fileItem.isDir = isDir;
+        return fileItem;
+    }
+}
 
 - (void)fetchAllFileOfFolder:(FolderItem *)folder withAfterCompleteHandler:(void (^)(void))completionHandler{
     [folder.allFileItems removeAllObjects];
@@ -44,23 +66,9 @@
     if(listFile){
         for(NSURL* file in listFile){
             if(![self isTempFile:file]){
-                NSError* attributeError = nil;
-                NSDictionary* fileAttributes = [_fileManager attributesOfItemAtPath:file.path error: &attributeError];
-                if(attributeError){
-                    NSLog(@"%@", @"Get attribute error");
-                }else{
-                    BOOL isDir = [[fileAttributes objectForKey:NSFileType] isEqualToString:NSFileTypeDirectory];
-                    NSDate *creationDate = (NSDate *)[fileAttributes objectForKey:NSFileCreationDate];
-                    FileTypeEnum* fileType = [self getFileTypeFromFileExtension:[file pathExtension]];
-                    NSString* fileName = [file lastPathComponent];
-                    NSNumber *fileSizeNumber;
-                    if(isDir){
-                        fileSizeNumber =  [NSNumber numberWithInteger:[self getTotalItemOfURL:file]];
-                    }else{
-                        fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-                    }
-                    FileItem* fileItem = [[FileItem alloc]initWithName:fileName andSize: fileSizeNumber andCreateDate:creationDate andType: fileType andURL:file];
-                    if(isDir){
+                FileItem* fileItem = [self getFileByURL:file];
+                if(fileItem){
+                    if(fileItem.isDir){
                         NSMutableArray <NSURL*>* parentFolders = [NSMutableArray arrayWithArray:folder.parentFolders];
                         [parentFolders addObject: folder.url];
                         FileItem* folderItem = [[FolderItem alloc] initWithFileItem:fileItem andParentFolders: parentFolders];
@@ -68,6 +76,8 @@
                     }else{
                         [folder.allFileItems addObject:fileItem];
                     }
+                }else{
+                    NSLog(@"%@", @"Create file fail");
                 }
             }
         }

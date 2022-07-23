@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) pasteFileTo: (FolderItem*) destinationFolder;
 - (BOOL) shouldShowPaste;
 - (BOOL) copyFileAtURL: (NSURL*) source toFolder: (FolderItem*) destinationFolder;
+- (FileItem*) getFileByURL: (NSURL*) file;
 - (NSInteger) getTotalItemOfURL: (NSURL*) url;
 @end
 

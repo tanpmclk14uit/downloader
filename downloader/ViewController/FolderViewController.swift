@@ -1189,10 +1189,23 @@ extension FolderViewController: UIDocumentPickerDelegate{
                 present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Import \(url.lastPathComponent) fail"), animated: true)
             }
         }
-        fetchAllFileOfFolder()
-    }
-    
-    func getInsertIndexForItem(){
+        
+        DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+            if let self = self{
+                self.fileManager.fetchAllFile(ofFolder: self.currentFolder!) {
+                    self.getAllFileMatchSearchSortAndFilter()
+                    self.clearCache()
+                    if(self.filterBy == FilterByFileType.Image){
+                        self.caculatorForLayout.caculateAtributeForItem(from: 0, to: self.caculatorForLayout.range/4)
+                        self.caculatorForLayout.hightestIndex = self.caculatorForLayout.range/4 + 1
+                    }
+                    DispatchQueue.main.async {
+                        self.fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+                        self.reloadCollectionView()
+                    }
+                }
+            }
+        }
         
     }
 }
