@@ -400,6 +400,7 @@ class FolderViewController: UIViewController {
                 if let currentFolder = self.currentFolder {
                     self.fileManager.fetchAllFile(ofFolder: currentFolder, withAfterCompleteHandler: {
                         if let currentSelectedFilePath = self.currentSelectedFilePath, self.isMoveSuccess{
+                            self.getAllFileMatchSearchSortAndFilter()
                             self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                             self.isMoveSuccess = false
                         }
@@ -480,7 +481,7 @@ class FolderViewController: UIViewController {
     
     
 
-    private func getAllFileMatchSearchSortAndFilter()-> [FileItem]{
+    private func getAllFileMatchSearchSortAndFilter(){
         // get all original list
         var fileItems = currentFolder!.getFileItems()
         // filter
@@ -520,7 +521,7 @@ class FolderViewController: UIViewController {
             break
         }
         }
-        return fileItems
+        currentFileMatchSearchSortAndFiler = fileItems
     }
     
     private func compareObjectToSort<T: Comparable>(sortDiv: SortDIV, ObjFirst: T, ObjSecond: T)-> Bool{
@@ -642,6 +643,7 @@ class FolderViewController: UIViewController {
             DispatchQueue.global(qos: .userInitiated).async {[weak self] in
                 if let self = self{
                     let range = self.caculatorForLayout.range
+                    self.getAllFileMatchSearchSortAndFilter()
                     self.caculatorForLayout.caculateAtributeForItem(from: 0, to: range/4)
                     self.caculatorForLayout.hightestIndex = range/4 + 1
                     DispatchQueue.main.async {
@@ -662,6 +664,7 @@ class FolderViewController: UIViewController {
             buttonFilter.setTitle("\(newFilter)", for: .normal)
             filterBy = newFilter
             fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+            getAllFileMatchSearchSortAndFilter()
             if(newFilter == FilterByFileType.Image){
                 if(caculatorForLayout.getCacheCount()==0){
                     moveGuide.isHidden = false
@@ -787,6 +790,7 @@ class FolderViewController: UIViewController {
                                 }else{
                                     index += 1
                                 }
+                                self.getAllFileMatchSearchSortAndFilter()
                                 self.caculatorForLayout.reloadLayoutFromIndex(index, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                             }
                         }
@@ -918,6 +922,7 @@ class FolderViewController: UIViewController {
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
                         if(self.filterBy == FilterByFileType.Image){
+                            self.getAllFileMatchSearchSortAndFilter()
                             self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                         }
                         self.reloadCollectionView()
@@ -1076,6 +1081,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     
     func reloadCollectionView(){
+        getAllFileMatchSearchSortAndFilter()
         fileCollectionView.reloadData()
         setEmptyListMessage()
         setTotalItemsLable()
