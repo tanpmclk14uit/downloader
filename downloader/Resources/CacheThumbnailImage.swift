@@ -31,5 +31,9 @@ class CacheThumbnailImage{
         cacheThumb.setObject(uiImage! as UIImage, forKey: url as NSURL)
     }
     
+    public func removeFromCache(url: URL){
+        cacheThumb.removeObject(forKey: url as NSURL)
+    }
+    
     
 }

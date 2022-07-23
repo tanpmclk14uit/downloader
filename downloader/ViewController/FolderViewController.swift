@@ -537,6 +537,16 @@ class FolderViewController: UIViewController {
         if(filterBy == FilterByFileType.All || filterBy == FilterByFileType.Directory){
             onFileIemDragAndDrop(sender: sender)
         }
+        if(filterBy == FilterByFileType.Image && currentLayoutState == LayoutState.WaterFallImage){
+            if(sender.state == .began){
+                guard let targetIndexPath = fileCollectionView.indexPathForItem(at: sender.location(in: fileCollectionView)) else{
+                    return
+                }
+                currentSelectedFilePath = targetIndexPath
+                let fileItem = currentFileMatchSearchSortAndFiler[currentSelectedFilePath!.item]
+                showMenuActionOfFileItem(fileItem)
+            }
+        }
     }
     
     
@@ -738,6 +748,7 @@ class FolderViewController: UIViewController {
             let fileSupported = ["public.image", "public.archive", "public.audio", "public.video", "public.text", "public.pdf"]
             pickerVC = UIDocumentPickerViewController(documentTypes: fileSupported, in: UIDocumentPickerMode.import)
         }
+        
         pickerVC.delegate = self
         present(pickerVC, animated: true)
     }
@@ -1133,6 +1144,14 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     @available(iOS 13.0, *)
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
         .updateContents
+    }
+    
+    func previewControllerWillDismiss(_ controller: QLPreviewController) {
+        if let indexPath = currentSelectedFilePath, !indexPath.isEmpty{
+            let currentItem = currentFileMatchSearchSortAndFiler[indexPath.item]
+            CacheThumbnailImage.shareInstance().removeFromCache(url: currentItem.url)
+            reloadCollectionViewItem(of: currentItem)
+        }
     }
 }
 
