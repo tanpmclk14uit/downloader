@@ -45,6 +45,10 @@
 }
 
 - (DownloadItem *)convertToDownloadItem{
-    return [[DownloadItem alloc] initWithName:self.name andState:self.state andURL:self.url andResumeData:self.resumeData];
+    if([self.state  isEqual: @"Downloading"]){
+        
+    }
+    NSString* state = [self.state isEqual:@"Downloading"] ? @"Error" : self.state;
+    return [[DownloadItem alloc] initWithName:self.name andState:state andURL:self.url andResumeData:self.resumeData];
 }
 @end
