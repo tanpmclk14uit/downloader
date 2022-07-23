@@ -508,7 +508,10 @@ class FolderViewController: UIViewController {
         case BasicSort.Date: do{
             let sortTime: SortDIV = (sortDiv == SortDIV.Asc) ? SortDIV.Desc : SortDIV.Asc
             fileItems.sort { hls, fls in
-                compareObjectToSort(sortDiv: sortTime, ObjFirst: hls.createdDate, ObjSecond: fls.createdDate)
+                if(hls.createdDate == fls.createdDate){
+                    return compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+                }
+                return compareObjectToSort(sortDiv: sortTime, ObjFirst: hls.createdDate, ObjSecond: fls.createdDate)
             }
             break
         }
@@ -694,10 +697,8 @@ class FolderViewController: UIViewController {
             let fileSupported = ["public.image", "public.archive", "public.audio", "public.video", "public.text", "public.pdf"]
             pickerVC = UIDocumentPickerViewController(documentTypes: fileSupported, in: UIDocumentPickerMode.import)
         }
-        
         pickerVC.delegate = self
         present(pickerVC, animated: true)
-        
     }
     
     private func onRenameFileClick(fileItem: FileItem){
@@ -737,13 +738,34 @@ class FolderViewController: UIViewController {
     
     @objc private func onPasteToCurrentFolder(){
         if(fileManager.pasteFile(to: self.currentFolder!)){
-            fetchAllFileOfFolder()
+            if(filterBy == FilterByFileType.Image){
+                DispatchQueue.global(qos: .userInitiated).async {[weak self] in
+                    if let self = self{
+                        self.fileManager.fetchAllFile(ofFolder: self.currentFolder!) {
+                            if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
+                                var index = currentSelectedFilePath.item
+                                if(self.sortDiv == SortDIV.Asc){
+                                    index -= 1
+                                }else{
+                                    index += 1
+                                }
+                                self.caculatorForLayout.reloadLayoutFromIndex(index, itemCount: self.getAllFileMatchSearchSortAndFilter().count)
+                            }
+                        }
+                        DispatchQueue.main.async {
+                            self.reloadCollectionView()
+                        }
+                    }
+                }
+            }else{
+                fetchAllFileOfFolder()
+            }
         }else{
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
             setPasteButton()
         }
     }
-    
+
     private func onDecompressFileClick(fileItem: FileItem){
         
     }
@@ -1100,8 +1122,7 @@ extension FolderViewController: UIDocumentPickerDelegate{
 extension FolderViewController: PinterestLayoutCaculatorDelegate{
     func getHeightForImageAtIndexPath(indexPath: NSIndexPath, itemWidth: CGFloat) -> CGFloat {
         guard indexPath.item < getAllFileMatchSearchSortAndFilter().count else {
-            print("error")
-            return 0
+            return itemWidth
         }
         let currentItem = getAllFileMatchSearchSortAndFilter()[indexPath.item]
         let actualImage = UIImage(contentsOfFile: currentItem.url.path)
@@ -1109,7 +1130,7 @@ extension FolderViewController: PinterestLayoutCaculatorDelegate{
             let itemHeight = itemWidth * actualImage.size.height / actualImage.size.width
             return itemHeight
         }else{
-            return 0
+            return itemWidth
         }
     }
     

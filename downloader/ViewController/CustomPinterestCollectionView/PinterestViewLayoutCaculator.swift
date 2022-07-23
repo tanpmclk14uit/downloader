@@ -77,8 +77,7 @@ class PinterestViewLayoutCaculator{
                     if (newContentHeight > contentHeight){
                         contentHeight = newContentHeight;
                     }
-                    
-                    print(i)
+                
                     self.contentSize = CGSize(width: collectionViewWidth, height: contentHeight)
                 }
             }
@@ -92,6 +91,8 @@ class PinterestViewLayoutCaculator{
         guard !caches.isEmpty, index<=hightestIndex else{
             return
         }
+        self.hightestIndex = min(self.hightestIndex, caches.count)
+        
         for i in index..<self.hightestIndex{
             let cache = caches[i]
             heightOfColumnsQueue.sync {
