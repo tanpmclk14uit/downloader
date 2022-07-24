@@ -17,6 +17,7 @@
 @property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
 @property(strong, nonatomic) DownloadItemPersistenceManager* persistence;
 @property(strong, nonatomic) dispatch_queue_t persistenceQueue;
+@property(strong, nonatomic) dispatch_queue_t downloadItemsQueue;
 @property(strong, nonatomic) InternetTracking* tracking;
 @property(assign, atomic) BOOL shouldTrack;
 @end
@@ -46,6 +47,7 @@
         self.allDownloadItems = [[NSMutableArray alloc] init];
         self.persistence = [DownloadItemPersistenceManager sharedInstance];
         self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
+        self.downloadItemsQueue = dispatch_queue_create("downloadItemsQueue", DISPATCH_QUEUE_SERIAL);
         self.tracking = [[InternetTracking alloc] initWithTrackingInterval:3];
         self.shouldTrack = true;
     }
@@ -64,21 +66,35 @@
     _tracking.delegate = internetTrackingDelegate;
 }
 
+- (void) addNewDownloadItems: (DownloadItem*) newDownloadItem{
+    dispatch_async(self.downloadItemsQueue, ^{
+        [self.allDownloadItems addObject:newDownloadItem];
+    });
+}
+
+- (NSMutableArray<DownloadItem*>*) getAllDownloadItems{
+    __block NSMutableArray<DownloadItem*>* downloadItems;
+    __weak DownloadManager *weakSelf = self;
+    dispatch_sync(self.downloadItemsQueue, ^{
+        downloadItems = weakSelf.allDownloadItems;
+    });
+    return downloadItems;
+}
+ 
 - (void) downloadWithURL:(NSString *)downloadURL{
     NSURL *url = [NSURL URLWithString:downloadURL];
     if(url){
         DownloadItem* newDownloadItem = [[DownloadItem alloc] initWithStringURL:downloadURL];
         NSURLSessionDownloadTask *downloadTask = [_session downloadTaskWithURL:url];
         newDownloadItem.downloadTask = downloadTask;
-        [self.allDownloadItems addObject:newDownloadItem];
+        [self addNewDownloadItems:newDownloadItem];
         [downloadTask resume];
         [self startTrackingInternetConnection];
-        //[self saveAllDownloadItemsToPersistence];
     }
 }
 
 -(DownloadItem*) getItemByDownloadTask:(NSURLSessionDownloadTask *)downloadTask{
-    for(DownloadItem* item in self.allDownloadItems){
+    for(DownloadItem* item in [self getAllDownloadItems]){
         if(downloadTask == item.downloadTask){
             return item;
         }
@@ -122,7 +138,7 @@
 }
 
 - (void) pauseAllCurrentlyDownloadingItem{
-    for(DownloadItem* downloadItem in self.allDownloadItems){
+    for(DownloadItem* downloadItem in [self getAllDownloadItems]){
         if([downloadItem.state isEqual: @"Downloading"]){
             [self pauseDownload:downloadItem withCompleteHandler:^{
                 NSLog(@"%@", @"Pause complete");
@@ -132,7 +148,7 @@
 }
 
 - (BOOL) pauseAllDownloadingProcessComplete{
-    for(DownloadItem* downloadItem in self.allDownloadItems){
+    for(DownloadItem* downloadItem in [self getAllDownloadItems]){
         if([downloadItem.state isEqual: @"Downloading"]){
             return false;
         }
@@ -142,7 +158,7 @@
 }
 
 - (BOOL) isExistDownloadingProcess{
-    for(DownloadItem* downloadItem in self.allDownloadItems){
+    for(DownloadItem* downloadItem in [self getAllDownloadItems]){
         if([downloadItem.state isEqual: @"Downloading"]){
             return true;
         }
@@ -156,18 +172,17 @@
         [downloadItem.downloadTask suspend];
         downloadItem.downloadTask = nil;
     }
-    [self.allDownloadItems removeObject:downloadItem];
+    
+    dispatch_async(self.downloadItemsQueue, ^{
+        [self.allDownloadItems removeObject:downloadItem];
+    });
     [self saveAllDownloadItemsToPersistence];
-}
-
-- (NSArray<DownloadItem *> *)getAllDownloadItems{
-    return self.allDownloadItems;
 }
 
 - (void) saveAllDownloadItemsToPersistence{
     __weak DownloadManager *weakSelf = self;
-    dispatch_async(self.persistenceQueue, ^{
-        [weakSelf.persistence saveAllDownloadItems:weakSelf.allDownloadItems];
+    dispatch_sync(self.persistenceQueue, ^{
+        [weakSelf.persistence saveAllDownloadItems:[weakSelf getAllDownloadItems]];
     });
 }
 

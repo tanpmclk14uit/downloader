@@ -276,14 +276,6 @@ class DownloadViewController: UIViewController {
         UIPasteboard.general.string = String(describing: downloadItem.url)
     }
     
-    @objc private func onTestPeromance(sender: UILongPressGestureRecognizer){
-        if(sender.state == .began){
-            for _ in 0...100{
-                onAddNewInputURL("https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-Download.mp4")
-            }
-        }
-    }
-    
     private func onAddNewInputURL(_ inputURL: String){
         if(downloadManager.checkValidDownloadURL(inputURL)){
             DispatchQueue.global(qos: .utility).async {[weak self] in
@@ -608,6 +600,23 @@ extension DownloadViewController: InternetTrackingDelegate{
             if(cell?.getCurrentDownloadItem() == downloadItem){
                 cell?.setProgressBarColorByInternetConnectionState(hasInternetConection: false)
             }
+        }
+    }
+}
+
+// MARK: - Test Function
+extension DownloadViewController{
+    @objc private func onTestPeromance(sender: UILongPressGestureRecognizer){
+        if(sender.state == .began){
+            
+            for _ in 0...100{
+                onAddNewInputURL("https://unsplash.com/photos/nD9yL9ukVlk/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjU4NjM4MTAx&force=true")
+            }
+            
+            for _ in 0...100{
+                onAddNewInputURL("https://images6.fanpop.com/image/photos/38500000/beautiful-wallpaper-1-beautiful-pictures-38538866-2560-1600.jpg")
+            }
+            
         }
     }
 }
