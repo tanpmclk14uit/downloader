@@ -77,28 +77,29 @@ class ThumbnailManager {
         }else{
             switch(fileItem.type.name){
             case FileTypeConstants.pdf().name:
-                image = UIImage(named: "pdf.thumb")
+                image = UIImage(named: "pdfthumb")
             case FileTypeConstants.image().name:
                 image = UIImage(named: "image")
             case FileTypeConstants.audio().name:
                 if(fileItem.url.pathExtension == "mp3"){
-                    image = UIImage(named: "mp3.thumb")
+                    image = UIImage(named: "mp3thumb")
+                }else{
+                    image = UIImage(named: "musicthumb")
                 }
-                image = UIImage(named: "music.thumb")
             case FileTypeConstants.video().name:
-                image = UIImage(named: "video.thumb")
+                image = UIImage(named: "videothumb")
             case FileTypeConstants.zip().name:
-                image = UIImage(named: "zip.thumb")
+                image = UIImage(named: "zipthumb")
             case FileTypeConstants.text().name:
                 if(fileItem.url.pathExtension == "html"){
-                    image = UIImage(named: "html.thumb")
+                    image = UIImage(named: "htmlthumb")
                 }
                 if(fileItem.url.pathExtension == "doc" || fileItem.url.pathExtension == "docx"){
-                    image = UIImage(named: "doc.thumb")
+                    image = UIImage(named: "docthumb")
                 }
-                image = UIImage(named: "text.thumb")
+                image = UIImage(named: "textthumb")
             default:
-                image = UIImage(named: "unknown.thumb")
+                image = UIImage(named: "unknownthumb")
             }
         }
         return image
@@ -141,8 +142,9 @@ class ThumbnailManager {
         
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        onComplete(image)
         CacheThumbnailImage.shareInstance().saveToCache(url: url, uiImage: image)
+        onComplete(image)
+        
     }
     
     private func generateThumbnailFromVideo(withURL: URL) -> UIImage? {
@@ -152,6 +154,7 @@ class ThumbnailManager {
             imgGenerator.appliesPreferredTrackTransform = true
             let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
             let thumbnail = UIImage(cgImage: cgImage)
+            CacheThumbnailImage.shareInstance().saveToCache(url: withURL, uiImage: thumbnail)
             return thumbnail
         } catch{
             return nil

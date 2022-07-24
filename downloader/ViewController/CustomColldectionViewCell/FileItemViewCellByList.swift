@@ -72,9 +72,9 @@ class FileItemViewCellByList: UICollectionViewCell {
         fileIcon.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
         // config button download action
         fileActionMenu.centerYAnchor.constraint(equalTo: layout.centerYAnchor).isActive = true
-        fileActionMenu.trailingAnchor.constraint(equalTo: layout.trailingAnchor, constant: DimenResource.cellItemMargin.right).isActive = true
-        fileActionMenu.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
-        fileActionMenu.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
+        fileActionMenu.trailingAnchor.constraint(equalTo: layout.trailingAnchor).isActive = true
+        fileActionMenu.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth+20).isActive = true
+        fileActionMenu.heightAnchor.constraint(equalTo: layout.heightAnchor).isActive = true
         // config content layout (title & information)
         let contentLayout = UIStackView()
         contentLayout.translatesAutoresizingMaskIntoConstraints = false

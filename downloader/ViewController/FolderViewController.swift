@@ -101,14 +101,14 @@ class FolderViewController: UIViewController {
         
         // config button add file
         buttonImportFile.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonImportFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor, constant: DimenResource.toolBarMargin.left).isActive = true
-        buttonImportFile.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
-        buttonImportFile.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
+        buttonImportFile.leadingAnchor.constraint(equalTo: toolBar.leadingAnchor).isActive = true
+        buttonImportFile.heightAnchor.constraint(equalTo: toolBar.heightAnchor).isActive = true
+        buttonImportFile.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth+20).isActive = true
         // config button add forder
         buttonAddFolder.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
-        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonImportFile.trailingAnchor, constant: DimenResource.toolBarMargin.left).isActive = true
-        buttonAddFolder.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
-        buttonAddFolder.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
+        buttonAddFolder.leadingAnchor.constraint(equalTo: buttonImportFile.trailingAnchor).isActive = true
+        buttonAddFolder.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth+20).isActive = true
+        buttonAddFolder.heightAnchor.constraint(equalTo: toolBar.heightAnchor).isActive = true
         // config button filter
         buttonFilter.topAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         buttonFilter.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
@@ -118,9 +118,9 @@ class FolderViewController: UIViewController {
         buttonSort.bottomAnchor.constraint(equalTo: toolBar.bottomAnchor).isActive = true
         buttonSort.trailingAnchor.constraint(equalTo: buttonFilter.leadingAnchor, constant: DimenResource.toolBarMargin.right).isActive = true
         // config button type view
-        buttonViewType.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
-        buttonViewType.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth).isActive = true
-        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor, constant: DimenResource.toolBarMargin.right).isActive = true
+        buttonViewType.heightAnchor.constraint(equalTo: toolBar.heightAnchor).isActive = true
+        buttonViewType.widthAnchor.constraint(equalToConstant: DimenResource.buttonIconWidth+20).isActive = true
+        buttonViewType.trailingAnchor.constraint(equalTo: buttonSort.leadingAnchor).isActive = true
         buttonViewType.centerYAnchor.constraint(equalTo: toolBar.centerYAnchor).isActive = true
         
         return toolBar
@@ -138,7 +138,8 @@ class FolderViewController: UIViewController {
         let layout = MaintainOffsetFlowLayout()
         layout.scrollDirection = .vertical
         layout.itemSize.width = view.frame.width/2 - 15
-        layout.itemSize.height = layout.itemSize.width * 1.2
+        let height = max(layout.itemSize.width*1.2, 230)
+        layout.itemSize.height = height
         return layout
     }()
     
@@ -808,7 +809,6 @@ class FolderViewController: UIViewController {
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Paste success"), animated: true)
             fileItem.size = fileManager.getTotalItem(of: fileItem.url) as NSNumber
             reloadCollectionViewItem(of: fileItem)
-           
         }else{
             present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: "Paste fail"), animated: true)
             setPasteButton()
@@ -817,6 +817,7 @@ class FolderViewController: UIViewController {
     
     @objc private func onPasteToCurrentFolder(){
         if(fileManager.pasteFile(to: self.currentFolder!)){
+            present(UIAlertController.notificationAlert(type: NotificationAlertType.Success, message: "Paste success"), animated: true)
             if(filterBy == FilterByFileType.Image){
                 DispatchQueue.global(qos: .userInitiated).async {[weak self] in
                     if let self = self{

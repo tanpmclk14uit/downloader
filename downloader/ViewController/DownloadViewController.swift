@@ -429,7 +429,7 @@ class DownloadViewController: UIViewController {
         switch(sortBy){
         case BasicSort.Name: do{
             downloadItems.sort { hls, fls in
-                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name.lowercased(), ObjSecond: fls.name.lowercased())
             }
             break
         }

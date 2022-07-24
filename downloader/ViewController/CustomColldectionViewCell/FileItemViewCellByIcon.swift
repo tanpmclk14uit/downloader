@@ -168,7 +168,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             fileTypeIcon.image = UIImage(named: "image")
             break
         case FileTypeConstants.audio().name:
-            fileTypeIcon.image = UIImage(named: "audio")
+            fileTypeIcon.image = UIImage(named: "music")
             break
         case FileTypeConstants.video().name:
             fileTypeIcon.image = UIImage(named: "video")
