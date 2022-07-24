@@ -456,6 +456,10 @@ extension DownloadViewController: UISearchBarDelegate{
         self.searchKey = searchText
         reloadTableViewData()
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.searchBar.endEditing(true)
+    }
 }
 // MARK: - CONFIRM TABLE VIEW DELEGATE
 extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
@@ -608,15 +612,9 @@ extension DownloadViewController: InternetTrackingDelegate{
 extension DownloadViewController{
     @objc private func onTestPeromance(sender: UILongPressGestureRecognizer){
         if(sender.state == .began){
-            
             for _ in 0...100{
                 onAddNewInputURL("https://unsplash.com/photos/nD9yL9ukVlk/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjU4NjM4MTAx&force=true")
             }
-            
-            for _ in 0...100{
-                onAddNewInputURL("https://images6.fanpop.com/image/photos/38500000/beautiful-wallpaper-1-beautiful-pictures-38538866-2560-1600.jpg")
-            }
-            
         }
     }
 }

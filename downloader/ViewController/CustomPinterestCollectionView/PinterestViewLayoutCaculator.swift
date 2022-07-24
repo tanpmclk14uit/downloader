@@ -47,7 +47,7 @@ class PinterestViewLayoutCaculator{
             caculatorQueue.sync {
                 let low = max(0, from)
                 let high = min(to, itemCount - 1)
-                guard low < high else{
+                guard low <= high else{
                     return
                 }
                 for i in from ... high{

@@ -665,6 +665,7 @@ class FolderViewController: UIViewController {
                 }
             }
         }else{
+            getAllFileMatchSearchSortAndFilter()
             reloadCollectionView()
         }
     }
@@ -709,7 +710,7 @@ class FolderViewController: UIViewController {
                     pinterestLayout.invalidateLayout()
                     currentLayoutState = LayoutState.Grid
                 }
-                onViewByChange(newLayoutState: currentLayoutState)
+                onViewByChange(newLayoutState: currentLayoutState, withAnimation: false)
             }
             
         }
@@ -1010,6 +1011,10 @@ extension FolderViewController: UISearchBarDelegate{
             reloadCollectionView()
         }
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.searchBar.endEditing(true)
+    }
 }
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSource{
@@ -1180,7 +1185,18 @@ extension FolderViewController: CustomContextMenuDelegate{
 }
 // MARK: - CONFIRM UIDocumentPickerDelegate
 extension FolderViewController: UIDocumentPickerDelegate{
+    
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        let alert = UIAlertController(title: nil, message: "Importing...", preferredStyle: .alert)
+
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = UIActivityIndicatorView.Style.gray
+        loadingIndicator.startAnimating();
+
+        alert.view.addSubview(loadingIndicator)
+        present(alert, animated: true, completion: nil)
+        
         for url in urls{
             if(fileManager.copyFile(at: url, toFolder: currentFolder!)){
                 
@@ -1202,6 +1218,7 @@ extension FolderViewController: UIDocumentPickerDelegate{
                         self.fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
                         self.reloadCollectionView()
                         self.present(UIAlertController.notificationAlert(type: .Success, message: "Import file success"), animated: true)
+                        self.dismiss(animated: false, completion: nil)
                     }
                 }
             }

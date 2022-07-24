@@ -48,7 +48,7 @@
         self.persistence = [DownloadItemPersistenceManager sharedInstance];
         self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
         self.downloadItemsQueue = dispatch_queue_create("downloadItemsQueue", DISPATCH_QUEUE_SERIAL);
-        self.tracking = [[InternetTracking alloc] initWithTrackingInterval:3];
+        self.tracking = [[InternetTracking alloc] initWithTrackingInterval:5];
         self.shouldTrack = true;
     }
     return self;
