@@ -30,7 +30,7 @@ class DownloadViewController: UIViewController {
     lazy var buttonSort: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sort by Date", for: .normal)
+        button.setTitle("Date", for: .normal)
         button.setImage(UIImage(named: "sort-asc"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue

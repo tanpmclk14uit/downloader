@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) removeFile: (FileItem*) fileItem fromFolder: (FolderItem*) folder;
 - (void) removeTempFolderFromFolder: (FolderItem*) folder;
 - (BOOL) createNewFolder: (NSString*) folderName inFolder: (FolderItem*) folder;
-- (BOOL) showRefetchDataOfFolder: (FolderItem*) folderItem;
 - (BOOL) canMove: (FileItem*) source to: (FolderItem*) destination;
 - (BOOL) moveFile: (FileItem*) source toFolder: (FolderItem*) destination;
 - (void) copyFile: (FileItem*) fileItem;
@@ -29,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) shouldShowPaste;
 - (BOOL) copyFileAtURL: (NSURL*) source toFolder: (FolderItem*) destinationFolder;
 - (FileItem*) getFileByURL: (NSURL*) file;
+- (void) rootFolderShouldReload;
+- (BOOL) shouldRefetchDataOfFolder;
+- (void) refreshSuccess;
 - (NSInteger) getTotalItemOfURL: (NSURL*) url;
 @end
 

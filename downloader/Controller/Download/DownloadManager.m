@@ -224,6 +224,7 @@
             [currentDownloadItem didFinishDownloadWithState:@"Error"];
         }else{
             onSuccess();
+            [[DownloadFileManager sharedInstance] rootFolderShouldReload];
             [currentDownloadItem didFinishDownloadWithState:@"Completed"];
         }
     }else{

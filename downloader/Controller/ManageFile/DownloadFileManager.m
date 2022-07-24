@@ -12,9 +12,8 @@
 
 @interface DownloadFileManager ()
 @property(strong, nonatomic) NSFileManager* fileManager;
-@property(strong, nonatomic) NSMutableSet<NSURL*>* needReloadFoldes;
+@property(assign, atomic) BOOL needReloadRootFolder;
 @property(strong, nonatomic, nullable) FileItem* fileToCopy;
-
 
 @end
 
@@ -32,8 +31,7 @@
     self = [super init];
     if(self){
         self.fileManager = [NSFileManager defaultManager];
-        self.needReloadFoldes = [[NSMutableSet alloc] init];
-      
+        self.needReloadRootFolder = false;
     }
     return self;
 }
@@ -127,7 +125,6 @@
         return false;
     }else{
         [folder.allFileItems removeObject:fileItem];
-        [_needReloadFoldes addObjectsFromArray:folder.parentFolders];
         _fileToCopy = nil;
         return true;
     }
@@ -186,21 +183,22 @@
 - (BOOL)createNewFolder:(NSString *)folderName inFolder:(FolderItem *)folder{
     NSURL* directoryPath = [folder.url URLByAppendingPathComponent:folderName];
     if( [_fileManager createDirectoryAtURL:directoryPath withIntermediateDirectories:NO attributes:nil error:nil]){
-        [_needReloadFoldes addObject:folder.url];
-        [_needReloadFoldes addObjectsFromArray:folder.parentFolders];
         return true;
     }else{
         return false;
     }
 }
 
-- (BOOL)showRefetchDataOfFolder:(FolderItem *)folderItem{
-    if([_needReloadFoldes containsObject:folderItem.url]){
-        [_needReloadFoldes removeObject:folderItem.url];
-        return true;
-    }else{
-        return false;
-    }
+- (BOOL) shouldRefetchDataOfFolder{
+    return _needReloadRootFolder;
+}
+
+- (void) refreshSuccess{
+    _needReloadRootFolder = false;
+}
+
+- (void) rootFolderShouldReload{
+    _needReloadRootFolder = true;
 }
 
 - (BOOL)canMove:(FileItem *)source to:(FolderItem *)destination{

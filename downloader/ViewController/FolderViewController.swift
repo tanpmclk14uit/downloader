@@ -390,6 +390,25 @@ class FolderViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        if(fileManager.shouldRefetchDataOfFolder() && currentFolder!.isRootFolder){
+            fileCollectionView.setContentOffset(CGPoint(x: 0,y: 0), animated: false)
+            searchKey = ""
+            searchBar.text = nil
+            
+            
+            sortDiv = SortDIV.Asc
+            setIconOfSortButton()
+            
+            onViewSortChange(newSortBy: BasicSort.Date)
+            
+            onViewFilerChange(newFilter: FilterByFileType.All)
+            
+            buttonViewType.setImage(UIImage(named: "row"), for: .normal)
+            currentLayoutState = LayoutState.List
+            
+            caculatorForLayout.clearCache(itemCount: self.fileManager.getTotalItem(of: currentFolder!.url))
+            fileManager.refreshSuccess()
+        }
         fetchAllFileOfFolder()
         setHeader()
     }
@@ -405,7 +424,7 @@ class FolderViewController: UIViewController {
                             self.isMoveSuccess = false
                         }
                         DispatchQueue.main.async {
-                            self.reloadCollectionView()
+                            self.onViewByChange(newLayoutState: self.currentLayoutState, withAnimation: false)
                         }
                     })
                 }
@@ -635,13 +654,17 @@ class FolderViewController: UIViewController {
         reloadCollectionView()
     }
     
+    private func onViewSortChange(newSortBy: BasicSort){
+        sortBy = newSortBy
+        buttonSort.setTitle("\(newSortBy)", for: .normal)
+    }
+    
     private func onSortChange(newSortBy: BasicSort){
         if(sortBy == newSortBy){
             sortDiv.reverse()
             setIconOfSortButton()
         }else{
-            sortBy = newSortBy
-            buttonSort.setTitle("\(newSortBy)", for: .normal)
+            onViewSortChange(newSortBy: newSortBy)
         }
         
         fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
@@ -670,10 +693,14 @@ class FolderViewController: UIViewController {
         }
     }
     
+    private func onViewFilerChange(newFilter: FilterByFileType){
+        buttonFilter.setTitle("\(newFilter)", for: .normal)
+        filterBy = newFilter
+    }
+    
     private func onFilterChange(newFilter: FilterByFileType){
         if(newFilter != filterBy){
-            buttonFilter.setTitle("\(newFilter)", for: .normal)
-            filterBy = newFilter
+            onViewFilerChange(newFilter: newFilter)
             fileCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
             getAllFileMatchSearchSortAndFilter()
             if(newFilter == FilterByFileType.Image){
