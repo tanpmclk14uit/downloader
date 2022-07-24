@@ -351,7 +351,7 @@
 				47FDFB5F284EEFF500FDA80F /* Info.plist */,
 				47FDFB8C284F007500FDA80F /* Models */,
 				474A60FC2862CEF30039B3D0 /* Resources */,
-				47FDFB8A284F004D00FDA80F /* ViewController */,
+				47FDFB8A284F004D00FDA80F /* View */,
 			);
 			path = downloader;
 			sourceTree = "<group>";
@@ -373,7 +373,7 @@
 			path = downloaderUITests;
 			sourceTree = "<group>";
 		};
-		47FDFB8A284F004D00FDA80F /* ViewController */ = {
+		47FDFB8A284F004D00FDA80F /* View */ = {
 			isa = PBXGroup;
 			children = (
 				47CF1D282885A75E0076888A /* CustomPinterestCollectionView */,
@@ -388,7 +388,7 @@
 				47439FA028869C3B00FE43C9 /* MoreSettingViewController.swift */,
 				478B67CE2887B61200D38B68 /* PassCodeLockViewController.swift */,
 			);
-			path = ViewController;
+			path = View;
 			sourceTree = "<group>";
 		};
 		47FDFB8C284F007500FDA80F /* Models */ = {

@@ -30,7 +30,7 @@
     if(self){
         
         NSError* error;
-        self.url = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
+        self.url = [[NSFileManager defaultManager] URLForDirectory:NSDownloadsDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:true error: &error];
         if(error){
             NSLog(@"%@", error);
         }
