@@ -932,8 +932,8 @@ class FolderViewController: UIViewController {
             if let self = self{
                 if(self.fileManager.removeFile(fileItem, fromFolder: self.currentFolder!)){
                     if let currentSelectedFilePath = self.currentSelectedFilePath, !currentSelectedFilePath.isEmpty {
+                        self.getAllFileMatchSearchSortAndFilter()
                         if(self.filterBy == FilterByFileType.Image){
-                            self.getAllFileMatchSearchSortAndFilter()
                             self.caculatorForLayout.reloadLayoutFromIndex(currentSelectedFilePath.item, itemCount: self.currentFileMatchSearchSortAndFiler.count)
                         }
                         self.reloadCollectionView()

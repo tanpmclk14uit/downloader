@@ -18,6 +18,7 @@
 @property(strong, nonatomic) DownloadItemPersistenceManager* persistence;
 @property(strong, nonatomic) dispatch_queue_t persistenceQueue;
 @property(strong, nonatomic) InternetTracking* tracking;
+@property(assign, atomic) BOOL shouldTrack;
 @end
 
 @implementation DownloadManager
@@ -45,7 +46,8 @@
         self.allDownloadItems = [[NSMutableArray alloc] init];
         self.persistence = [DownloadItemPersistenceManager sharedInstance];
         self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
-        self.tracking = [[InternetTracking alloc] initWithTrackingInterval:5];
+        self.tracking = [[InternetTracking alloc] initWithTrackingInterval:3];
+        self.shouldTrack = true;
     }
     return self;
 }
@@ -251,6 +253,20 @@
     if(![self isExistDownloadingProcess]){
         [_tracking stopTracking];
     }
+}
+
+- (void) startTrackingInternetConnectionByManager{
+    [self startTrackingInternetConnection];
+    self.shouldTrack = true;
+}
+
+- (void) stopTrackingInternetConnectionByManager{
+    self.shouldTrack = false;
+    [_tracking stopTracking];
+}
+
+- (BOOL)shouldRestartTracking{
+    return self.shouldTrack;
 }
 
 

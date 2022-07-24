@@ -71,5 +71,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         while(DownloadManager.sharedInstance().pauseAllDownloadingProcessComplete() == false){}
         DownloadFileManager.sharedInstance().removeTempFolder(fromFolder: FolderItem.rootFolder())
     }
+    
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        DownloadManager.sharedInstance().stopTrackingInternetConnectionByManager()
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        DownloadManager.sharedInstance().startTrackingInternetConnectionByManager()
+        
+    }
 }
 

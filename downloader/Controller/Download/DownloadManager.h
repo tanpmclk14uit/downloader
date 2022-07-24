@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) isValidFileName: (NSString*) fileName;
 - (void) callForHaveInternetConnection;
 - (void) setInternetTrackingDelegate: (id<InternetTrackingDelegate>) internetTrackingDelegate;
+- (void) startTrackingInternetConnection;
+- (void) startTrackingInternetConnectionByManager;
+- (void) stopTrackingInternetConnectionByManager;
+- (BOOL) shouldRestartTracking;
+
 @end
 
 NS_ASSUME_NONNULL_END
