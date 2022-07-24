@@ -144,7 +144,7 @@
 }
 
 - (void) pauseAllCurrentlyDownloadingItem{
-    dispatch_sync(self.downloadItemsQueue, ^{
+    dispatch_async(self.downloadItemsQueue, ^{
         for(DownloadItem* downloadItem in self.allDownloadItems){
             if([downloadItem.state isEqual: @"Downloading"]){
                 [self pauseDownload:downloadItem withCompleteHandler:^{
@@ -156,7 +156,6 @@
 }
 
 - (BOOL) pauseAllDownloadingProcessComplete{
-    
     for(DownloadItem* downloadItem in [self getAllDownloadItems]){
         if([downloadItem.state isEqual: @"Downloading"]){
             return false;
@@ -195,14 +194,14 @@
 
 - (void) saveAllDownloadItemsToPersistence{
     __weak DownloadManager *weakSelf = self;
-    dispatch_sync(self.persistenceQueue, ^{
-        [weakSelf.persistence saveAllDownloadItems:[weakSelf getAllDownloadItems]];
+    dispatch_sync(self.downloadItemsQueue, ^{
+        [weakSelf.persistence saveAllDownloadItems:self.allDownloadItems];
     });
 }
 
 - (void) fetchAllDownloadItemsWithAfterCompleteHandler:(void (^)(void))completionHandler{
     __weak DownloadManager *weakSelf = self;
-    dispatch_sync(self.persistenceQueue, ^{
+    dispatch_async(self.downloadItemsQueue, ^{
         weakSelf.allDownloadItems = [NSMutableArray arrayWithArray:[weakSelf.persistence getAllDownloadItems]];
         completionHandler();
     });
