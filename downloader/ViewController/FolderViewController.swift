@@ -395,7 +395,6 @@ class FolderViewController: UIViewController {
             searchKey = ""
             searchBar.text = nil
             
-            
             sortDiv = SortDIV.Asc
             setIconOfSortButton()
             
@@ -525,7 +524,7 @@ class FolderViewController: UIViewController {
         switch(sortBy){
         case BasicSort.Name: do{
             fileItems.sort { hls, fls in
-                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+                compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name.lowercased(), ObjSecond: fls.name.lowercased())
             }
             break
         }
@@ -533,7 +532,7 @@ class FolderViewController: UIViewController {
             let sortTime: SortDIV = (sortDiv == SortDIV.Asc) ? SortDIV.Desc : SortDIV.Asc
             fileItems.sort { hls, fls in
                 if(hls.createdDate == fls.createdDate){
-                    return compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name, ObjSecond: fls.name)
+                    return compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name.lowercased(), ObjSecond: fls.name.lowercased())
                 }
                 return compareObjectToSort(sortDiv: sortTime, ObjFirst: hls.createdDate, ObjSecond: fls.createdDate)
             }
