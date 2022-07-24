@@ -80,6 +80,8 @@
     });
     return downloadItems;
 }
+
+
  
 - (void) downloadWithURL:(NSString *)downloadURL{
     NSURL *url = [NSURL URLWithString:downloadURL];
@@ -94,12 +96,16 @@
 }
 
 -(DownloadItem*) getItemByDownloadTask:(NSURLSessionDownloadTask *)downloadTask{
-    for(DownloadItem* item in [self getAllDownloadItems]){
-        if(downloadTask == item.downloadTask){
-            return item;
+    __block DownloadItem* downloadItem;
+    dispatch_sync(self.downloadItemsQueue, ^{
+        for(DownloadItem* item in self.allDownloadItems){
+            if(downloadTask == item.downloadTask){
+                downloadItem = item;
+                return;
+            }
         }
-    }
-    return nil;
+    });
+    return downloadItem;
 }
 
 - (void) pauseDownload:(DownloadItem *)downloadItem withCompleteHandler:(void (^)(void))completeHandler{
@@ -138,16 +144,19 @@
 }
 
 - (void) pauseAllCurrentlyDownloadingItem{
-    for(DownloadItem* downloadItem in [self getAllDownloadItems]){
-        if([downloadItem.state isEqual: @"Downloading"]){
-            [self pauseDownload:downloadItem withCompleteHandler:^{
-                NSLog(@"%@", @"Pause complete");
-            }];
+    dispatch_sync(self.downloadItemsQueue, ^{
+        for(DownloadItem* downloadItem in self.allDownloadItems){
+            if([downloadItem.state isEqual: @"Downloading"]){
+                [self pauseDownload:downloadItem withCompleteHandler:^{
+                    NSLog(@"%@", @"Pause complete");
+                }];
+            }
         }
-    }
+    });
 }
 
 - (BOOL) pauseAllDownloadingProcessComplete{
+    
     for(DownloadItem* downloadItem in [self getAllDownloadItems]){
         if([downloadItem.state isEqual: @"Downloading"]){
             return false;
@@ -158,12 +167,16 @@
 }
 
 - (BOOL) isExistDownloadingProcess{
-    for(DownloadItem* downloadItem in [self getAllDownloadItems]){
-        if([downloadItem.state isEqual: @"Downloading"]){
-            return true;
+    __block BOOL isExist;
+    dispatch_sync(self.downloadItemsQueue, ^{
+        for(DownloadItem* downloadItem in self.allDownloadItems){
+            if([downloadItem.state isEqual: @"Downloading"]){
+                isExist = true;
+            }
         }
-    }
-    return false;
+        isExist = false;
+    });
+    return isExist;
 }
 
 
@@ -176,6 +189,7 @@
     dispatch_async(self.downloadItemsQueue, ^{
         [self.allDownloadItems removeObject:downloadItem];
     });
+    [self stopTrackingInternetConnection];
     [self saveAllDownloadItemsToPersistence];
 }
 

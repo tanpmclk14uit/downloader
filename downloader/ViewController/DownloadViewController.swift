@@ -269,7 +269,13 @@ class DownloadViewController: UIViewController {
     
     private func onRestartDownloadItem(downloadItem: DownloadItem){
         downloadManager.restart(downloadItem)
-        reloadCell(currentDownloadItem: downloadItem)
+        
+        if(filterBy != FilterByState.Downloading){
+            reloadTableViewData()
+            
+        }else{
+            reloadCell(currentDownloadItem: downloadItem)
+        }
     }
     
     private func onCopyURLOfDownloadItem(downloadItem: DownloadItem){
@@ -469,6 +475,9 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DownloadItemViewCell.identifier) as! DownloadItemViewCell
+        guard indexPath.row < getAllDownloadItemMatchSearchSortAndFilter().count else{
+            return cell
+        }
         let displayingDownloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
         cell.setUpDataCell(downloadItem: displayingDownloadItem)
         cell.delegate = self
@@ -476,12 +485,14 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true;
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        guard indexPath.row < getAllDownloadItemMatchSearchSortAndFilter().count else{
+            return nil
+        }
         let downloadItem = getAllDownloadItemMatchSearchSortAndFilter()[indexPath.row]
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] _, _ in
             self?.showDeleteConfirmAlert(downloadItem: downloadItem)
