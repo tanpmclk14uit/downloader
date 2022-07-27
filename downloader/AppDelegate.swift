@@ -41,11 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     lazy var tabBarController: UITabBarController = {
         let tabBarController = UITabBarController()
-        tabBarController.setViewControllers([folderViewController, downloadViewController], animated: false)
+        tabBarController.setViewControllers([folderViewController, downloadViewController, moreSettingViewController], animated: false)
         
         if let items = tabBarController.tabBar.items{
             items[0].image = UIImage(named: "folder.fill")
             items[1].image = UIImage(named: "download.fill")
+            items[2].image = UIImage(named: "menu")
         }
         tabBarController.tabBar.backgroundColor = .white
         return tabBarController
@@ -79,6 +80,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         DownloadManager.sharedInstance().startTrackingInternetConnectionByManager()
         
+    }
+    var restrictRotation:UIInterfaceOrientationMask = .portrait
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        return self.restrictRotation
     }
 }
 

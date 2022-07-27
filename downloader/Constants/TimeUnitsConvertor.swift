@@ -6,7 +6,7 @@
 //
 
 import Foundation
-public struct TimeSizeUnits{
+public struct TimeUnitsConvertor{
     public let seconds: Int64
     
     public var minutes: Int64{
@@ -32,7 +32,7 @@ public struct TimeSizeUnits{
         return months/12
     }
     
-    public init(seconds: Int64){
+    public init(withSeconds seconds: Int64){
         self.seconds = seconds
     }
     let oneMinuteUnit: Int64 = 60;

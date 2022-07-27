@@ -11,7 +11,7 @@ class DownloadViewController: UIViewController {
     //MARK: - CONFIG UI
     lazy var titleName: UILabel = {
         let titleName = UILabel()
-        titleName.text = "Downloads"
+        titleName.text = StringResource.downloadTitle
         titleName.textColor = .black
         titleName.font = UIFont.boldSystemFont(ofSize: DimenResource.screenTitleTextSize)
         return titleName
@@ -21,7 +21,7 @@ class DownloadViewController: UIViewController {
         var searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.delegate = self
-        searchBar.placeholder = "Search in downloads"
+        searchBar.placeholder = StringResource.downloadSearchPlaceHolder
         searchBar.searchBarStyle = .minimal
         searchBar.sizeToFit()
         return searchBar
@@ -30,20 +30,22 @@ class DownloadViewController: UIViewController {
     lazy var buttonSort: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Date", for: .normal)
+        button.setTitle(sortBy.toString(), for: .normal)
         button.setImage(UIImage(named: "sort-asc"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
+        button.addTarget(self, action: #selector(onSortClick), for: .touchUpInside)
         return button
     }()
     
     lazy var buttonFilter: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("All process", for: .normal)
+        button.setTitle(filterBy.toString(), for: .normal)
         button.setImage(UIImage(named: "filtered"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = .systemBlue
+        button.addTarget(self, action: #selector(onFilterClick), for: .touchUpInside)
         return button
     }()
     
@@ -52,12 +54,12 @@ class DownloadViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.rowHeight = 70
+        tableView.rowHeight = DimenResource.downloadItemsTableViewRowHeight
         tableView.register(DownloadItemViewCell.self, forCellReuseIdentifier: DownloadItemViewCell.identifier)
         return tableView
     }()
     
-    lazy var emptyListMessage: UILabel = {
+    lazy var emptyDownloadsMessage: UILabel = {
         let lable = UILabel()
         lable.translatesAutoresizingMaskIntoConstraints = false
         lable.textColor = .gray
@@ -71,46 +73,47 @@ class DownloadViewController: UIViewController {
         let button = UIButton(type: .system)
         button.tintColor = .systemBlue
         button.setImage(UIImage(named: "add"), for: .normal)
+        button.addTarget(self, action: #selector(showInputURLAllert), for: .touchUpInside)
         return button
     }()
     
     lazy var sortBySelectionAlert: UIAlertController = {
         let alert = UIAlertController(
-            title: "Sort", message: "Select property to sort", preferredStyle: .actionSheet
+            title: StringResource.sortBySelectionAlertTitle, message: StringResource.sortBySelectionAlertMessage, preferredStyle: .actionSheet
         )
-        alert.addAction(UIAlertAction(title: "Sort by date", style: .default, handler: { [weak self] _ in
-            self?.onSortChange(newSortBy: BasicSort.Date)
+        alert.addAction(UIAlertAction(title: "\(StringResource.sortBy) \(SortBy.Date.toString())", style: .default, handler: { [weak self] _ in
+            self?.onSortChange(newSortBy: SortBy.Date)
         }))
-        alert.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { [weak self] _ in
-            self?.onSortChange(newSortBy: BasicSort.Name)
+        alert.addAction(UIAlertAction(title: "\(StringResource.sortBy) \(SortBy.Name.toString())", style: .default, handler: { [weak self] _ in
+            self?.onSortChange(newSortBy: SortBy.Name)
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: StringResource.cancel, style: .cancel))
         return alert
     }()
     
     lazy var filterBySelectionAlert: UIAlertController = {
         let alert = UIAlertController(
-            title: "Filter", message: "Select state to filter", preferredStyle: .actionSheet
+            title: StringResource.filterAlertTitle, message: StringResource.filterAlertTitleMessage, preferredStyle: .actionSheet
         )
-        alert.addAction(UIAlertAction(title: "All", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.All)
+        alert.addAction(UIAlertAction(title:FilterByDownloadState.All.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.All)
         }))
-        alert.addAction(UIAlertAction(title: "Downloading", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Downloading)
+        alert.addAction(UIAlertAction(title: FilterByDownloadState.Downloading.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.Downloading)
         }))
-        alert.addAction(UIAlertAction(title: "Pause", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Pause)
+        alert.addAction(UIAlertAction(title: FilterByDownloadState.Pause.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.Pause)
         }))
-        alert.addAction(UIAlertAction(title: "Completed", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Completed)
+        alert.addAction(UIAlertAction(title: FilterByDownloadState.Completed.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.Completed)
         }))
-        alert.addAction(UIAlertAction(title: "Canceled", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Canceled)
+        alert.addAction(UIAlertAction(title: FilterByDownloadState.Canceled.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.Canceled)
         }))
-        alert.addAction(UIAlertAction(title: "Error", style: .default, handler: { [weak self] _ in
-            self?.onFilterChange(newFilter: FilterByState.Error)
+        alert.addAction(UIAlertAction(title: FilterByDownloadState.Error.toString(), style: .default, handler: { [weak self] _ in
+            self?.onFilterChange(newFilter: FilterByDownloadState.Error)
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: StringResource.cancel, style: .cancel))
         return alert
     }()
     
@@ -155,103 +158,103 @@ class DownloadViewController: UIViewController {
         buttonFilter.heightAnchor.constraint(equalToConstant: DimenResource.buttonIconHeight).isActive = true
     }
     
+    private func configEmptyDownloadsMessage(){
+        emptyDownloadsMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emptyDownloadsMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
     // MARK: - CONTROLLER SETUP
     private var downloadManager = DownloadManager.sharedInstance()
     private var searchKey: String = ""
-    private var sortBy: BasicSort = BasicSort.Date
+    private var sortBy: SortBy = SortBy.Date
     private var sortDiv: SortDIV = SortDIV.Asc
-    private var filterBy: FilterByState = FilterByState.All
+    private var filterBy: FilterByDownloadState = FilterByDownloadState.All
     private let mapDownloadItemToCell: NSMapTable = NSMapTable<DownloadItem, DownloadItemViewCell>.weakToWeakObjects()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchAllDownLoadItems()
+        setUpContentView()
+        downloadManager.setInternetTrackingDelegate(self)
+        downloadManager.setDownloadViewDelegate(self)
+    }
+    
+    private func setUpContentView(){
+        
         view.backgroundColor = .white
         navigationItem.titleView = titleName
-        downloadManager.setInternetTrackingDelegate(self)
-        // set up button add new download item
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: addNewDownloadButton)
-        addNewDownloadButton.addTarget(self, action: #selector(addNewDownloadItemClick), for: .touchUpInside)
         
-        // download view delegate
-        downloadManager.setDownloadViewDelegate(self)
-        // set up screen
         view.addSubview(searchBar)
         configSearchBarConstraint()
+        
         view.addSubview(buttonFilter)
         configButtonFilterConstraint()
+        
         view.addSubview(buttonSort)
         configButtonSortConstraint()
+        
         view.addSubview(downloadItemsTableView)
         configTableViewConstraint()
         
-        buttonSort.addTarget(self, action: #selector(sortButtonClick), for: .touchUpInside)
-        buttonFilter.addTarget(self, action: #selector(filterButtonClick), for: .touchUpInside)
+        view.addSubview(emptyDownloadsMessage)
+        configEmptyDownloadsMessage()
         
-        // set up empty list table
-        view.addSubview(emptyListMessage)
-        emptyListMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        emptyListMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        setUpEmptyListMessage()
-        
-        fetchAllDownLoadItems()
-        
-        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(onTestPeromance))
-        addNewDownloadButton.addGestureRecognizer(longGesture)
-        
-        
+       
     }
     
-    private func fetchAllDownLoadItems(){
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            self?.downloadManager.fetchAllDownloadItemsWith {
-                DispatchQueue.main.async {
-                    self?.reloadTableViewData()
-                }
-            }
-        }
-    }
-    
-    @objc func addNewDownloadItemClick(){
-        showInputURLAllert()
-    }
-    
-    @objc func filterButtonClick(){
-        present(filterBySelectionAlert, animated: true)
-    }
-    
-    @objc func sortButtonClick(){
-        present(sortBySelectionAlert, animated: true)
-    }
-    
-    private func setUpEmptyListMessage(){
+    private func setUpContentViewState(){
         if(getAllDownloadItemMatchSearchSortAndFilter().isEmpty){
-            if(filterBy == FilterByState.All){
-                emptyListMessage.text = "Your download process is empty!"
+            if(filterBy == FilterByDownloadState.All){
+                emptyDownloadsMessage.text = StringResource.emptyDownloadsMessage
                 downloadItemsTableView.isHidden = true
             }else{
-                emptyListMessage.text = "Filter result is empty\nplease choose other state!"
+                emptyDownloadsMessage.text = StringResource.emptyDownloadsMessageFilter
                 downloadItemsTableView.isHidden = true
             }
         }else{
-            emptyListMessage.text = nil
+            emptyDownloadsMessage.text = nil
             downloadItemsTableView.isHidden = false
         }
     }
     
-    private func onSortChange(newSortBy: BasicSort){
+    private func fetchAllDownLoadItems(){
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else{
+                return
+            }
+            self.downloadManager.fetchAllDownloadItemsWith {
+                DispatchQueue.main.async {
+                    self.reloadTableViewData()
+                    self.setUpContentViewState()
+                }
+            }
+        }
+    }
+
+    
+    @objc func onFilterClick(){
+        present(filterBySelectionAlert, animated: true)
+    }
+    
+    @objc func onSortClick(){
+        present(sortBySelectionAlert, animated: true)
+    }
+    
+    private func onSortChange(newSortBy: SortBy){
         if(sortBy == newSortBy){
             sortDiv.reverse()
             setIconOfSortButton()
         }else{
             sortBy = newSortBy
-            buttonSort.setTitle("\(newSortBy)", for: .normal)
+            buttonSort.setTitle(newSortBy.toString(), for: .normal)
         }
         reloadTableViewData()
     }
     
-    private func onFilterChange(newFilter: FilterByState){
+    private func onFilterChange(newFilter: FilterByDownloadState){
         if(newFilter != filterBy){
-            buttonFilter.setTitle("\(newFilter) process", for: .normal)
+            buttonFilter.setTitle(newFilter.toString(), for: .normal)
             buttonFilter.layoutIfNeeded()
             filterBy = newFilter
             reloadTableViewData()
@@ -264,13 +267,13 @@ class DownloadViewController: UIViewController {
     }
     
     private func onRenameDownloadItem(downloadItem: DownloadItem){
-        showInputNewDownloadItemNameOfDownloadItem(downloadItem)
+        showInputNewNameOfDownloadItem(downloadItem)
     }
     
     private func onRestartDownloadItem(downloadItem: DownloadItem){
         downloadManager.restart(downloadItem)
         
-        if(filterBy != FilterByState.Downloading){
+        if(filterBy != FilterByDownloadState.Downloading){
             reloadTableViewData()
             
         }else{
@@ -296,12 +299,10 @@ class DownloadViewController: UIViewController {
     }
     
     private func showErrorNotification(message: String){
-        let emptyURLNotification = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        emptyURLNotification.addAction(UIAlertAction(title: "OK", style: .cancel))
-        present(emptyURLNotification, animated: true)
+        present(UIAlertController.notificationAlert(type: NotificationAlertType.Error, message: message), animated: true)
     }
     
-    private func showInputURLAllert(){
+    @objc private func showInputURLAllert(){
         let alert = UIAlertController(
             title: "Download URL",
             message: nil,
@@ -331,7 +332,7 @@ class DownloadViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    private func showInputNewDownloadItemNameOfDownloadItem(_ downloadItem: DownloadItem){
+    private func showInputNewNameOfDownloadItem(_ downloadItem: DownloadItem){
         let alert = UIAlertController(
             title: "Rename download item",
             message: nil,
@@ -420,7 +421,7 @@ class DownloadViewController: UIViewController {
         // get all original list
         var downloadItems = downloadManager.getAllDownloadItems()
         // filter
-        if(filterBy != FilterByState.All){
+        if(filterBy != FilterByDownloadState.All){
             downloadItems = downloadItems.filter({ downloadItem in
                 return downloadItem.state == String(describing: filterBy)
             })
@@ -433,13 +434,13 @@ class DownloadViewController: UIViewController {
         }
         // sort
         switch(sortBy){
-        case BasicSort.Name: do{
+        case SortBy.Name: do{
             downloadItems.sort { hls, fls in
                 compareObjectToSort(sortDiv: sortDiv, ObjFirst: hls.name.lowercased(), ObjSecond: fls.name.lowercased())
             }
             break
         }
-        case BasicSort.Date: do{
+        case SortBy.Date: do{
             if(sortDiv == SortDIV.Asc){
                 downloadItems.reverse()
             }
@@ -517,11 +518,9 @@ extension DownloadViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    
-    
     func reloadTableViewData(){
         self.downloadItemsTableView.reloadData()
-        self.setUpEmptyListMessage()
+        self.setUpContentViewState()
     }
     
 }
@@ -530,7 +529,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
     
     func cancelClick(downloadItem: DownloadItem) {
         self.downloadManager.cancelDownload(downloadItem)
-        if(filterBy == FilterByState.Pause){
+        if(filterBy == FilterByDownloadState.Pause){
             self.reloadTableViewData()
         }else{
             self.reloadCell(currentDownloadItem: downloadItem)
@@ -539,7 +538,7 @@ extension DownloadViewController: DownloadItemCellDelegate{
     
     func resumeClick(downloadItem: DownloadItem) {
         self.downloadManager.resumeDownload(downloadItem)
-        if(filterBy == FilterByState.Pause){
+        if(filterBy == FilterByDownloadState.Pause){
             self.reloadTableViewData()
         }else{
             self.reloadCell(currentDownloadItem: downloadItem)
@@ -549,12 +548,12 @@ extension DownloadViewController: DownloadItemCellDelegate{
     func pauseClick(downloadItem: DownloadItem) {
         self.downloadManager.pauseDownload(downloadItem) {
             DispatchQueue.main.async { [self] in
-                if(filterBy == FilterByState.Downloading){
+                if(filterBy == FilterByDownloadState.Downloading){
                     self.reloadTableViewData()
                 }else{
                     self.reloadCell(currentDownloadItem: downloadItem)
                 }
-               
+                
             }
         }
     }
@@ -568,7 +567,7 @@ extension DownloadViewController: DownloadDelegate {
         if let currentDownloadItem = currentDownloadItem {
             self.downloadManager.didFinishDownloadingTask(downloadTask, toLocation: location) {
                 DispatchQueue.main.async {[weak self] in
-                    if(self?.filterBy == FilterByState.Downloading){
+                    if(self?.filterBy == FilterByDownloadState.Downloading){
                         self?.reloadTableViewData()
                     }else{
                         self?.reloadRow(currentDownloadItem: currentDownloadItem)
@@ -582,19 +581,21 @@ extension DownloadViewController: DownloadDelegate {
         }
     }
     
-    
-    
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
         if(self.downloadManager.shouldRestartTracking()){
             self.downloadManager.callForHaveInternetConnection();
         }
+        
         let currentDownloadItem = self.downloadManager.getItemBy(downloadTask);
         
         currentDownloadItem.totalSizeFitWithUnit = (FileSizeUnits(bytes: totalBytesExpectedToWrite).getReadableUnit())
         currentDownloadItem.durationString = "\(FileSizeUnits(bytes: totalBytesWritten).getReadableUnit()) / \(currentDownloadItem.totalSizeFitWithUnit)"
         
-        DispatchQueue.main.async {[self] in
+        DispatchQueue.main.async {[weak self] in
+            guard let self = self else{
+                return
+            }
             let cell = self.mapDownloadItemToCell.object(forKey: currentDownloadItem)
             if(cell?.getCurrentDownloadItem() == currentDownloadItem){
                 cell?.setDownloadItemDownloadDuration(currentDownloadItem.durationString)
@@ -614,17 +615,6 @@ extension DownloadViewController: InternetTrackingDelegate{
             let cell = mapDownloadItemToCell.object(forKey: downloadItem)
             if(cell?.getCurrentDownloadItem() == downloadItem){
                 cell?.setProgressBarColorByInternetConnectionState(hasInternetConection: false)
-            }
-        }
-    }
-}
-
-// MARK: - Test Function
-extension DownloadViewController{
-    @objc private func onTestPeromance(sender: UILongPressGestureRecognizer){
-        if(sender.state == .began){
-            for _ in 0...100{
-                onAddNewInputURL("https://unsplash.com/photos/nD9yL9ukVlk/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjU4NjM4MTAx&force=true")
             }
         }
     }

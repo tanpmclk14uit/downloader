@@ -49,6 +49,8 @@ class DimenResource {
     public static let moreSettingContainerHeight: CGFloat = 70
     // top bar size
     public static let pinterestContentMaxHeight: CGFloat = 40;
+    // table & collection view
+    public static let downloadItemsTableViewRowHeight: CGFloat = 70;
 }
 // MARK: - GET HEIGHT OF STRING
 extension String {

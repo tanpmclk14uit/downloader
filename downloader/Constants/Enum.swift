@@ -13,12 +13,16 @@ enum DownloadState {
     case Pause
     case Error
     case Downloading
+    
+    func toString()-> String{
+        return String(describing: self)
+    }
 }
 
-enum LayoutState{
+enum LayoutType{
     case List
     case Grid
-    case WaterFallImage
+    case Pinterest
 }
 
 enum SortDIV{
@@ -34,18 +38,26 @@ enum SortDIV{
     }
 }
 
-enum FilterByState{
+enum FilterByDownloadState{
     case Completed
     case Canceled
     case Pause
     case Error
     case Downloading
     case All
+    
+    func toString()-> String{
+        return "\(String(describing: self)) process"
+    }
 }
 
-enum BasicSort{
+enum SortBy{
     case Name
     case Date
+    
+    func toString()-> String{
+        return String(describing: self)
+    }
 }
 
 enum FilterByFileType{

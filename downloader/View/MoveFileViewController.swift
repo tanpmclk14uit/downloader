@@ -17,7 +17,7 @@ class MoveFileViewController: UIViewController {
     lazy var titleName: UILabel = {
         let titleName = UILabel()
         titleName.translatesAutoresizingMaskIntoConstraints = false
-        titleName.text = "Downloads"
+        titleName.text = FolderItem.rootFolder().name
         titleName.textColor = .black
         titleName.textAlignment = .center
         titleName.font = UIFont.boldSystemFont(ofSize: DimenResource.screenTitleTextSize)

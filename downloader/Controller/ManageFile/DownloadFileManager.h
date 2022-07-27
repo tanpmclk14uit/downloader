@@ -17,19 +17,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) decompressZipFile: (FileItem*) fileItem;
 - (BOOL) isExitsFileName: (NSString*) fileName inFolder: (NSURL*) url;
 - (BOOL) isExitsFolderName: (NSString*) folderName inFolder: (NSURL*) url;
-- (BOOL) renameFileOf: (FileItem*) fileItem toNewName: (NSString*) newName;
+- (BOOL) renameFile: (FileItem*) fileItem toNewName: (NSString*) newName;
 - (BOOL) removeFile: (FileItem*) fileItem fromFolder: (FolderItem*) folder;
 - (void) removeTempFolderFromFolder: (FolderItem*) folder;
 - (BOOL) createNewFolder: (NSString*) folderName inFolder: (FolderItem*) folder;
 - (BOOL) canMove: (FileItem*) source to: (FolderItem*) destination;
 - (BOOL) moveFile: (FileItem*) source toFolder: (FolderItem*) destination;
 - (void) copyFile: (FileItem*) fileItem;
-- (BOOL) pasteFileTo: (FolderItem*) destinationFolder;
+- (BOOL) pasteCopiedFileTo: (FolderItem*) destinationFolder;
 - (BOOL) shouldShowPaste;
 - (BOOL) copyFileAtURL: (NSURL*) source toFolder: (FolderItem*) destinationFolder;
-- (FileItem*) getFileByURL: (NSURL*) file;
+- (FileItem*) createFileItemByURL: (NSURL*) file;
 - (void) rootFolderShouldReload;
-- (BOOL) shouldRefetchDataOfFolder;
+- (BOOL) shouldClearSearchSortAndFilterDataOfFolder;
 - (void) refreshSuccess;
 - (NSInteger) getTotalItemOfURL: (NSURL*) url;
 @end

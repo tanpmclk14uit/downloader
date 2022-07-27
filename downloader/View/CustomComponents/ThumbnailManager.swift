@@ -21,6 +21,7 @@ class ThumbnailManager {
     private init(){
         
     }
+    
     public func gernerateThumbnail(for fileItem: FileItem,
                                    to size: CGSize,
                                    onComplete: @escaping (UIImage?) -> Void,

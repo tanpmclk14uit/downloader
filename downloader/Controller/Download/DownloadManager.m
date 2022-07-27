@@ -16,7 +16,6 @@
 @property(strong, atomic) NSURLSession* session;
 @property(strong, nonatomic) NSMutableArray<DownloadItem*>* allDownloadItems;
 @property(strong, nonatomic) DownloadItemPersistenceManager* persistence;
-@property(strong, nonatomic) dispatch_queue_t persistenceQueue;
 @property(strong, nonatomic) dispatch_queue_t downloadItemsQueue;
 @property(strong, nonatomic) InternetTracking* tracking;
 @property(assign, atomic) BOOL shouldTrack;
@@ -46,7 +45,6 @@
     if(self){
         self.allDownloadItems = [[NSMutableArray alloc] init];
         self.persistence = [DownloadItemPersistenceManager sharedInstance];
-        self.persistenceQueue = dispatch_queue_create("persistenceQueue", DISPATCH_QUEUE_SERIAL);
         self.downloadItemsQueue = dispatch_queue_create("downloadItemsQueue", DISPATCH_QUEUE_SERIAL);
         self.tracking = [[InternetTracking alloc] initWithTrackingInterval:5];
         self.shouldTrack = true;
@@ -233,7 +231,7 @@
         NSError* error;
         [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
         if(error){
-            onFail([NSString stringWithFormat: @"Can't save current download item due to:  %@", error.userInfo]);
+            onFail([NSString stringWithFormat: @"Can't save current download item: %@", currentDownloadItem.name]);
             [currentDownloadItem didFinishDownloadWithState:@"Error"];
         }else{
             onSuccess();

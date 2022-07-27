@@ -149,7 +149,7 @@ class FileItemViewCellByList: UICollectionViewCell {
             self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
         }
         
-        self.fileDate.text = TimeSizeUnits(seconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
+        self.fileDate.text = TimeUnitsConvertor(withSeconds: Int64(fileItem.countDaysFromCreatedToNow())).getReadableTimeUnit()
         
         ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: fileIcon.bounds.size) { image in
             DispatchQueue.main.async { [weak self] in

@@ -62,11 +62,7 @@ class MoreSettingViewController: UIViewController {
         version.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8).isActive = true
         version.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: version.font)).isActive = true
     }
-    
-    
-    
-    
-    
+
     //MARK: - CONTROLLER SETUP
     
     override func viewDidLoad() {

@@ -8,8 +8,6 @@
 #import "DownloadFileManager.h"
 #import "FileItem.h"
 
-
-
 @interface DownloadFileManager ()
 @property(strong, nonatomic) NSFileManager* fileManager;
 @property(assign, atomic) BOOL needReloadRootFolder;
@@ -35,11 +33,12 @@
     }
     return self;
 }
-- (FileItem*) getFileByURL: (NSURL*) file{
+
+- (FileItem*) createFileItemByURL: (NSURL*) file{
     NSError* attributeError = nil;
     NSDictionary* fileAttributes = [_fileManager attributesOfItemAtPath:file.path error: &attributeError];
     if(attributeError){
-        NSLog(@"%@", @"Get attribute error");
+        NSLog(@"%@", @"Get attribute fail");
         return nil;
     }else{
         BOOL isDir = [[fileAttributes objectForKey:NSFileType] isEqualToString:NSFileTypeDirectory];
@@ -60,11 +59,12 @@
 
 - (void)fetchAllFileOfFolder:(FolderItem *)folder withAfterCompleteHandler:(void (^)(void))completionHandler{
     [folder.allFileItems removeAllObjects];
-    NSArray<NSURL*> *listFile = [_fileManager contentsOfDirectoryAtURL: folder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
-    if(listFile){
-        for(NSURL* file in listFile){
-            if(![self isTempFile:file]){
-                FileItem* fileItem = [self getFileByURL:file];
+    NSError* error = nil;
+    NSArray<NSURL*> *fileURLs = [_fileManager contentsOfDirectoryAtURL: folder.url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error];
+    if(!error){
+        for(NSURL* url in fileURLs){
+            if(![self isTempFile:url]){
+                FileItem* fileItem = [self createFileItemByURL:url];
                 if(fileItem){
                     if(fileItem.isDir){
                         NSMutableArray <NSURL*>* parentFolders = [NSMutableArray arrayWithArray:folder.parentFolders];
@@ -104,7 +104,7 @@
     return [_fileManager fileExistsAtPath:destinationURL.path isDirectory: false];
 }
 
-- (BOOL) renameFileOf:(FileItem *)fileItem toNewName:(NSString *)newName{
+- (BOOL) renameFile:(FileItem *)fileItem toNewName:(NSString *)newName{
     NSURL* currentWorkingPath = [fileItem.url URLByDeletingLastPathComponent];
     NSString* destinationFileName = [newName stringByAppendingPathExtension: fileItem.url.pathExtension];
     NSURL* destinationURL = [currentWorkingPath URLByAppendingPathComponent: destinationFileName];
@@ -189,7 +189,7 @@
     }
 }
 
-- (BOOL) shouldRefetchDataOfFolder{
+- (BOOL) shouldClearSearchSortAndFilterDataOfFolder{
     return _needReloadRootFolder;
 }
 
@@ -244,7 +244,7 @@
     _fileToCopy = fileItem;
 }
 
-- (BOOL)pasteFileTo:(FolderItem *)destinationFolder{
+- (BOOL)pasteCopiedFileTo:(FolderItem *)destinationFolder{
     if(_fileToCopy != nil){
         NSError *error = nil;
         NSURL* destinationURL;

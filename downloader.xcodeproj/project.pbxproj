@@ -14,7 +14,6 @@
 		472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */; };
 		4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942728768B9200045AFE /* DownloadItemCellDelegate.swift */; };
 		4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942928768BDF00045AFE /* FileItemCellDelegate.swift */; };
-		4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4738942C2876E83A00045AFE /* PopAnimator.swift */; };
 		473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473B6DFE2869963200747CD8 /* FileSizeUnits.swift */; };
 		473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */; };
 		473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C64DC287FF56400D38467 /* NotificationAlert.swift */; };
@@ -40,7 +39,8 @@
 		478B67DB288B93E400D38B68 /* PinterestViewLayoutCaculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478B67DA288B93E400D38B68 /* PinterestViewLayoutCaculator.swift */; };
 		479B293E286EDE2900854350 /* FileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B293D286EDE2900854350 /* FileItem.m */; };
 		479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B2941286EE8DD00854350 /* DownloadFileManager.m */; };
-		479B2944286F066100854350 /* TimeSizeUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479B2943286F066100854350 /* TimeSizeUnits.swift */; };
+		479B2944286F066100854350 /* TimeUnitsConvertor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479B2943286F066100854350 /* TimeUnitsConvertor.swift */; };
+		47B380482890E4D200B32F77 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380472890E4D200B32F77 /* StringResource.swift */; };
 		47CF1D232883F1990076888A /* InternetTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D222883F1990076888A /* InternetTracking.m */; };
 		47CF1D2528859D820076888A /* PinterestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D2428859D820076888A /* PinterestViewCell.swift */; };
 		47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D262885A7370076888A /* PinterestLayout.swift */; };
@@ -88,7 +88,6 @@
 		472C9070286C025000F79ACD /* DownloadItemPersistenceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadItemPersistenceManager.m; sourceTree = "<group>"; };
 		4738942728768B9200045AFE /* DownloadItemCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadItemCellDelegate.swift; sourceTree = "<group>"; };
 		4738942928768BDF00045AFE /* FileItemCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemCellDelegate.swift; sourceTree = "<group>"; };
-		4738942C2876E83A00045AFE /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		473B6DFC2869537200747CD8 /* DownloadDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadDelegate.h; sourceTree = "<group>"; };
 		473B6DFE2869963200747CD8 /* FileSizeUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeUnits.swift; sourceTree = "<group>"; };
 		473C64DA287FCA8900D38467 /* CustomContextMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContextMenuViewController.swift; sourceTree = "<group>"; };
@@ -118,7 +117,8 @@
 		479B293D286EDE2900854350 /* FileItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileItem.m; sourceTree = "<group>"; };
 		479B2940286EE8DD00854350 /* DownloadFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadFileManager.h; sourceTree = "<group>"; };
 		479B2941286EE8DD00854350 /* DownloadFileManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadFileManager.m; sourceTree = "<group>"; };
-		479B2943286F066100854350 /* TimeSizeUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSizeUnits.swift; sourceTree = "<group>"; };
+		479B2943286F066100854350 /* TimeUnitsConvertor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnitsConvertor.swift; sourceTree = "<group>"; };
+		47B380472890E4D200B32F77 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
 		47CF1D212883F1990076888A /* InternetTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InternetTracking.h; sourceTree = "<group>"; };
 		47CF1D222883F1990076888A /* InternetTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InternetTracking.m; sourceTree = "<group>"; };
 		47CF1D2428859D820076888A /* PinterestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestViewCell.swift; sourceTree = "<group>"; };
@@ -179,14 +179,6 @@
 			path = CollectionCellDelegate;
 			sourceTree = "<group>";
 		};
-		4738942B2876E82000045AFE /* Animation */ = {
-			isa = PBXGroup;
-			children = (
-				4738942C2876E83A00045AFE /* PopAnimator.swift */,
-			);
-			path = Animation;
-			sourceTree = "<group>";
-		};
 		473C64D8287FC19900D38467 /* CustomColldectionViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,9 +215,10 @@
 				47FDFB5A284EEFF500FDA80F /* Assets.xcassets */,
 				47FDFB5C284EEFF500FDA80F /* LaunchScreen.storyboard */,
 				474A60FD2862CF2C0039B3D0 /* Colors.swift */,
+				47439F9A28865E9500FE43C9 /* CacheThumbnailImage.swift */,
 				47E8E9CE286563A80005EE4D /* DimenResource.swift */,
 				478B67D02887B88E00D38B68 /* ColorResource.swift */,
-				47439F9A28865E9500FE43C9 /* CacheThumbnailImage.swift */,
+				47B380472890E4D200B32F77 /* StringResource.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -315,7 +308,7 @@
 			children = (
 				47E8E9D92865BFC70005EE4D /* Enum.swift */,
 				473B6DFE2869963200747CD8 /* FileSizeUnits.swift */,
-				479B2943286F066100854350 /* TimeSizeUnits.swift */,
+				479B2943286F066100854350 /* TimeUnitsConvertor.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -343,12 +336,11 @@
 		47FDFB50284EEFF200FDA80F /* downloader */ = {
 			isa = PBXGroup;
 			children = (
-				4738942B2876E82000045AFE /* Animation */,
+				47FDFB5F284EEFF500FDA80F /* Info.plist */,
 				47E8E9D82865BFA40005EE4D /* Constants */,
 				47FDFB51284EEFF200FDA80F /* AppDelegate.swift */,
 				47FDFB91284F018C00FDA80F /* BridgingHeader.h */,
 				47FDFB8D284F007D00FDA80F /* Controller */,
-				47FDFB5F284EEFF500FDA80F /* Info.plist */,
 				47FDFB8C284F007500FDA80F /* Models */,
 				474A60FC2862CEF30039B3D0 /* Resources */,
 				47FDFB8A284F004D00FDA80F /* View */,
@@ -569,7 +561,7 @@
 				478B67D7288A582600D38B68 /* RadiusUIImage.swift in Sources */,
 				47E8E9D1286577340005EE4D /* FileItemViewCellByList.swift in Sources */,
 				47CF1D2528859D820076888A /* PinterestViewCell.swift in Sources */,
-				479B2944286F066100854350 /* TimeSizeUnits.swift in Sources */,
+				479B2944286F066100854350 /* TimeUnitsConvertor.swift in Sources */,
 				47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */,
 				479B293E286EDE2900854350 /* FileItem.m in Sources */,
 				478B67CF2887B61200D38B68 /* PassCodeLockViewController.swift in Sources */,
@@ -577,6 +569,7 @@
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
 				477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */,
 				473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */,
+				47B380482890E4D200B32F77 /* StringResource.swift in Sources */,
 				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
 				47439F9B28865E9500FE43C9 /* CacheThumbnailImage.swift in Sources */,
 				478B67D9288A65D100D38B68 /* PinterestLayoutAttributes.swift in Sources */,
@@ -584,7 +577,6 @@
 				4738942828768B9200045AFE /* DownloadItemCellDelegate.swift in Sources */,
 				477D34B6287D765100D3FCBD /* ContentSizedTableView.swift in Sources */,
 				47CF1D232883F1990076888A /* InternetTracking.m in Sources */,
-				4738942D2876E83A00045AFE /* PopAnimator.swift in Sources */,
 				47E8E9D72865BE420005EE4D /* DownloadManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

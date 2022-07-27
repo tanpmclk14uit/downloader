@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (FileTypeEnum*) image;
 + (FileTypeEnum*) text;
 + (FileTypeEnum*) unknown;
+
 @end
 
 NS_ASSUME_NONNULL_END

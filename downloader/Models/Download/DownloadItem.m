@@ -22,6 +22,7 @@
     }
     return self;
 }
+
 - (instancetype)initWithName:(NSString *)name andState:(NSString *)state andURL:(NSString *)url andResumeData:(NSData *)resumeData{
     self = [super init];
     if(self){

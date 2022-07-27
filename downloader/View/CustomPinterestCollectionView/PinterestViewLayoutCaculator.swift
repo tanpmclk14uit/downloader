@@ -10,7 +10,7 @@ import UIKit
 class PinterestViewLayoutCaculator{
     weak var delegate: PinterestLayoutCaculatorDelegate?
     private var cellPading: CGFloat;
-    private var collectionViewWidth: CGFloat;
+    var collectionViewWidth: CGFloat;
     private var itemCount: Int;
     private var numberOfColumn: Int
     private var heightOfColumns: [CGFloat]
@@ -28,7 +28,7 @@ class PinterestViewLayoutCaculator{
     private var cacheClear: Bool = false
     
     
-    init(collectionViewWidth: CGFloat, itemCount: Int, numberOfColumn: Int = 2, cellPading: CGFloat = 10){
+    init(itemCount: Int, numberOfColumn: Int = 2, cellPading: CGFloat = 10, collectionViewWidth: CGFloat){
         self.numberOfColumn = numberOfColumn
         self.collectionViewWidth = collectionViewWidth
         self.cellPading = cellPading
@@ -121,10 +121,12 @@ class PinterestViewLayoutCaculator{
     
     func clearCache(itemCount: Int){
         cacheClear = true
+        
         cacheSafeQueue.sync {[weak self] in
             self?.caches.removeAll()
             self?.cacheClear = false
         }
+        
         self.itemCount = itemCount
         curentCaculteProgress?.cancel()
         hightestIndex = 0
