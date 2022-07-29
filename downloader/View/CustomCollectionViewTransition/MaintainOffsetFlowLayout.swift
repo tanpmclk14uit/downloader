@@ -9,9 +9,7 @@ import UIKit
 
 class MaintainOffsetFlowLayout: UICollectionViewFlowLayout {
     open var previousContentOffset: NSValue?
-    open var caculator: PinterestViewLayoutCaculator?
-    
-    
+
     override open func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         let previousContentOffsetPoint = previousContentOffset?.cgPointValue
         let superContentOffset = super.targetContentOffset(forProposedContentOffset: proposedContentOffset)

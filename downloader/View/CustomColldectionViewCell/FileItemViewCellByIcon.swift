@@ -143,7 +143,7 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             self.fileTypeIcon.image = UIImage(named: "folder-image")
         }else{
             self.fileSize.text = FileSizeUnits(bytes: Int64(truncating: fileItem.size)).getReadableUnit()
-            drawIconFromFileType(fileType: fileItem.type)
+            fileTypeIcon.image = UIImage(named: fileItem.type.iconName)
         }
         
         ThumbnailManager.getInstance().gernerateThumbnail(for: fileItem, to: thumbnail.bounds.size) { image in
@@ -156,32 +156,6 @@ class FileItemViewCellByIcon: UICollectionViewCell {
             if(fileItem.url == self.fileItem?.url){
                 self.thumbnail.image = image
             }
-        }
-    }
-
-    func drawIconFromFileType(fileType: FileTypeEnum){
-        switch(fileType.name){
-        case FileTypeConstants.pdf().name:
-            fileTypeIcon.image = UIImage(named: "pdf")
-            break
-        case FileTypeConstants.image().name:
-            fileTypeIcon.image = UIImage(named: "image")
-            break
-        case FileTypeConstants.audio().name:
-            fileTypeIcon.image = UIImage(named: "music")
-            break
-        case FileTypeConstants.video().name:
-            fileTypeIcon.image = UIImage(named: "video")
-            break
-        case FileTypeConstants.zip().name:
-            fileTypeIcon.image = UIImage(named: "zip")
-            break
-        case FileTypeConstants.text().name:
-            fileTypeIcon.image = UIImage(named: "text")
-            break
-        default:
-            fileTypeIcon.image = UIImage(named: "unknown")
-            break
         }
     }
 }

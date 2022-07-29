@@ -159,23 +159,10 @@
 }
 
 - (FileTypeEnum*) getFileTypeFromFileExtension: (NSString*) extension{
-    if([FileTypeConstants.pdf.extensionList containsObject:extension]){
-        return FileTypeConstants.pdf;
-    }
-    if([FileTypeConstants.image.extensionList containsObject:extension]){
-        return FileTypeConstants.image;
-    }
-    if([FileTypeConstants.text.extensionList containsObject:extension]){
-        return FileTypeConstants.text;
-    }
-    if([FileTypeConstants.video.extensionList containsObject:extension]){
-        return FileTypeConstants.video;
-    }
-    if([FileTypeConstants.audio.extensionList containsObject:extension]){
-        return FileTypeConstants.audio;
-    }
-    if([FileTypeConstants.zip.extensionList containsObject:extension]){
-        return FileTypeConstants.zip;
+    for(FileTypeEnum* fileType in FileTypeConstants.supportedFileTypes){
+        if([fileType.extensionList containsObject:extension]){
+            return fileType;
+        }
     }
     return FileTypeConstants.unknown;
 }

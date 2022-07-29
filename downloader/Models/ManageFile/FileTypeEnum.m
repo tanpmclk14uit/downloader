@@ -8,11 +8,12 @@
 #import "FileTypeEnum.h"
 
 @implementation FileTypeEnum
-- (instancetype) initWithName:(NSString *)name andExtension:(NSArray<NSString *>*)extensionList{
+- (instancetype) initWithName:(NSString *)name andExtension:(NSArray<NSString *>*)extensionList andIconName: (NSString*) iconName{
     self = [super init];
     if(self){
         self.name = name;
         self.extensionList = extensionList;
+        self.iconName = iconName;
     }
     return  self;
 }

@@ -247,7 +247,7 @@ class MoveFileViewController: UIViewController {
     
     @objc private func onMoveClick(){
         if(fileManager.moveFile(sourceFile!, toFolder: currentFolder!)){
-           
+            CacheThumbnailImage.shareInstance().removeFromCache(url: sourceFile!.url)
             self.dismiss(animated: true)
             delegate?.onMoveFileSuccess()
         }else{

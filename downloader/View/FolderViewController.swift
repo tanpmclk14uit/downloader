@@ -373,6 +373,7 @@ class FolderViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setContentView()
+        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -1045,10 +1046,6 @@ extension FolderViewController: UISearchBarDelegate{
             reloadCollectionView()
         }
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.searchBar.endEditing(true)
-    }
 }
 //MARK: - CONFIRM UI COLLECTION VIEW DELEGAE, DATASOURCE
 extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSource{
@@ -1107,6 +1104,7 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
            let destinationFolder = destinationFolder
         {
             fileManager.moveFile(sourceFile, toFolder: destinationFolder)
+            CacheThumbnailImage.shareInstance().removeFromCache(url: sourceFile.url)
             fetchAllFileOfFolder()
         }
     }
@@ -1132,7 +1130,10 @@ extension FolderViewController: UICollectionViewDelegate, UICollectionViewDataSo
                     let range = caculatorForLayout.range
                     if(highestCaculatedIndex < indexPath.item + range){
                         DispatchQueue.global(qos: .userInitiated).async{[weak self] in
-                            self?.caculatorForLayout.caculateAtributeForItem(from: highestCaculatedIndex, to: indexPath.item + range)
+                            if let self = self{
+                                self.caculatorForLayout.caculateAtributeForItem(from: highestCaculatedIndex, to: indexPath.item + range)
+                            }
+                            
                         }
                         caculatorForLayout.hightestIndex = min(indexPath.item + range + 1, currentFileMatchSearchSortAndFiler.count)
                     }

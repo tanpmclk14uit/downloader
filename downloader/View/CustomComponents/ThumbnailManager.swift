@@ -94,11 +94,12 @@ class ThumbnailManager {
             case FileTypeConstants.text().name:
                 if(fileItem.url.pathExtension == "html"){
                     image = UIImage(named: "htmlthumb")
-                }
-                if(fileItem.url.pathExtension == "doc" || fileItem.url.pathExtension == "docx"){
+                }else if(fileItem.url.pathExtension == "doc" || fileItem.url.pathExtension == "docx"){
                     image = UIImage(named: "docthumb")
+                }else {
+                    image = UIImage(named: "textthumb")
                 }
-                image = UIImage(named: "textthumb")
+               
             default:
                 image = UIImage(named: "unknownthumb")
             }

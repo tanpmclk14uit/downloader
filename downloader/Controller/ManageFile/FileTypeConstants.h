@@ -17,8 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (FileTypeEnum*) zip;
 + (FileTypeEnum*) image;
 + (FileTypeEnum*) text;
++ (FileTypeEnum*) mp3;
++ (FileTypeEnum*) html;
++ (FileTypeEnum*) doc;
 + (FileTypeEnum*) unknown;
-
++ (NSArray<FileTypeEnum*>*) supportedFileTypes;
 @end
 
 NS_ASSUME_NONNULL_END

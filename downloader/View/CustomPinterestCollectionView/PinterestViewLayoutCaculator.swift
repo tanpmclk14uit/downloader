@@ -10,13 +10,13 @@ import UIKit
 class PinterestViewLayoutCaculator{
     weak var delegate: PinterestLayoutCaculatorDelegate?
     private var cellPading: CGFloat;
-    var collectionViewWidth: CGFloat;
+    private var collectionViewWidth: CGFloat;
     private var itemCount: Int;
     private var numberOfColumn: Int
     private var heightOfColumns: [CGFloat]
-    var contentSize: CGSize
     private var contentHeight: CGFloat
     var hightestIndex: Int
+    var contentSize: CGSize
     
     private let heightOfColumnsQueue = DispatchQueue(label: "heightOfColumnsThreadSafe")
     private let cacheSafeQueue = DispatchQueue(label: "cacheSafeQueue")

@@ -88,6 +88,5 @@ class MoreSettingViewController: UIViewController {
         
         view.addSubview(notificationCell)
         notificationCell.configAutoConstraint(parent: view, top: passCodeCell)
-        // Do any additional setup after loading the view.
     }
 }

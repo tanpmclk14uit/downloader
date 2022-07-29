@@ -41,6 +41,7 @@
 		479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B2941286EE8DD00854350 /* DownloadFileManager.m */; };
 		479B2944286F066100854350 /* TimeUnitsConvertor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479B2943286F066100854350 /* TimeUnitsConvertor.swift */; };
 		47B380482890E4D200B32F77 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380472890E4D200B32F77 /* StringResource.swift */; };
+		47B3804A2891407800B32F77 /* HideKeyBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380492891407800B32F77 /* HideKeyBoard.swift */; };
 		47CF1D232883F1990076888A /* InternetTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D222883F1990076888A /* InternetTracking.m */; };
 		47CF1D2528859D820076888A /* PinterestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D2428859D820076888A /* PinterestViewCell.swift */; };
 		47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D262885A7370076888A /* PinterestLayout.swift */; };
@@ -119,6 +120,7 @@
 		479B2941286EE8DD00854350 /* DownloadFileManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadFileManager.m; sourceTree = "<group>"; };
 		479B2943286F066100854350 /* TimeUnitsConvertor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnitsConvertor.swift; sourceTree = "<group>"; };
 		47B380472890E4D200B32F77 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
+		47B380492891407800B32F77 /* HideKeyBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyBoard.swift; sourceTree = "<group>"; };
 		47CF1D212883F1990076888A /* InternetTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InternetTracking.h; sourceTree = "<group>"; };
 		47CF1D222883F1990076888A /* InternetTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InternetTracking.m; sourceTree = "<group>"; };
 		47CF1D2428859D820076888A /* PinterestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestViewCell.swift; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 				474CCD9F2878338600F940FF /* GifImage.swift */,
 				473C64DC287FF56400D38467 /* NotificationAlert.swift */,
 				478B67D6288A582600D38B68 /* RadiusUIImage.swift */,
+				47B380492891407800B32F77 /* HideKeyBoard.swift */,
 			);
 			path = ExtensionView;
 			sourceTree = "<group>";
@@ -571,6 +574,7 @@
 				473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */,
 				47B380482890E4D200B32F77 /* StringResource.swift in Sources */,
 				4738942A28768BDF00045AFE /* FileItemCellDelegate.swift in Sources */,
+				47B3804A2891407800B32F77 /* HideKeyBoard.swift in Sources */,
 				47439F9B28865E9500FE43C9 /* CacheThumbnailImage.swift in Sources */,
 				478B67D9288A65D100D38B68 /* PinterestLayoutAttributes.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,

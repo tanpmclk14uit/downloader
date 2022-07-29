@@ -9,11 +9,11 @@ import UIKit
 
 class PinterestLayout: MaintainOffsetFlowLayout {
     
+    public var caculator: PinterestViewLayoutCaculator?
     
     override func prepare() {
         super.prepare()
     }
-    
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
