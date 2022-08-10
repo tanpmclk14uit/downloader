@@ -8,7 +8,7 @@
 import UIKit
 
 class TopBarContainer: UIView {
-    private lazy var titleName: UILabel = {
+    lazy var titleName: UILabel = {
         let titleName = UILabel()
         titleName.translatesAutoresizingMaskIntoConstraints = false
         titleName.text = "More"
@@ -31,13 +31,13 @@ class TopBarContainer: UIView {
     private func configTitleNameConstraint(){
         titleName.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         titleName.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 15).isActive = true
-        titleName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: DimenResource.defaultBackButtonWidth).isActive = true
+        titleName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: DimenResource.defaultBackButtonWidth + DimenResource.screenDefaultMargin.left).isActive = true
         titleName.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -DimenResource.defaultBackButtonWidth).isActive = true
         titleName.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: titleName.font)).isActive = true
     }
     
     private func configBackButtonConstraint(){
-        backButton.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        backButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: DimenResource.screenDefaultMargin.left).isActive = true
         backButton.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 15).isActive = true
         backButton.widthAnchor.constraint(equalToConstant: DimenResource.defaultBackButtonWidth).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: DimenResource.getFontHeight(font: (backButton.titleLabel?.font)!)).isActive = true

@@ -82,8 +82,10 @@ class FolderViewController: UIViewController {
     lazy var qlPreviewController: QLPreviewController = {
         let qlPreviewController = QLPreviewController()
         qlPreviewController.dataSource = self
+        qlPreviewController.tabBarItem.badgeColor = .black
         qlPreviewController.delegate = self
         qlPreviewController.modalPresentationStyle = .fullScreen
+        
         return qlPreviewController
     }()
     
@@ -351,7 +353,7 @@ class FolderViewController: UIViewController {
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
     
     private var searchKey: String = ""
-    private var viewBy: LayoutType = LayoutType.List
+    private var viewBy: LayoutType = LayoutType.Grid
     private var sortBy: SortBy = SortBy.Date
     private var sortDiv: SortDIV = SortDIV.Asc
     private var filterBy: FilterByFileType = FilterByFileType.All
@@ -368,6 +370,7 @@ class FolderViewController: UIViewController {
     private var lastVisibleItem: Int = 0
     private var lastContentOffset: CGFloat = 0
     private var isMoveSuccess = false
+    private var transition: PopAnimator = PopAnimator()
     
     
     override func viewDidLoad() {
@@ -503,8 +506,6 @@ class FolderViewController: UIViewController {
             buttonSort.setImage(UIImage(named: "sort-desc"), for: .normal)
         }
     }
-    
-    
 
     private func getAllFileMatchSearchSortAndFilter(){
         // get all original list
@@ -869,8 +870,19 @@ class FolderViewController: UIViewController {
             if(fileItem.type.name == FileTypeConstants.unknown().name){
                 showErrorNotification(message: "This file type is not supported!")
             }else{
-                qlPreviewController.reloadData()
-                present(qlPreviewController, animated: true)
+                if(fileItem.type.name == FileTypeConstants.image().name){
+                    let imageVC = CustomImageViewController()
+                    imageVC.setImageDataByImageURL(fileItem.url)
+                    imageVC.title = fileItem.name
+                    imageVC.modalPresentationStyle = .overFullScreen
+                    imageVC.transitioningDelegate = self
+
+                    present(imageVC, animated: true)
+                }else{
+                    qlPreviewController.reloadData()
+                    
+                    present(qlPreviewController, animated: true)
+                }
             }
         }
     }
@@ -1173,6 +1185,7 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
         if let path = currentSelectedIndexPath{
             return currentFileMatchSearchSortAndFiler[path.item].url as QLPreviewItem
         }
+        
         return currentFileMatchSearchSortAndFiler[index].url as QLPreviewItem
     }
     
@@ -1195,7 +1208,7 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
     
     @available(iOS 13.0, *)
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
-        .updateContents
+        .disabled
     }
     
     func previewControllerWillDismiss(_ controller: QLPreviewController) {
@@ -1205,6 +1218,8 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
             reloadCollectionViewItem(of: currentItem)
         }
     }
+    
+    
 }
 
 //MARK: - CONFIRM CustomContextMenuDelegate
@@ -1286,5 +1301,42 @@ extension FolderViewController: PinterestLayoutCaculatorDelegate{
 extension FolderViewController: MoveFileDelegate{
     func onMoveFileSuccess() {
         isMoveSuccess = true
+    }
+}
+
+// MARK: - CONFIRM 
+extension FolderViewController: UIViewControllerTransitioningDelegate{
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard
+            let currentSelectedFileIndexPath  = currentSelectedIndexPath
+        else {
+            return nil
+        }
+        let selectedCellSuperview: UIView
+        if(self.viewBy == LayoutType.Pinterest){
+            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
+            as? PinterestViewCell
+            guard let selectedItems = selectedItems else {
+                return nil
+            }
+            
+            selectedCellSuperview = selectedItems.superview ?? UIView()
+            transition.originFrame = selectedCellSuperview.convert(selectedItems.frame, to: nil)
+            transition.recipeImage = selectedItems.thumbnail
+            transition.presenting = true
+            return transition
+        }else{
+            return nil
+        }
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if(viewBy == LayoutType.Pinterest){
+            transition.presenting = false
+            return transition
+        }else{
+            return nil
+        }
+
     }
 }

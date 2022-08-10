@@ -8,6 +8,8 @@ target 'downloader' do
   # Pods for downloader
   # Add the Firebase pod for Google Analytics
  	pod 'FirebaseAnalytics'
+	pod 'Firebase/Core'
+	pod 'Firebase/Crashlytics'
   target 'downloaderTests' do
     inherit! :search_paths
     # Pods for testing

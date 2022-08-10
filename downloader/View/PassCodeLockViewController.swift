@@ -29,11 +29,10 @@ class PassCodeLockViewController: UIViewController {
         return item
     }()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = ColorResource.backGroundColor
+        
         
         view.addSubview(topBarContainer)
         topBarContainer.configAutoLayoutConstraint(parent: view)
@@ -43,10 +42,15 @@ class PassCodeLockViewController: UIViewController {
         
         view.addSubview(passCodeEnable)
         passCodeEnable.configAutoConstraint(parent: view, top: topBarContainer)
+        passCodeEnable.setOnSwitchListener { sender in
+            let inputPassword = PasswordViewController()
+            inputPassword.modalPresentationStyle = .fullScreen
+            inputPassword.title = "Enter new password"
+            self.present(inputPassword, animated: true)
+        }
         
         view.addSubview(changePassCode)
         changePassCode.configAutoConstraint(parent: view, top: passCodeEnable)
-        
     }
 
 }

@@ -25,6 +25,12 @@ enum LayoutType{
     case Pinterest
 }
 
+enum SignCellType{
+    case number
+    case remove
+    case cancel
+}
+
 enum SortDIV{
     case Asc
     case Desc

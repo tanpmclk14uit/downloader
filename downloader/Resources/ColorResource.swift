@@ -9,8 +9,11 @@ import UIKit
 
 class ColorResource{
     public static let backGroundColor: UIColor? = UIColor(hex: "#F5F5F5")
+    public static let blueColor = UIColor.systemBlue
     public static let thumbnailBackgroundColor: UIColor? = UIColor(hex: "#F7F7F7")
     public static let white: UIColor? = UIColor(hex: "#FFFFFF")
+    public static let darkGray: UIColor? = UIColor(hex: "#6a6a6a")
+    
 }
 
 //MARK: - Extension get color by hex 6 or 8 bit
