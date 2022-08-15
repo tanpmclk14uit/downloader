@@ -353,7 +353,7 @@ class FolderViewController: UIViewController {
     private let fileManager: DownloadFileManager = DownloadFileManager.sharedInstance()
     
     private var searchKey: String = ""
-    private var viewBy: LayoutType = LayoutType.Grid
+    private var viewBy: LayoutType = LayoutType.List
     private var sortBy: SortBy = SortBy.Date
     private var sortDiv: SortDIV = SortDIV.Asc
     private var filterBy: FilterByFileType = FilterByFileType.All
@@ -871,16 +871,20 @@ class FolderViewController: UIViewController {
                 showErrorNotification(message: "This file type is not supported!")
             }else{
                 if(fileItem.type.name == FileTypeConstants.image().name){
-                    let imageVC = CustomImageViewController()
-                    imageVC.setImageDataByImageURL(fileItem.url)
-                    imageVC.title = fileItem.name
+                    let imageVC = CustomPreviewController()
+                    imageVC.dataSource = self
                     imageVC.modalPresentationStyle = .overFullScreen
-                    imageVC.transitioningDelegate = self
-
+                    imageVC.delegate = self
+                    
+                    
+                    if let currentSelectedIndexPath = currentSelectedIndexPath {
+                        imageVC.currentPreviewItemPosition = currentSelectedIndexPath.item
+                    }
+                    
                     present(imageVC, animated: true)
                 }else{
                     qlPreviewController.reloadData()
-                    
+
                     present(qlPreviewController, animated: true)
                 }
             }
@@ -1218,8 +1222,6 @@ extension FolderViewController: QLPreviewControllerDataSource, QLPreviewControll
             reloadCollectionViewItem(of: currentItem)
         }
     }
-    
-    
 }
 
 //MARK: - CONFIRM CustomContextMenuDelegate
@@ -1304,39 +1306,45 @@ extension FolderViewController: MoveFileDelegate{
     }
 }
 
-// MARK: - CONFIRM 
-extension FolderViewController: UIViewControllerTransitioningDelegate{
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard
-            let currentSelectedFileIndexPath  = currentSelectedIndexPath
-        else {
-            return nil
-        }
-        let selectedCellSuperview: UIView
-        if(self.viewBy == LayoutType.Pinterest){
-            let selectedItems = fileCollectionView.cellForItem(at: currentSelectedFileIndexPath)
-            as? PinterestViewCell
-            guard let selectedItems = selectedItems else {
+//MARK: - Confirm Custom Preview Controller Delegate, Data Source
+extension FolderViewController: CustomPreviewControllerDataSource, CustomPreviewControllerDelegate{
+    
+    func previewController(_ controller: CustomPreviewController, transitionViewForItemAt position: Int) -> UIView? {
+        let indexPath = IndexPath(item: position, section: 0)
+        switch(viewBy){
+        case LayoutType.Pinterest:
+            let cell = self.fileCollectionView.cellForItem(at: indexPath) as? PinterestViewCell
+            if let cell = cell{
+                return cell.thumbnail
+            }else{
                 return nil
             }
-            
-            selectedCellSuperview = selectedItems.superview ?? UIView()
-            transition.originFrame = selectedCellSuperview.convert(selectedItems.frame, to: nil)
-            transition.recipeImage = selectedItems.thumbnail
-            transition.presenting = true
-            return transition
-        }else{
+        default:
             return nil
         }
     }
     
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if(viewBy == LayoutType.Pinterest){
-            transition.presenting = false
-            return transition
-        }else{
+    func numberOfPreviewItems(in controller: CustomPreviewController) -> Int {
+        return currentFileMatchSearchSortAndFiler.count
+    }
+    
+    func previewController(_ controller: CustomPreviewController, previewItemAt index: Int) -> CustomPreviewItem {
+        return currentFileMatchSearchSortAndFiler[index].url as CustomPreviewItem
+    }
+
+    func previewController(_ controller: CustomPreviewController, defaultPlaceHolderForItemAt position: Int) -> UIImage? {
+        let indexPath = IndexPath(item: position, section: 0)
+        switch(viewBy){
+        case LayoutType.Pinterest:
+            let cell = self.fileCollectionView.cellForItem(at: indexPath) as? PinterestViewCell
+            if let cell = cell{
+                return cell.thumbnail.image
+            }else{
+                return nil
+            }
+        default:
             return nil
         }
-
     }
+    
 }

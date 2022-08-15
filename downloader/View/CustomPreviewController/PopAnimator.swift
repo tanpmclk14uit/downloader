@@ -8,12 +8,9 @@
 import UIKit
 
 class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let duration = 0.6
+    let duration = 0.5
     var presenting = true
     var originFrame = CGRect.zero
-    var dismissCompletion: (() -> Void)?
-    var recipeImage: UIImageView?
-    var transitionDelegate: PopAnimator?
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
@@ -62,27 +59,20 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             containerView.addSubview(toView)
         }
         
-        transitionContext.view(forKey: .to)?.backgroundColor = UIColor.black.withAlphaComponent(0)
         containerView.bringSubviewToFront(recipeView!)
         
         UIView.animate(
             withDuration: duration,
             delay:0.0,
             usingSpringWithDamping: 1,
-            initialSpringVelocity: 0.5,
-            options: .curveLinear,
+            initialSpringVelocity: 0.7,
+            options: .curveEaseIn,
             animations: {
                 recipeView!.transform = self.presenting ? .identity : scaleTransform
                 recipeView!.center = CGPoint(x: finalFrame.midX, y: finalFrame.midY)
-                transitionContext.view(forKey: .to)?.backgroundColor = UIColor.black.withAlphaComponent(1)
             },
             completion: { _ in
                 transitionContext.completeTransition(true)
-                
-                if !self.presenting {
-                    self.dismissCompletion?()
-                }
             })
-        
     }
 }
