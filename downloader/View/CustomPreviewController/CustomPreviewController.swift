@@ -45,10 +45,10 @@ class CustomPreviewController: UIViewController {
         collectionView.isScrollEnabled = true
         collectionView.isPagingEnabled = true
         collectionView.backgroundColor = .clear
-        collectionView.register(PreviewImageCell.self, forCellWithReuseIdentifier: PreviewImageCell.identifier)
+        collectionView.register(CustomPreviewImageCell.self, forCellWithReuseIdentifier: CustomPreviewImageCell.identifier)
         return collectionView
     }()
-
+    
     // MARK: - Config UI Constraint
     private func configImageViewConstraint(){
         dismissImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -73,8 +73,14 @@ class CustomPreviewController: UIViewController {
     }
     //MARK: Set Up ViewController
     private var viewTranslation = CGPoint(x: 0, y: 0)
+    
+    /** panDistance define min distance that user must pan to dismiss controller */
     private var panDistance: CGFloat = 0.0
+    
     private var isShowingAppbar: Bool = true
+    
+    private var isInZoomMode: Bool = false
+    
     private var currentSize = CGSize(width: 0, height: 0)
     
     var dataSource: CustomPreviewControllerDataSource?
@@ -82,7 +88,6 @@ class CustomPreviewController: UIViewController {
     private var animator = PopAnimator()
     
     var currentPreviewItemPosition: Int = 0
-    var currentPreviewItem: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,7 +117,7 @@ class CustomPreviewController: UIViewController {
         view.addSubview(backButton)
         configBackButtonConstraint()
     }
-
+    
     
     
     @objc private func onUserPanToDissmiss(sender: UIPanGestureRecognizer){
@@ -141,7 +146,7 @@ class CustomPreviewController: UIViewController {
             currentSize = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
             currentCell.imageView.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
             currentCell.imageView.center = sender.location(in: view)
-           
+            
         case .ended:
             let scale = 1.0 - (abs(viewTranslation.y) / panDistance)
             if scale > 0.7 {
@@ -149,7 +154,7 @@ class CustomPreviewController: UIViewController {
                 self.navigationController?.navigationBar.isHidden = true
                 
                 setVisibilityOfAppbar(visible: self.isShowingAppbar)
-
+                
                 UIView.animate(
                     withDuration: 0.5,
                     delay: 0,
@@ -173,14 +178,17 @@ class CustomPreviewController: UIViewController {
     }
     
     @objc private func reverseVisibilityOfAppBar(){
-        isShowingAppbar = !isShowingAppbar
-        setVisibilityOfAppbar(visible: isShowingAppbar)
+        if(!isInZoomMode){
+            isShowingAppbar = !isShowingAppbar
+            setVisibilityOfAppbar(visible: isShowingAppbar)
+        }
     }
     
+    /** This func call to set visibility of all view on screen except for main image*/
     private func setVisibilityOfAppbar(visible: Bool){
         backButton.isHidden = !visible
     }
-
+    
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         setVisibilityOfAppbar(visible: false)
         if let cell = getCurrentCellOfPosition(position: currentPreviewItemPosition){
@@ -208,29 +216,37 @@ extension CustomPreviewController: UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PreviewImageCell.identifier, for: indexPath) as! PreviewImageCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomPreviewImageCell.identifier, for: indexPath) as! CustomPreviewImageCell
         if let dataSource = self.dataSource{
+            // set cell delegate
+            cell.delegate = self
+            // set place holder for image
             cell.imageView.image = delegate?.previewController(self, defaultPlaceHolderForItemAt: indexPath.item)
+            // load image by URL
             cell.setImageDataByImageURL(dataSource.previewController(self, previewItemAt: indexPath.item).previewItemURL!)
             
         }
         return cell
     }
     
-    func getCurrentCellOfPosition(position: Int) -> PreviewImageCell?{
+    func getCurrentCellOfPosition(position: Int) -> CustomPreviewImageCell?{
         let indexPath = IndexPath(item: position, section: 0)
-        let currentCell = imageCollectionView.cellForItem(at: indexPath) as? PreviewImageCell
+        let currentCell = imageCollectionView.cellForItem(at: indexPath) as? CustomPreviewImageCell
         return currentCell
     }
     
+    /** This func will call when user  slide to view orther image*/
     private func previewItemAt(position: Int){
-        
-        let cell = getCurrentCellOfPosition(position: position)
-        if let cell = cell {
+        if(position != currentPreviewItemPosition){
+            let cell = getCurrentCellOfPosition(position: currentPreviewItemPosition)
+            if let cell = cell {
+                // reset zoom scale of previous item
+                cell.resetZoomScale()
+            }
             // set current preview item
-            currentPreviewItem = cell.currentItem
             currentPreviewItemPosition = position
-            // change indicator
+            
+            // Do any additional setup after user slide to new image.
         }
     }
     
@@ -268,7 +284,7 @@ extension CustomPreviewController: UIViewControllerTransitioningDelegate{
                 return nil
             }
             let selectedCellSuperview = animationView.superview ?? UIView()
-             return selectedCellSuperview.convert(animationView.frame, to: nil)
+            return selectedCellSuperview.convert(animationView.frame, to: nil)
         }else{
             return nil
         }
@@ -294,6 +310,13 @@ extension CustomPreviewController: UIViewControllerTransitioningDelegate{
         }
     }
 }
-
-
+//MARK: - Confirm Custom Image Cell Delegate
+extension CustomPreviewController: CustomPreviewImageCellDelegate{
+    func setZoomState(isInZoomState: Bool) {
+        self.isInZoomMode = isInZoomState
+        if(isInZoomState){
+            setVisibilityOfAppbar(visible: false)
+        }
+    }
+}
 
