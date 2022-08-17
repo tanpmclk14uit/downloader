@@ -61,7 +61,6 @@
 		47E8E9D42865B9600005EE4D /* DownloadItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9D32865B9600005EE4D /* DownloadItem.m */; };
 		47E8E9D72865BE420005EE4D /* DownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9D62865BE420005EE4D /* DownloadManager.m */; };
 		47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9D92865BFC70005EE4D /* Enum.swift */; };
-		47EB282728A5FA3E005380F8 /* CustomPreviewControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EB282628A5FA3E005380F8 /* CustomPreviewControllerDataSource.swift */; };
 		47EB282928A60B63005380F8 /* CustomPreviewImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EB282828A60B63005380F8 /* CustomPreviewImageCell.swift */; };
 		47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB51284EEFF200FDA80F /* AppDelegate.swift */; };
 		47FDFB56284EEFF200FDA80F /* FolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB55284EEFF200FDA80F /* FolderViewController.swift */; };
@@ -157,7 +156,6 @@
 		47E8E9D52865BE420005EE4D /* DownloadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadManager.h; sourceTree = "<group>"; };
 		47E8E9D62865BE420005EE4D /* DownloadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadManager.m; sourceTree = "<group>"; };
 		47E8E9D92865BFC70005EE4D /* Enum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enum.swift; sourceTree = "<group>"; };
-		47EB282628A5FA3E005380F8 /* CustomPreviewControllerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPreviewControllerDataSource.swift; sourceTree = "<group>"; };
 		47EB282828A60B63005380F8 /* CustomPreviewImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPreviewImageCell.swift; sourceTree = "<group>"; };
 		47FDFB4E284EEFF200FDA80F /* downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FDFB51284EEFF200FDA80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -370,7 +368,6 @@
 				4746117D28AA0AD200175563 /* CustomPreviewItem.swift */,
 				47EB282828A60B63005380F8 /* CustomPreviewImageCell.swift */,
 				476C4CDD28A105A5000841C6 /* CustomPreviewController.swift */,
-				47EB282628A5FA3E005380F8 /* CustomPreviewControllerDataSource.swift */,
 				4746117B28A8E62100175563 /* CustomPreviewControllerDelegate.swift */,
 			);
 			path = CustomPreviewController;
@@ -740,7 +737,6 @@
 				475FED96287443020007838F /* TransitionManager.swift in Sources */,
 				474CCDA02878338600F940FF /* GifImage.swift in Sources */,
 				47CF1D2A2885A84E0076888A /* PinterestLayoutCaculatorDelegate.swift in Sources */,
-				47EB282728A5FA3E005380F8 /* CustomPreviewControllerDataSource.swift in Sources */,
 				478B67D52888638D00D38B68 /* ThumbnailManager.swift in Sources */,
 				477D34B8287D7E9D00D3FCBD /* ContextMenuCell.swift in Sources */,
 				47E8E9D42865B9600005EE4D /* DownloadItem.m in Sources */,

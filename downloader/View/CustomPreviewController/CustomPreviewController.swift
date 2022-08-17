@@ -64,16 +64,16 @@ class CustomPreviewController: UIViewController {
         backButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
-    
     private func configImageConllectionViewConstraint(){
         imageCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         imageCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         imageCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         imageCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
+    
     //MARK: Set Up ViewController
     private var viewTranslation = CGPoint(x: 0, y: 0)
-    
+
     /** panDistance define min distance that user must pan to dismiss controller */
     private var panDistance: CGFloat = 0.0
     
@@ -83,7 +83,7 @@ class CustomPreviewController: UIViewController {
     
     private var currentSize = CGSize(width: 0, height: 0)
     
-    var dataSource: CustomPreviewControllerDataSource?
+    var previewItems: [CustomPreviewItem] = []
     var delegate: CustomPreviewControllerDelegate?
     private var animator = PopAnimator()
     
@@ -102,6 +102,9 @@ class CustomPreviewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        guard !previewItems.isEmpty else{
+            return
+        }
         let indexPath = IndexPath(item: currentPreviewItemPosition, section: 0)
         imageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
         imageCollectionView.layoutIfNeeded()
@@ -166,9 +169,7 @@ class CustomPreviewController: UIViewController {
                         currentCell.imageView.center = currentCell.contentView.center
                         self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1)
                     })
-                
-            } else  // dismiss
-            {
+            } else { // dismiss
                 currentCell.imageSize = currentSize
                 dismiss(animated: true, completion: nil)
             }
@@ -209,27 +210,29 @@ class CustomPreviewController: UIViewController {
 // MARK: - Confirm Collection View Data Source
 extension CustomPreviewController: UICollectionViewDataSource, UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let dataSource = self.dataSource{
-            return dataSource.numberOfPreviewItems(in: self)
-        }
-        return 0
+        return previewItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomPreviewImageCell.identifier, for: indexPath) as! CustomPreviewImageCell
-        if let dataSource = self.dataSource{
-            // set cell delegate
-            cell.delegate = self
+        // set cell delegate
+        cell.delegate = self
+        if let delegate = self.delegate{
             // set place holder for image
-            cell.imageView.image = delegate?.previewController(self, defaultPlaceHolderForItemAt: indexPath.item)
-            // load image by URL
-            cell.setImageDataByImageURL(dataSource.previewController(self, previewItemAt: indexPath.item).previewItemURL!)
-            
+            cell.imageView.image = delegate.previewController(self, defaultPlaceHolderForItemAt: indexPath.item)
         }
+        // load image by URL
+        if let previewItemURL = previewItems[indexPath.item].previewItemURL {
+            cell.setImageDataByImageURL(previewItemURL)
+        }
+        
         return cell
     }
     
     func getCurrentCellOfPosition(position: Int) -> CustomPreviewImageCell?{
+        guard !previewItems.isEmpty else{
+            return nil
+        }
         let indexPath = IndexPath(item: position, section: 0)
         let currentCell = imageCollectionView.cellForItem(at: indexPath) as? CustomPreviewImageCell
         return currentCell
@@ -245,7 +248,6 @@ extension CustomPreviewController: UICollectionViewDataSource, UICollectionViewD
             }
             // set current preview item
             currentPreviewItemPosition = position
-            
             // Do any additional setup after user slide to new image.
         }
     }

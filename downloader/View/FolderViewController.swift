@@ -872,10 +872,11 @@ class FolderViewController: UIViewController {
             }else{
                 if(fileItem.type.name == FileTypeConstants.image().name){
                     let imageVC = CustomPreviewController()
-                    imageVC.dataSource = self
                     imageVC.modalPresentationStyle = .overFullScreen
                     imageVC.delegate = self
-                    
+                    imageVC.previewItems = currentFileMatchSearchSortAndFiler.map({ fileItem in
+                        return fileItem.url as CustomPreviewItem
+                    })
                     
                     if let currentSelectedIndexPath = currentSelectedIndexPath {
                         imageVC.currentPreviewItemPosition = currentSelectedIndexPath.item
@@ -1307,7 +1308,7 @@ extension FolderViewController: MoveFileDelegate{
 }
 
 //MARK: - Confirm Custom Preview Controller Delegate, Data Source
-extension FolderViewController: CustomPreviewControllerDataSource, CustomPreviewControllerDelegate{
+extension FolderViewController: CustomPreviewControllerDelegate{
     
     func previewController(_ controller: CustomPreviewController, transitionViewForItemAt position: Int) -> UIView? {
         let indexPath = IndexPath(item: position, section: 0)
@@ -1324,15 +1325,8 @@ extension FolderViewController: CustomPreviewControllerDataSource, CustomPreview
         }
     }
     
-    func numberOfPreviewItems(in controller: CustomPreviewController) -> Int {
-        return currentFileMatchSearchSortAndFiler.count
-    }
-    
-    func previewController(_ controller: CustomPreviewController, previewItemAt index: Int) -> CustomPreviewItem {
-        return currentFileMatchSearchSortAndFiler[index].url as CustomPreviewItem
-    }
-
     func previewController(_ controller: CustomPreviewController, defaultPlaceHolderForItemAt position: Int) -> UIImage? {
+        
         let indexPath = IndexPath(item: position, section: 0)
         switch(viewBy){
         case LayoutType.Pinterest:
