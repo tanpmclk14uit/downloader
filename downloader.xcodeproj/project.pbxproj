@@ -339,6 +339,26 @@
 			path = ManageFile;
 			sourceTree = "<group>";
 		};
+		47B7243828AC91E4003E3F32 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				47439FA028869C3B00FE43C9 /* MoreSettingViewController.swift */,
+				4737A9232893C742005C8DB3 /* PasswordViewController.swift */,
+				478B67CE2887B61200D38B68 /* PassCodeLockViewController.swift */,
+				474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */,
+				477D34B9287E784F00D3FCBD /* MoveFileViewController.swift */,
+				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
+				474A61012863199E0039B3D0 /* ExtensionView */,
+				475FED972874491C0007838F /* CustomCollectionViewTransition */,
+				4738942628768B2700045AFE /* CollectionCellDelegate */,
+				473C64D8287FC19900D38467 /* CustomColldectionViewCell */,
+				473C64D9287FCA3E00D38467 /* CustomComponents */,
+				47CF1D282885A75E0076888A /* CustomPinterestCollectionView */,
+				47EB282528A5F55A005380F8 /* CustomPreviewController */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
 		47CF1D282885A75E0076888A /* CustomPinterestCollectionView */ = {
 			isa = PBXGroup;
 			children = (
@@ -432,19 +452,7 @@
 		47FDFB8A284F004D00FDA80F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				47EB282528A5F55A005380F8 /* CustomPreviewController */,
-				47CF1D282885A75E0076888A /* CustomPinterestCollectionView */,
-				473C64D9287FCA3E00D38467 /* CustomComponents */,
-				473C64D8287FC19900D38467 /* CustomColldectionViewCell */,
-				4738942628768B2700045AFE /* CollectionCellDelegate */,
-				475FED972874491C0007838F /* CustomCollectionViewTransition */,
-				474A61012863199E0039B3D0 /* ExtensionView */,
-				47FDFB55284EEFF200FDA80F /* FolderViewController.swift */,
-				477D34B9287E784F00D3FCBD /* MoveFileViewController.swift */,
-				474A60F92862BB2A0039B3D0 /* DownloadViewController.swift */,
-				47439FA028869C3B00FE43C9 /* MoreSettingViewController.swift */,
-				478B67CE2887B61200D38B68 /* PassCodeLockViewController.swift */,
-				4737A9232893C742005C8DB3 /* PasswordViewController.swift */,
+				47B7243828AC91E4003E3F32 /* UIKit */,
 			);
 			path = View;
 			sourceTree = "<group>";

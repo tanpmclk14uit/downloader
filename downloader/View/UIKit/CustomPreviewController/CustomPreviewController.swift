@@ -130,6 +130,10 @@ class CustomPreviewController: UIViewController {
             return
         }
         
+        if isInZoomMode {
+            return
+        }
+        
         let imageSize = currentCell.imageSize
         switch sender.state {
         case .changed:
