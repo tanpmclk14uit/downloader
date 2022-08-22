@@ -11,6 +11,7 @@ import AVFoundation
 import WebKit
 import QuickLook
 import UniformTypeIdentifiers
+import SwiftUI
 
 class FolderViewController: UIViewController {
     // MARK: - CONFIG UI
@@ -871,18 +872,34 @@ class FolderViewController: UIViewController {
                 showErrorNotification(message: "This file type is not supported!")
             }else{
                 if(fileItem.type.name == FileTypeConstants.image().name){
-                    let imageVC = CustomPreviewController()
-                    imageVC.modalPresentationStyle = .overFullScreen
-                    imageVC.delegate = self
-                    imageVC.previewItems = currentFileMatchSearchSortAndFiler.map({ fileItem in
+                    let previewItems = currentFileMatchSearchSortAndFiler.map({ fileItem in
                         return fileItem.url as CustomPreviewItem
                     })
                     
-                    if let currentSelectedIndexPath = currentSelectedIndexPath {
-                        imageVC.currentPreviewItemPosition = currentSelectedIndexPath.item
+                    if #available(iOS 13.0, *) {
+                        let uiCustomPreview = UICustomPreview {
+                            self.dismiss(animated: true)
+                        }
+                        
+                        let imageVC = UIHostingController(rootView: uiCustomPreview)
+                        imageVC.modalPresentationStyle = .fullScreen
+                        uiCustomPreview.setPreviewItems(previewItems)
+                        
+                        present(imageVC, animated: true)
+                    } else {
+                        // Fallback on earlier versions
+                        let imageVC = CustomPreviewController()
+                        imageVC.modalPresentationStyle = .overFullScreen
+                        imageVC.delegate = self
+                        imageVC.previewItems = previewItems
+                        
+                        if let currentSelectedIndexPath = currentSelectedIndexPath {
+                            imageVC.currentPreviewItemPosition = currentSelectedIndexPath.item
+                        }
+                        
+                        present(imageVC, animated: true)
                     }
                     
-                    present(imageVC, animated: true)
                 }else{
                     qlPreviewController.reloadData()
 

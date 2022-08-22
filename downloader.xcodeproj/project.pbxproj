@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		43CB11784AFA12F7F87C5CEE /* Pods_downloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B50887CFAF708363E7ECDFF0 /* Pods_downloader.framework */; };
 		47244D5B28759E2C005066FB /* MaintainOffsetFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47244D5A28759E2C005066FB /* MaintainOffsetFlowLayout.swift */; };
 		47244D5E2875AB69005066FB /* FileTypeConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 47244D5D2875AB69005066FB /* FileTypeConstants.m */; };
 		47244D612875ABD8005066FB /* FileTypeEnum.m in Sources */ = {isa = PBXBuildFile; fileRef = 47244D602875ABD8005066FB /* FileTypeEnum.m */; };
@@ -47,11 +46,13 @@
 		478B67D7288A582600D38B68 /* RadiusUIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478B67D6288A582600D38B68 /* RadiusUIImage.swift */; };
 		478B67D9288A65D100D38B68 /* PinterestLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478B67D8288A65D100D38B68 /* PinterestLayoutAttributes.swift */; };
 		478B67DB288B93E400D38B68 /* PinterestViewLayoutCaculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478B67DA288B93E400D38B68 /* PinterestViewLayoutCaculator.swift */; };
+		4792AF2A28AF86720012508C /* UICustomPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4792AF2928AF86720012508C /* UICustomPreviewViewModel.swift */; };
 		479B293E286EDE2900854350 /* FileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B293D286EDE2900854350 /* FileItem.m */; };
 		479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 479B2941286EE8DD00854350 /* DownloadFileManager.m */; };
 		479B2944286F066100854350 /* TimeUnitsConvertor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479B2943286F066100854350 /* TimeUnitsConvertor.swift */; };
 		47B380482890E4D200B32F77 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380472890E4D200B32F77 /* StringResource.swift */; };
 		47B3804A2891407800B32F77 /* HideKeyBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380492891407800B32F77 /* HideKeyBoard.swift */; };
+		47B7243D28AC9B7B003E3F32 /* UICustomPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B7243C28AC9B7B003E3F32 /* UICustomPreview.swift */; };
 		47CF1D232883F1990076888A /* InternetTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D222883F1990076888A /* InternetTracking.m */; };
 		47CF1D2528859D820076888A /* PinterestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D2428859D820076888A /* PinterestViewCell.swift */; };
 		47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D262885A7370076888A /* PinterestLayout.swift */; };
@@ -69,6 +70,10 @@
 		47FDFB69284EEFF500FDA80F /* downloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB68284EEFF500FDA80F /* downloaderTests.swift */; };
 		47FDFB73284EEFF500FDA80F /* downloaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */; };
 		47FDFB75284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */; };
+		47FEE8FB28B286380053DE03 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FEE8FA28B286380053DE03 /* LoadingIndicator.swift */; };
+		47FEE8FC28B28BD50053DE03 /* Pods_downloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B50887CFAF708363E7ECDFF0 /* Pods_downloader.framework */; };
+		47FEE90128B32C190053DE03 /* UICustomPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FEE90028B32C190053DE03 /* UICustomPreviewCell.swift */; };
+		47FEE90328B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FEE90228B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift */; };
 		BB9CD283C68658E7A4AC8A7F /* Pods_downloaderUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2087227EE729D64E92E5AF43 /* Pods_downloaderUITests.framework */; };
 		FA2EC7F2BF6371306CC53B51 /* Pods_downloaderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAD55B859F426D812C39D736 /* Pods_downloaderTests.framework */; };
 /* End PBXBuildFile section */
@@ -137,6 +142,7 @@
 		478B67D6288A582600D38B68 /* RadiusUIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiusUIImage.swift; sourceTree = "<group>"; };
 		478B67D8288A65D100D38B68 /* PinterestLayoutAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestLayoutAttributes.swift; sourceTree = "<group>"; };
 		478B67DA288B93E400D38B68 /* PinterestViewLayoutCaculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestViewLayoutCaculator.swift; sourceTree = "<group>"; };
+		4792AF2928AF86720012508C /* UICustomPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICustomPreviewViewModel.swift; sourceTree = "<group>"; };
 		479B293C286EDE2900854350 /* FileItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileItem.h; sourceTree = "<group>"; };
 		479B293D286EDE2900854350 /* FileItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileItem.m; sourceTree = "<group>"; };
 		479B2940286EE8DD00854350 /* DownloadFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadFileManager.h; sourceTree = "<group>"; };
@@ -144,6 +150,7 @@
 		479B2943286F066100854350 /* TimeUnitsConvertor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeUnitsConvertor.swift; sourceTree = "<group>"; };
 		47B380472890E4D200B32F77 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
 		47B380492891407800B32F77 /* HideKeyBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyBoard.swift; sourceTree = "<group>"; };
+		47B7243C28AC9B7B003E3F32 /* UICustomPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICustomPreview.swift; sourceTree = "<group>"; };
 		47CF1D212883F1990076888A /* InternetTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InternetTracking.h; sourceTree = "<group>"; };
 		47CF1D222883F1990076888A /* InternetTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InternetTracking.m; sourceTree = "<group>"; };
 		47CF1D2428859D820076888A /* PinterestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestViewCell.swift; sourceTree = "<group>"; };
@@ -169,6 +176,9 @@
 		47FDFB72284EEFF500FDA80F /* downloaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITests.swift; sourceTree = "<group>"; };
 		47FDFB74284EEFF500FDA80F /* downloaderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloaderUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		47FDFB91284F018C00FDA80F /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		47FEE8FA28B286380053DE03 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
+		47FEE90028B32C190053DE03 /* UICustomPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICustomPreviewCell.swift; sourceTree = "<group>"; };
+		47FEE90228B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICustomPreviewCellViewModel.swift; sourceTree = "<group>"; };
 		8EC2F94BB90B4DC4EFB9CD38 /* Pods-downloaderTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-downloaderTests.release.xcconfig"; path = "Target Support Files/Pods-downloaderTests/Pods-downloaderTests.release.xcconfig"; sourceTree = "<group>"; };
 		AAB6513EDE61FF64376D406E /* Pods-downloaderUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-downloaderUITests.release.xcconfig"; path = "Target Support Files/Pods-downloaderUITests/Pods-downloaderUITests.release.xcconfig"; sourceTree = "<group>"; };
 		B2DDDBB07AC36FA95E2885F1 /* Pods-downloaderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-downloaderTests.debug.xcconfig"; path = "Target Support Files/Pods-downloaderTests/Pods-downloaderTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -184,7 +194,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43CB11784AFA12F7F87C5CEE /* Pods_downloader.framework in Frameworks */,
+				47FEE8FC28B28BD50053DE03 /* Pods_downloader.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +259,13 @@
 			path = MoreInApp;
 			sourceTree = "<group>";
 		};
+		47469FF128B332080076E61A /* CustomPreview */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = CustomPreview;
+			sourceTree = "<group>";
+		};
 		474A60FC2862CEF30039B3D0 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -288,6 +305,16 @@
 			children = (
 			);
 			path = Animation;
+			sourceTree = "<group>";
+		};
+		4792AF2828AF848D0012508C /* UICustomPreviewController */ = {
+			isa = PBXGroup;
+			children = (
+				47FEE8F928B286200053DE03 /* Components */,
+				47B7243C28AC9B7B003E3F32 /* UICustomPreview.swift */,
+				4792AF2928AF86720012508C /* UICustomPreviewViewModel.swift */,
+			);
+			path = UICustomPreviewController;
 			sourceTree = "<group>";
 		};
 		479B2938286ED77A00854350 /* Download */ = {
@@ -357,6 +384,14 @@
 				47EB282528A5F55A005380F8 /* CustomPreviewController */,
 			);
 			path = UIKit;
+			sourceTree = "<group>";
+		};
+		47B7243928AC9524003E3F32 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				4792AF2828AF848D0012508C /* UICustomPreviewController */,
+			);
+			path = SwiftUI;
 			sourceTree = "<group>";
 		};
 		47CF1D282885A75E0076888A /* CustomPinterestCollectionView */ = {
@@ -452,6 +487,7 @@
 		47FDFB8A284F004D00FDA80F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				47B7243928AC9524003E3F32 /* SwiftUI */,
 				47B7243828AC91E4003E3F32 /* UIKit */,
 			);
 			path = View;
@@ -460,6 +496,7 @@
 		47FDFB8C284F007500FDA80F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				47469FF128B332080076E61A /* CustomPreview */,
 				479B293B286EDAC400854350 /* ManageFile */,
 				479B293A286EDABB00854350 /* Download */,
 			);
@@ -474,6 +511,24 @@
 				479B2938286ED77A00854350 /* Download */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		47FEE8F928B286200053DE03 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				47FEE8FF28B32C020053DE03 /* UICustomPreviewCell */,
+				47FEE8FA28B286380053DE03 /* LoadingIndicator.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		47FEE8FF28B32C020053DE03 /* UICustomPreviewCell */ = {
+			isa = PBXGroup;
+			children = (
+				47FEE90028B32C190053DE03 /* UICustomPreviewCell.swift */,
+				47FEE90228B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift */,
+			);
+			path = UICustomPreviewCell;
 			sourceTree = "<group>";
 		};
 		9EA5904E91851A244047BF42 /* Frameworks */ = {
@@ -757,6 +812,7 @@
 				475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */,
 				478B67D12887B88E00D38B68 /* ColorResource.swift in Sources */,
 				47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */,
+				4792AF2A28AF86720012508C /* UICustomPreviewViewModel.swift in Sources */,
 				478B67DB288B93E400D38B68 /* PinterestViewLayoutCaculator.swift in Sources */,
 				47EB282928A60B63005380F8 /* CustomPreviewImageCell.swift in Sources */,
 				473B6DFF2869963200747CD8 /* FileSizeUnits.swift in Sources */,
@@ -781,7 +837,10 @@
 				47439FA32886BA1000FE43C9 /* MoreSettingActionItem.swift in Sources */,
 				4737A9282893DAE4005C8DB3 /* PasswordKeyBoard.swift in Sources */,
 				47FDFB52284EEFF200FDA80F /* AppDelegate.swift in Sources */,
+				47FEE90128B32C190053DE03 /* UICustomPreviewCell.swift in Sources */,
 				4746117C28A8E62100175563 /* CustomPreviewControllerDelegate.swift in Sources */,
+				47B7243D28AC9B7B003E3F32 /* UICustomPreview.swift in Sources */,
+				47FEE90328B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift in Sources */,
 				477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */,
 				473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */,
 				47B380482890E4D200B32F77 /* StringResource.swift in Sources */,
@@ -789,6 +848,7 @@
 				47B3804A2891407800B32F77 /* HideKeyBoard.swift in Sources */,
 				476C4CDE28A105A5000841C6 /* CustomPreviewController.swift in Sources */,
 				47439F9B28865E9500FE43C9 /* CacheThumbnailImage.swift in Sources */,
+				47FEE8FB28B286380053DE03 /* LoadingIndicator.swift in Sources */,
 				478B67D9288A65D100D38B68 /* PinterestLayoutAttributes.swift in Sources */,
 				47E8E9DA2865BFC70005EE4D /* Enum.swift in Sources */,
 				476C4CDC28A104DE000841C6 /* PopAnimator.swift in Sources */,
