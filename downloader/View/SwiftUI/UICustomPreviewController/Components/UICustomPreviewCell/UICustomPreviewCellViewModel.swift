@@ -26,39 +26,40 @@ final class UICustomPreviewCellViewModel: ObservableObject{
     
     
     func loadImageByImageURL(_ url: URL?){
-        loadingState = LoadingState.Loading
-        guard let url = url else {
-            print("Image url is nil")
-            loadingState = LoadingState.Error
-            return
-        }
-        
-        DispatchQueue.global().async { [weak self] in
-            if let self = self{
-                do{
-                    let image = try UIImage(data: Data(contentsOf: url))
-                    if let image = image {
-                        DispatchQueue.main.async { [self] in
-                            let imageRatio = image.size.width / image.size.height
-                            let imageWidth = UIScreen.main.bounds.width
-                            let imageHeight = imageWidth/imageRatio
-                            DispatchQueue.global().async {
-                                let imageSize = CGSize(width: imageWidth, height: imageHeight)
-                                let optimizedImage = self.getAndOptimizeImage(withURL: url, to: imageSize, scale: self.maximumZoomScale)
-                                // save optimized image to cache if needed
-                                DispatchQueue.main.async {
-                                    
-                                    if let optimizedImage = optimizedImage {
-                                        self.image = Image(uiImage: optimizedImage)
-                                        self.loadingState = .Success
+        if(image == nil){
+            loadingState = LoadingState.Loading
+            guard let url = url else {
+                print("Image url is nil")
+                loadingState = LoadingState.Error
+                return
+            }
+            
+            DispatchQueue.global().async { [weak self] in
+                if let self = self{
+                    do{
+                        let image = try UIImage(data: Data(contentsOf: url))
+                        if let image = image {
+                            DispatchQueue.main.async { [self] in
+                                let imageRatio = image.size.width / image.size.height
+                                let imageWidth = UIScreen.main.bounds.width
+                                let imageHeight = imageWidth/imageRatio
+                                DispatchQueue.global().async {
+                                    let imageSize = CGSize(width: imageWidth, height: imageHeight)
+                                    let optimizedImage = self.getAndOptimizeImage(withURL: url, to: imageSize, scale: self.maximumZoomScale)
+                                    // save optimized image to cache if needed
+                                    DispatchQueue.main.async {
+                                        if let optimizedImage = optimizedImage {
+                                            self.image = Image(uiImage: optimizedImage)
+                                            self.loadingState = .Success
+                                        }
                                     }
                                 }
                             }
                         }
+                    }catch{
+                        print("Get image error!")
+                        self.loadingState = LoadingState.Error
                     }
-                }catch{
-                    print("Get image error!")
-                    self.loadingState = LoadingState.Error
                 }
             }
         }

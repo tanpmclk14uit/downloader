@@ -53,10 +53,12 @@
 		47B380482890E4D200B32F77 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380472890E4D200B32F77 /* StringResource.swift */; };
 		47B3804A2891407800B32F77 /* HideKeyBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B380492891407800B32F77 /* HideKeyBoard.swift */; };
 		47B7243D28AC9B7B003E3F32 /* UICustomPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B7243C28AC9B7B003E3F32 /* UICustomPreview.swift */; };
+		47C5F5DB28B76AC900F9DE52 /* ZoomableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C5F5DA28B76AC900F9DE52 /* ZoomableScrollView.swift */; };
 		47CF1D232883F1990076888A /* InternetTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D222883F1990076888A /* InternetTracking.m */; };
 		47CF1D2528859D820076888A /* PinterestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D2428859D820076888A /* PinterestViewCell.swift */; };
 		47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D262885A7370076888A /* PinterestLayout.swift */; };
 		47CF1D2A2885A84E0076888A /* PinterestLayoutCaculatorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CF1D292885A84E0076888A /* PinterestLayoutCaculatorDelegate.swift */; };
+		47E7C45B28B48A830038E58B /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E7C45A28B48A830038E58B /* PageViewController.swift */; };
 		47E8E9CF286563A80005EE4D /* DimenResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9CE286563A80005EE4D /* DimenResource.swift */; };
 		47E8E9D1286577340005EE4D /* FileItemViewCellByList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */; };
 		47E8E9D42865B9600005EE4D /* DownloadItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E8E9D32865B9600005EE4D /* DownloadItem.m */; };
@@ -151,11 +153,13 @@
 		47B380472890E4D200B32F77 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
 		47B380492891407800B32F77 /* HideKeyBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyBoard.swift; sourceTree = "<group>"; };
 		47B7243C28AC9B7B003E3F32 /* UICustomPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICustomPreview.swift; sourceTree = "<group>"; };
+		47C5F5DA28B76AC900F9DE52 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
 		47CF1D212883F1990076888A /* InternetTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InternetTracking.h; sourceTree = "<group>"; };
 		47CF1D222883F1990076888A /* InternetTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InternetTracking.m; sourceTree = "<group>"; };
 		47CF1D2428859D820076888A /* PinterestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestViewCell.swift; sourceTree = "<group>"; };
 		47CF1D262885A7370076888A /* PinterestLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestLayout.swift; sourceTree = "<group>"; };
 		47CF1D292885A84E0076888A /* PinterestLayoutCaculatorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestLayoutCaculatorDelegate.swift; sourceTree = "<group>"; };
+		47E7C45A28B48A830038E58B /* PageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		47E8E9CE286563A80005EE4D /* DimenResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimenResource.swift; sourceTree = "<group>"; };
 		47E8E9D0286577340005EE4D /* FileItemViewCellByList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemViewCellByList.swift; sourceTree = "<group>"; };
 		47E8E9D22865B9600005EE4D /* DownloadItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DownloadItem.h; path = downloader/Models/Download/DownloadItem.h; sourceTree = SOURCE_ROOT; };
@@ -518,6 +522,8 @@
 			children = (
 				47FEE8FF28B32C020053DE03 /* UICustomPreviewCell */,
 				47FEE8FA28B286380053DE03 /* LoadingIndicator.swift */,
+				47E7C45A28B48A830038E58B /* PageViewController.swift */,
+				47C5F5DA28B76AC900F9DE52 /* ZoomableScrollView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -826,6 +832,7 @@
 				474A60FA2862BB2A0039B3D0 /* DownloadViewController.swift in Sources */,
 				479B2942286EE8DD00854350 /* DownloadFileManager.m in Sources */,
 				478B67CD2887B27400D38B68 /* TopBarContainer.swift in Sources */,
+				47E7C45B28B48A830038E58B /* PageViewController.swift in Sources */,
 				472C9071286C025000F79ACD /* DownloadItemPersistenceManager.m in Sources */,
 				478B67D7288A582600D38B68 /* RadiusUIImage.swift in Sources */,
 				47E8E9D1286577340005EE4D /* FileItemViewCellByList.swift in Sources */,
@@ -841,6 +848,7 @@
 				4746117C28A8E62100175563 /* CustomPreviewControllerDelegate.swift in Sources */,
 				47B7243D28AC9B7B003E3F32 /* UICustomPreview.swift in Sources */,
 				47FEE90328B32C8F0053DE03 /* UICustomPreviewCellViewModel.swift in Sources */,
+				47C5F5DB28B76AC900F9DE52 /* ZoomableScrollView.swift in Sources */,
 				477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */,
 				473C64DD287FF56400D38467 /* NotificationAlert.swift in Sources */,
 				47B380482890E4D200B32F77 /* StringResource.swift in Sources */,

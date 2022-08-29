@@ -18,36 +18,47 @@ struct UICustomPreview: View {
         viewModel.previewItems = previewItems
     }
     
+    func setCurrentPreviewItemTo(position: Int){
+        viewModel.currentPreviewItemIndex = position
+    }
+    
     var body: some View {
         ZStack(alignment: .top){
-            Color.black.edgesIgnoringSafeArea(.all)
+            Color.black.edgesIgnoringSafeArea(.all).opacity(viewModel.backgroundAlpha).animation(.easeInOut, value: true)
             
-            GeometryReader {_ in
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(viewModel.previewItems, id: \.previewItemURL){ previewItem in
-                            UICustomPreviewCell(previewItem.previewItemURL)
-                        }
-                    }
-                }
-            }
-            
-            
-            HStack {
-                Button {
+            GeometryReader { proxy in
+                ZoomableScrollView(content:
+                                    PageViewController(pages: viewModel.previewItems.map({
+    
+                    UICustomPreviewCell($0.previewItemURL)
+                }), currentPage: $viewModel.currentPreviewItemIndex, slideAble: $viewModel.slideAble)
+                                   , slideAble: $viewModel.slideAble, isInZoomMode: $viewModel.isInZoomMode)
+            }.gesture(DragGesture().onChanged({ value in
+                viewModel.onPanToDismissChange(value: value)
+            }).onEnded({ value in
+                viewModel.onPanToDismissEnded(value: value) {
                     dismissClosure?()
-                } label: {
-                    Text("Close")
-                        .font(Font.system(size: 18))
-                        .foregroundColor(.white)
-                        .padding(10)
                 }
-                
-                Spacer()
+            }))
+            
+            if(viewModel.shouldShowAppBar){
+                HStack {
+                    Button {
+                        dismissClosure?()
+                    } label: {
+                        Text("Close")
+                            .font(Font.system(size: 18))
+                            .foregroundColor(.white)
+                            .padding(10)
+                    }
+                    
+                    Spacer()
+                }
             }
-        }
+        }.environmentObject(viewModel)
     }
 }
+
 
 @available(iOS 13.0, *)
 struct UICustomPreviewController_Previews: PreviewProvider {

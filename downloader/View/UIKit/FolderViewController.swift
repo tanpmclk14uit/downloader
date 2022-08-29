@@ -880,11 +880,17 @@ class FolderViewController: UIViewController {
                         let uiCustomPreview = UICustomPreview {
                             self.dismiss(animated: true)
                         }
-                        
-                        let imageVC = UIHostingController(rootView: uiCustomPreview)
-                        imageVC.modalPresentationStyle = .fullScreen
+
                         uiCustomPreview.setPreviewItems(previewItems)
-                        
+
+                        if let currentSelectedIndexPath = currentSelectedIndexPath {
+                            uiCustomPreview.setCurrentPreviewItemTo(position: currentSelectedIndexPath.item)
+                        }
+
+                        let imageVC = UIHostingController(rootView: uiCustomPreview)
+                        imageVC.modalPresentationStyle = .overFullScreen
+                        imageVC.view.backgroundColor = .clear
+
                         present(imageVC, animated: true)
                     } else {
                         // Fallback on earlier versions
@@ -892,11 +898,11 @@ class FolderViewController: UIViewController {
                         imageVC.modalPresentationStyle = .overFullScreen
                         imageVC.delegate = self
                         imageVC.previewItems = previewItems
-                        
+
                         if let currentSelectedIndexPath = currentSelectedIndexPath {
                             imageVC.currentPreviewItemPosition = currentSelectedIndexPath.item
                         }
-                        
+
                         present(imageVC, animated: true)
                     }
                     
