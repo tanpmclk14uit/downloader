@@ -18,11 +18,11 @@ protocol CustomPreviewControllerDelegate{
 }
 
 extension CustomPreviewControllerDelegate{
-    func previewController(_ controller: CustomPreviewController, defaultPlaceHolderForItemAt position: Int) -> UIImage?{
+    func previewController(_ controller: UIViewController, defaultPlaceHolderForItemAt position: Int) -> UIImage?{
         return nil
     }
     
-    func previewController(_ controller: CustomPreviewController, transitionViewForItemAt position: Int) -> UIView?{
+    func previewController(_ controller: UIViewController, transitionViewForItemAt position: Int) -> UIView?{
         return nil
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 struct UICustomPreview: View {
-    @ObservedObject private var viewModel = UICustomPreviewViewModel()
+    @ObservedObject var viewModel = UICustomPreviewViewModel()
     
     let dismissClosure: (() -> Void)?
     

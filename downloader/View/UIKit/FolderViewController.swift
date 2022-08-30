@@ -876,6 +876,7 @@ class FolderViewController: UIViewController {
                         return fileItem.url as CustomPreviewItem
                     })
                     
+                    
                     if #available(iOS 13.0, *) {
                         let uiCustomPreview = UICustomPreview {
                             self.dismiss(animated: true)
@@ -887,10 +888,11 @@ class FolderViewController: UIViewController {
                             uiCustomPreview.setCurrentPreviewItemTo(position: currentSelectedIndexPath.item)
                         }
 
-                        let imageVC = UIHostingController(rootView: uiCustomPreview)
+                        let imageVC = UIHostringControllerWithZoomTransition(rootView: uiCustomPreview)
                         imageVC.modalPresentationStyle = .overFullScreen
                         imageVC.view.backgroundColor = .clear
-
+                        imageVC.delegate = self
+                        
                         present(imageVC, animated: true)
                     } else {
                         // Fallback on earlier versions

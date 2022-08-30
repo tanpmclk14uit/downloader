@@ -35,6 +35,7 @@
 		475FED96287443020007838F /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475FED95287443020007838F /* TransitionManager.swift */; };
 		476C4CDC28A104DE000841C6 /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476C4CDB28A104DE000841C6 /* PopAnimator.swift */; };
 		476C4CDE28A105A5000841C6 /* CustomPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476C4CDD28A105A5000841C6 /* CustomPreviewController.swift */; };
+		47771BED28BE1B3800105E13 /* UIHostringControllerWithZoomTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47771BEC28BE1B3800105E13 /* UIHostringControllerWithZoomTransition.swift */; };
 		477D34B6287D765100D3FCBD /* ContentSizedTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */; };
 		477D34B8287D7E9D00D3FCBD /* ContextMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */; };
 		477D34BA287E784F00D3FCBD /* MoveFileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D34B9287E784F00D3FCBD /* MoveFileViewController.swift */; };
@@ -132,6 +133,7 @@
 		475FED95287443020007838F /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		476C4CDB28A104DE000841C6 /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		476C4CDD28A105A5000841C6 /* CustomPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPreviewController.swift; sourceTree = "<group>"; };
+		47771BEC28BE1B3800105E13 /* UIHostringControllerWithZoomTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHostringControllerWithZoomTransition.swift; sourceTree = "<group>"; };
 		477D34B5287D765100D3FCBD /* ContentSizedTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedTableView.swift; sourceTree = "<group>"; };
 		477D34B7287D7E9D00D3FCBD /* ContextMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuCell.swift; sourceTree = "<group>"; };
 		477D34B9287E784F00D3FCBD /* MoveFileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveFileViewController.swift; sourceTree = "<group>"; };
@@ -524,6 +526,7 @@
 				47FEE8FA28B286380053DE03 /* LoadingIndicator.swift */,
 				47E7C45A28B48A830038E58B /* PageViewController.swift */,
 				47C5F5DA28B76AC900F9DE52 /* ZoomableScrollView.swift */,
+				47771BEC28BE1B3800105E13 /* UIHostringControllerWithZoomTransition.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -815,6 +818,7 @@
 				47439FA128869C3B00FE43C9 /* MoreSettingViewController.swift in Sources */,
 				47E8E9CF286563A80005EE4D /* DimenResource.swift in Sources */,
 				473C64DB287FCA8900D38467 /* CustomContextMenuViewController.swift in Sources */,
+				47771BED28BE1B3800105E13 /* UIHostringControllerWithZoomTransition.swift in Sources */,
 				475FED922873E5A90007838F /* FileItemViewCellByIcon.swift in Sources */,
 				478B67D12887B88E00D38B68 /* ColorResource.swift in Sources */,
 				47CF1D272885A7370076888A /* PinterestLayout.swift in Sources */,
