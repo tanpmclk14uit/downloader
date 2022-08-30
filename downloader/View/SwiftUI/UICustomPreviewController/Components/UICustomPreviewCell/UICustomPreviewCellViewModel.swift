@@ -21,9 +21,9 @@ enum LoadingState{
 final class UICustomPreviewCellViewModel: ObservableObject{
     @Published var image: Image?
     @Published var loadingState: LoadingState = LoadingState.Loading
+    var imageSize: CGSize = .zero
     
     let maximumZoomScale: CGFloat = 4
-    
     
     func loadImageByImageURL(_ url: URL?){
         if(image == nil){
@@ -40,12 +40,14 @@ final class UICustomPreviewCellViewModel: ObservableObject{
                         let image = try UIImage(data: Data(contentsOf: url))
                         if let image = image {
                             DispatchQueue.main.async { [self] in
+                                
                                 let imageRatio = image.size.width / image.size.height
                                 let imageWidth = UIScreen.main.bounds.width
                                 let imageHeight = imageWidth/imageRatio
                                 DispatchQueue.global().async {
-                                    let imageSize = CGSize(width: imageWidth, height: imageHeight)
-                                    let optimizedImage = self.getAndOptimizeImage(withURL: url, to: imageSize, scale: self.maximumZoomScale)
+                                    self.imageSize = CGSize(width: imageWidth, height: imageHeight)
+                                    let optimizedImage = self.getAndOptimizeImage(withURL: url, to: self.imageSize, scale: self.maximumZoomScale)
+                                    
                                     // save optimized image to cache if needed
                                     DispatchQueue.main.async {
                                         if let optimizedImage = optimizedImage {

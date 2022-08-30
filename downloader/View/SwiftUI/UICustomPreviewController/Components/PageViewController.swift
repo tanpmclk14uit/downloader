@@ -13,6 +13,7 @@ struct PageViewController<Page: View>: UIViewControllerRepresentable {
     var pages: [Page]
     @Binding var currentPage: Int
     @Binding var slideAble: Bool
+    @Binding var shouldShowAppBar: Bool
     
     func makeCoordinator() -> Coordinator {
         let coordinator = Coordinator(self)
@@ -100,6 +101,7 @@ struct PageViewController<Page: View>: UIViewControllerRepresentable {
             
             return controllers[index - 1]
         }
+        
         
         func pageViewController(
             _ pageViewController: UIPageViewController,

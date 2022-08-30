@@ -15,7 +15,7 @@ struct UICustomPreview: View {
     let dismissClosure: (() -> Void)?
     
     func setPreviewItems(_ previewItems: [CustomPreviewItem]){
-        viewModel.previewItems = previewItems
+        viewModel.loadPreviewCellView(previewItems: previewItems)
     }
     
     func setCurrentPreviewItemTo(position: Int){
@@ -26,22 +26,20 @@ struct UICustomPreview: View {
         ZStack(alignment: .top){
             Color.black.edgesIgnoringSafeArea(.all).opacity(viewModel.backgroundAlpha).animation(.easeInOut, value: true)
             
-            GeometryReader { proxy in
-                ZoomableScrollView(content:
-                                    PageViewController(pages: viewModel.previewItems.map({
-    
-                    UICustomPreviewCell($0.previewItemURL)
-                }), currentPage: $viewModel.currentPreviewItemIndex, slideAble: $viewModel.slideAble)
-                                   , slideAble: $viewModel.slideAble, isInZoomMode: $viewModel.isInZoomMode)
-            }.gesture(DragGesture().onChanged({ value in
+            PageViewController(pages: viewModel.previewItemImages
+                               , currentPage: $viewModel.currentPreviewItemIndex, slideAble: $viewModel.slideAble, shouldShowAppBar: $viewModel.shouldShowAppBar)
+            .simultaneousGesture(DragGesture().onChanged({ value in
                 viewModel.onPanToDismissChange(value: value)
             }).onEnded({ value in
                 viewModel.onPanToDismissEnded(value: value) {
                     dismissClosure?()
                 }
             }))
-            
-            if(viewModel.shouldShowAppBar){
+            .onTapGesture {
+                viewModel.onTap()
+            }
+
+            if(viewModel.shouldShowAppBar && !viewModel.isInZoomMode){
                 HStack {
                     Button {
                         dismissClosure?()
@@ -64,7 +62,7 @@ struct UICustomPreview: View {
 struct UICustomPreviewController_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            UICustomPreview(dismissClosure: nil)
+           // UICustomPreview(dismissClosure: nil)
         }
     }
 }

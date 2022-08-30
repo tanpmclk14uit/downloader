@@ -31,16 +31,20 @@ struct UICustomPreviewCell: View {
             case .Success:
                 if let image = viewModel.image{
                     GeometryReader {proxy in
-                        
                         let center = CGPoint(x: proxy.size.width/2, y: proxy.size.height/2)
                         
-                        image
+                        ZoomableScrollView(content:
+                                            image
                             .resizable()
                             .scaledToFit()
                             .animation(.easeInOut, value: true)
                             .scaleEffect(parentViewModel.imageScale)
                             .position(parentViewModel.isInPanMode ? parentViewModel.currentImagePosition : center)
-                           
+                                           , isInZoomMode: $parentViewModel.isInZoomMode, imageSize: $viewModel.imageSize)
+                        .onTapGesture {
+                            // Applying onTapGesture here to helf view (SwiftUI Code) detect
+                            // double tap gesture in ZoomableScrollView(UIKit code)
+                        }
                     }
                 }
             case .Error:
