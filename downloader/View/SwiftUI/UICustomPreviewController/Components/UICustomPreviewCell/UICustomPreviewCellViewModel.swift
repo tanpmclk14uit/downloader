@@ -33,7 +33,7 @@ final class UICustomPreviewCellViewModel: ObservableObject{
                 loadingState = LoadingState.Error
                 return
             }
-            
+            // load image from cache as place holder
             DispatchQueue.global().async { [weak self] in
                 if let self = self{
                     do{
