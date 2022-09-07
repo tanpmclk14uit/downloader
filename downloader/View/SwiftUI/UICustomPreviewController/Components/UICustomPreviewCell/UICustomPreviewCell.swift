@@ -13,24 +13,30 @@ struct UICustomPreviewCell: View {
     @ObservedObject private var viewModel = UICustomPreviewCellViewModel()
     @EnvironmentObject var parentViewModel: UICustomPreviewViewModel
     
-    
-    init(_ url: URL?){
+    func loadPreviewItem(url: URL?){
         viewModel.loadImageByImageURL(url)
+    }
+    
+    func getCurrentImageSize(imageScale: CGFloat) -> CGSize{
+        let imageRatio = viewModel.imageSize.width/viewModel.imageSize.height
+        let width = UIScreen.main.bounds.width * imageScale
+        let height = width/imageRatio
+        return CGSize(width: width, height: height)
     }
     
     var body: some View {
         
-        VStack(alignment: .center){
+        GeometryReader {proxy in
             
-            Spacer()
-            
-            switch(viewModel.loadingState){
+            VStack(alignment: .center){
                 
-            case .Loading:
-                LoadingIndicator()
-            case .Success:
-                if let image = viewModel.image{
-                    GeometryReader {proxy in
+                switch(viewModel.loadingState){
+                    
+                case .Loading:
+                    LoadingIndicator()
+                case .Success:
+                    if let image = viewModel.image{
+                        
                         let center = CGPoint(x: proxy.size.width/2, y: proxy.size.height/2)
                         
                         ZoomableScrollView(content:
@@ -41,22 +47,21 @@ struct UICustomPreviewCell: View {
                             .scaleEffect(parentViewModel.imageScale)
                             .position(parentViewModel.isInPanMode ? parentViewModel.currentImagePosition : center)
                                            , isInZoomMode: $parentViewModel.isInZoomMode, imageSize: $viewModel.imageSize)
+                        
                         .onTapGesture {
                             // Applying onTapGesture here to helf view (SwiftUI Code) detect
                             // double tap gesture in ZoomableScrollView(UIKit code)
                         }
+                        
                     }
+                case .Error:
+                    Text("Image loading failed,\nan error has occurred!")
+                        .foregroundColor(.white)
+                        .font(.system(size: 20))
+                        .multilineTextAlignment(.center)
+                        .padding()
                 }
-            case .Error:
-                Text("Image loading failed,\nan error has occurred!")
-                    .foregroundColor(.white)
-                    .font(.system(size: 20))
-                    .multilineTextAlignment(.center)
-                    .padding()
             }
-            
-            
-            Spacer()
         }.frame(width: UIScreen.main.bounds.width)
     }
 }
@@ -66,7 +71,7 @@ struct UICustomPreviewCell_Previews: PreviewProvider {
     static var previews: some View {
         ZStack{
             Color.black.edgesIgnoringSafeArea(.all)
-            UICustomPreviewCell(URL(string: "https://images6.fanpop.com/image/photos/38500000/beautiful-wallpaper-1-beautiful-pictures-38538866-2560-1600.jpg")!)
+            UICustomPreviewCell()
         }
         
     }

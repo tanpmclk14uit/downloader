@@ -876,23 +876,23 @@ class FolderViewController: UIViewController {
                         return fileItem.url as CustomPreviewItem
                     })
                     
-                    
+                
                     if #available(iOS 13.0, *) {
                         let uiCustomPreview = UICustomPreview {
                             self.dismiss(animated: true)
                         }
 
-                        uiCustomPreview.setPreviewItems(previewItems)
 
                         if let currentSelectedIndexPath = currentSelectedIndexPath {
-                            uiCustomPreview.setCurrentPreviewItemTo(position: currentSelectedIndexPath.item)
+                            uiCustomPreview.setPreviewItems(previewItems, currentIndex: currentSelectedIndexPath.item)
                         }
 
                         let imageVC = UIHostringControllerWithZoomTransition(rootView: uiCustomPreview)
+                
                         imageVC.modalPresentationStyle = .overFullScreen
                         imageVC.view.backgroundColor = .clear
                         imageVC.delegate = self
-                        
+
                         present(imageVC, animated: true)
                     } else {
                         // Fallback on earlier versions
@@ -1335,7 +1335,7 @@ extension FolderViewController: MoveFileDelegate{
 //MARK: - Confirm Custom Preview Controller Delegate, Data Source
 extension FolderViewController: CustomPreviewControllerDelegate{
     
-    func previewController(_ controller: CustomPreviewController, transitionViewForItemAt position: Int) -> UIView? {
+    func previewController(_ controller: UIViewController, transitionViewForItemAt position: Int) -> UIView? {
         let indexPath = IndexPath(item: position, section: 0)
         switch(viewBy){
         case LayoutType.Pinterest:
@@ -1350,7 +1350,7 @@ extension FolderViewController: CustomPreviewControllerDelegate{
         }
     }
     
-    func previewController(_ controller: CustomPreviewController, defaultPlaceHolderForItemAt position: Int) -> UIImage? {
+    func previewController(_ controller: UIViewController, defaultPlaceHolderForItemAt position: Int) -> UIImage? {
         
         let indexPath = IndexPath(item: position, section: 0)
         switch(viewBy){

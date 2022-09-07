@@ -25,6 +25,7 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         var yScaleFactor = 1.0
         if presenting{
             recipeView =  transitionContext.view(forKey: .to)
+            
             guard let recipeView = recipeView else {
                 return
             }

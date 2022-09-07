@@ -11,17 +11,19 @@ import SwiftUI
 @available(iOS 13, *)
 class UIHostringControllerWithZoomTransition<Content>:UIHostingController<Content>, UIViewControllerTransitioningDelegate where Content: View {
     
+    var delegate: CustomPreviewControllerDelegate?
+    private var animator = PopAnimator()
+    
     override init(rootView: Content) {
         super.init(rootView: rootView)
-        print("init")
+        view.frame = UIScreen.main.bounds
+        self.transitioningDelegate = self
     }
     
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var delegate: CustomPreviewControllerDelegate?
-    private var animator = PopAnimator()
     
     func getOriginFrameForItemAt(position: Int) -> CGRect?{
         if let delegate = delegate{
@@ -38,13 +40,17 @@ class UIHostringControllerWithZoomTransition<Content>:UIHostingController<Conten
     
     func getCurrentPreviewItemPosition() -> Int{
         let previewControllerView = self.rootView as! UICustomPreview
-        return previewControllerView.viewModel.currentPreviewItemIndex
+        return previewControllerView.getCurrentPreviewItemIndex()
     }
+    
+    
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let originFrame = getOriginFrameForItemAt(position: getCurrentPreviewItemPosition()){
+            let previewControllerView = self.rootView as! UICustomPreview
+            view.frame = previewControllerView.getCurrentFrame()
             animator.originFrame = originFrame
-            animator.presenting = true
+            animator.presenting = false
             return animator
         }else{
             return nil
@@ -54,7 +60,7 @@ class UIHostringControllerWithZoomTransition<Content>:UIHostingController<Conten
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let originFrame = getOriginFrameForItemAt(position: getCurrentPreviewItemPosition()){
             animator.originFrame = originFrame
-            animator.presenting = false
+            animator.presenting = true
             return animator
         }else{
             return nil

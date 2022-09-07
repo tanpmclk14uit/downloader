@@ -11,41 +11,52 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 class UICustomPreviewViewModel: ObservableObject{
-    var currentPreviewItemIndex: Int = 0
+    
     var currentImagePosition: CGPoint = .zero
     
+    @Published var currentPreviewItemIndex: Int = 0 {
+        didSet{
+            let currentPreviewItemURL = previewItems[currentPreviewItemIndex].previewItemURL
+            currentPreviewCell = previewItemCells[currentPreviewItemIndex]
+            currentPreviewCell!.loadPreviewItem(url: currentPreviewItemURL)
+        }
+    }
+    @Published var previewItemCells: [UICustomPreviewCell];
     @Published var shouldShowAppBar: Bool = true
     @Published var slideAble: Bool = true
     @Published var backgroundAlpha: CGFloat = 1.0
     @Published var imageScale: CGFloat = 1.0
     @Published var lastScale: CGFloat = 1.0
-    @Published var previewItemImages: [UICustomPreviewCell];
     @Published var isInPanMode: Bool;
     @Published var isInZoomMode: Bool;
+    @Published var currentImageSize: CGSize = .zero
+    var currentPreviewCell: UICustomPreviewCell?
     
+    private var previewItems: [CustomPreviewItem]
     
     private let maxZoomScale: CGFloat = 4.0
     private let minZoomScale: CGFloat = 1.0
     private let minPanDetecable: CGFloat = 20
     private let panDistance: CGFloat = UIScreen.main.bounds.height/3
+    private let maxCountOfCell: Int = 3
     
     private var isShowingAppBar: Bool = true
     
     
-
-
     init(){
-        previewItemImages = []
+        previewItemCells = []
+        previewItems = []
         isInPanMode = false
         isInZoomMode = false
     }
     
     func loadPreviewCellView(previewItems: [CustomPreviewItem]){
         for previewItem in previewItems {
-            previewItemImages.append(UICustomPreviewCell(previewItem.previewItemURL))
+            self.previewItemCells.append(UICustomPreviewCell())
+            self.previewItems.append(previewItem)
         }
     }
-
+    
     func onTap(){
         shouldShowAppBar = !shouldShowAppBar
         isShowingAppBar = !isShowingAppBar
@@ -69,11 +80,20 @@ class UICustomPreviewViewModel: ObservableObject{
         }
     }
     
-    func onPanToDismissEnded(value: DragGesture.Value, dismiss: (()-> Void)?){
+    func startDismiss(){
+        if let currentPreviewCell = currentPreviewCell {
+            currentImageSize = currentPreviewCell.getCurrentImageSize(imageScale: imageScale)
+        }
+        imageScale = 1.0
+        shouldShowAppBar = false
+        backgroundAlpha = 0
+    }
+    
+    func onPanToDismissEnded(value: DragGesture.Value, dismiss: (()-> Void)){
         if(!isInZoomMode){
             if shouldDismiss() {
-                backgroundAlpha = 0
-                dismiss?()
+                startDismiss()
+                dismiss()
             }else{
                 backgroundAlpha = 1
                 shouldShowAppBar = isShowingAppBar
@@ -82,7 +102,6 @@ class UICustomPreviewViewModel: ObservableObject{
             isInPanMode = false
             slideAble = true
         }
-        
     }
     
     private func shouldDismiss() -> Bool{

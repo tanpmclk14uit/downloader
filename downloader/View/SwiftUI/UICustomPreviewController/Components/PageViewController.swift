@@ -33,12 +33,16 @@ struct PageViewController<Page: View>: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        guard !pages.isEmpty else {
+            return
+        }
         if(slideAble){
             pageViewController.dataSource = context.coordinator
         }else{
             pageViewController.dataSource = nil
         }
         pageViewController.setViewControllers(
+            
             [context.coordinator.controllers[currentPage]], direction: .forward, animated: true)
     }
     
@@ -50,6 +54,7 @@ struct PageViewController<Page: View>: UIViewControllerRepresentable {
         
         init(_ pageViewController: PageViewController) {
             parent = pageViewController
+            
             for page in parent.pages {
                 let controller = UIHostingController(rootView: page)
                 controller.view.backgroundColor = .clear
